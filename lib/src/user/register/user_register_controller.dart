@@ -1,0 +1,52 @@
+part of 'register.dart';
+
+class UserRegisterController {
+  const UserRegisterController();
+
+  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
+    // grab the properties from the request
+    final firstName = req.store.get<String>('firstName');
+    final lastName = req.store.get<String>('lastName');
+    final email = req.store.get<String>('email');
+    final password = req.store.get<String>('password');
+
+    final hashedPassword = DBCrypt().hashpw(password, DBCrypt().gensalt());
+
+    final user = User(
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      password: hashedPassword,
+    );
+
+    try {
+      await user.save();
+
+      final jwt = JWT(
+        {'email': user.email},
+        issuer: 'https://api.alfreddemo.com',
+      );
+
+      final accessToken = jwt.sign(
+        services.jwtAccessSigner,
+        expiresIn: const Duration(days: 7),
+      );
+
+      final refreshToken = jwt.sign(
+        services.jwtRefreshSigner,
+        expiresIn: const Duration(days: 90),
+      );
+
+      res.statusCode = HttpStatus.ok;
+      await res.json({
+        'user': user.toJson(showPassword: false),
+        'accessToken': accessToken,
+        'refreshToken': refreshToken,
+      });
+    } catch (e) {
+      throw AlfredException(500, {
+        'message': 'an unknown error occurred',
+      });
+    }
+  }
+}
