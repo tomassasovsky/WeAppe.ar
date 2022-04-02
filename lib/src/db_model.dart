@@ -5,7 +5,7 @@ abstract class DBModel<T> {
   DBModel(this.collection, {this.id});
 
   @JsonKey(name: '_id', includeIfNull: false)
-  dynamic id;
+  ObjectId? id;
 
   @JsonKey(ignore: true)
   DbCollection collection;
@@ -24,7 +24,7 @@ abstract class DBModel<T> {
       final result = await collection.insertOne(payload);
       final document = result.document;
       if (document != null) {
-        id = result.document!['_id'];
+        id = result.document?['_id'] as ObjectId?;
       }
       return result.document;
     }

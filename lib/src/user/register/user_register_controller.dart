@@ -23,8 +23,8 @@ class UserRegisterController {
       await user.save();
 
       final jwt = JWT(
-        {'email': user.email},
-        issuer: 'https://api.alfreddemo.com',
+        {'userId': user.id?.$oid},
+        issuer: 'https://weappe.ar',
       );
 
       final accessToken = jwt.sign(

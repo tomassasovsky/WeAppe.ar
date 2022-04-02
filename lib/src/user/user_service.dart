@@ -18,4 +18,16 @@ class UsersService {
 
     return User.fromJson(user);
   }
+
+  Future<User?> findUserById(
+    String id,
+  ) async {
+    final user = await dbService.usersCollection.findOne(where.id(ObjectId.parse(id)));
+
+    if (user == null || user.isEmpty) {
+      return null;
+    }
+
+    return User.fromJson(user);
+  }
 }

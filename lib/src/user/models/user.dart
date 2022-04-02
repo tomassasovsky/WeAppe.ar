@@ -1,6 +1,7 @@
 import 'package:backend/src/database/database.dart';
 import 'package:backend/src/db_model.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 
 part 'user.g.dart';
 

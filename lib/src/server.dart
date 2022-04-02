@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:alfred/alfred.dart';
+import 'package:backend/src/user/current/current.dart';
 import 'package:backend/src/user/user.dart';
+import 'package:backend/src/validators/auth_validator.dart';
 
 class Server {
   const Server();
@@ -27,6 +29,13 @@ class Server {
         const UserLoginController(),
         middleware: [
           const UserLoginMiddleware(),
+        ],
+      )
+      ..get(
+        'user',
+        const UserCurrentController(),
+        middleware: [
+          const AuthenticationMiddleware(),
         ],
       )
       ..printRoutes();

@@ -35,8 +35,8 @@ class AuthenticationMiddleware {
     }
 
     try {
-      final email = (parsedToken.payload as Map<String, dynamic>)['email'] as String;
-      final user = await services.users.findUserByEmail(email: email);
+      final userId = (parsedToken.payload as Map<String, dynamic>)['userId'] as String;
+      final user = await services.users.findUserById(userId);
 
       if (user == null) {
         throw AlfredException(401, {
