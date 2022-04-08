@@ -30,8 +30,7 @@ class User extends DBModel<User> {
   List<ObjectId>? organizations;
 
   @override
-  Map<String, dynamic> toJson({bool showPassword = true}) =>
-      _$UserToJson(this, showPassword);
+  Map<String, dynamic> toJson({bool showPassword = true}) => _$UserToJson(this, showPassword);
 
   @override
   User fromJson(Map<String, dynamic> json) => User.fromJson(json);

@@ -14,24 +14,16 @@ class CreateOrganizationController {
       homePageUrl: homePageUrl,
     );
 
-    final organizationQuery =
-        await services.organizations.findOrganizationByNameAndUserId(
-      name: name,
-      userId: organization.admin,
-    );
-    if (organizationQuery != null) {
-      res.reasonPhrase = 'organizationAlreadyExists';
-      throw AlfredException(400, {
-        'message': 'you already created an organization with that name!',
-      });
-    }
-
     try {
-      final result = await services.organizations.addToDatabase(organization);
+      final result = await services.organizations.addToDatabase(
+        organization,
+      );
+
       user.organizations ??= [];
       user.organizations?.add(result.id as ObjectId);
-      final userJson = user.toJson();
+
       await user.save();
+
       res.statusCode = 200;
       await res.json(
         <String, dynamic>{

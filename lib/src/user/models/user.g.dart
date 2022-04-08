@@ -26,7 +26,7 @@ Map<String, dynamic> _$UserToJson(User instance, [bool showPassword = true]) {
     }
   }
 
-  writeNotNull('_id', instance.id?.$oid);
+  writeNotNull('_id', instance.id);
   writeNotNull('firstName', instance.firstName);
   writeNotNull('lastName', instance.lastName);
   writeNotNull('email', instance.email);

@@ -26,7 +26,7 @@ Map<String, dynamic> _$OrganizationToJson(
     }
   }
 
-  writeNotNull('_id', instance.id?.$oid);
+  writeNotNull('_id', instance.id);
   writeNotNull('name', instance.name);
   writeNotNull('admin', instance.admin);
   writeNotNull('homePageUrl', instance.homePageUrl);
