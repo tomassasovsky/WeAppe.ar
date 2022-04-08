@@ -14,4 +14,10 @@ class TokensService {
       },
     );
   }
+
+  Future<WriteResult> deleteFromDatabase(String token) {
+    return dbService.refreshTokensCollection.deleteOne(
+      where.eq('refreshToken', token),
+    );
+  }
 }

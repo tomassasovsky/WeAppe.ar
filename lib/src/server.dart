@@ -38,6 +38,11 @@ class Server {
           const AuthenticationMiddleware(),
         ],
       )
+      ..delete(
+        'user/logout',
+        const UserLogoutController(),
+        middleware: [const AuthenticationMiddleware()],
+      )
       ..printRoutes();
 
     // start the alfred server:
