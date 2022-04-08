@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:alfred/alfred.dart';
+import 'package:backend/src/clock-in-out/clock-in/clock_in.dart';
 import 'package:backend/src/organization/create_organization/create_organization.dart';
 import 'package:backend/src/user/current/current.dart';
 import 'package:backend/src/user/user.dart';
@@ -52,10 +53,15 @@ class Server {
         const UserLogoutController(),
         middleware: [const AuthenticationMiddleware()],
       )
+      ..post(
+        'clock/in',
+        const ClockInController(),
+        middleware: [const ClockInMiddleware()],
+      )
       ..printRoutes();
 
     // start the alfred server:
-    await app.listen(8080);
+    await app.listen(5000);
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:backend/backend.dart';
+import 'package:backend/src/clock-in-out/clock_in_out_service.dart';
 import 'package:backend/src/database/database.dart';
 import 'package:backend/src/imgur/imgur_client.dart';
 import 'package:backend/src/organization/organization_service.dart';
@@ -15,6 +16,7 @@ class Services {
   late final users = UsersService(dbService);
   late final tokens = TokensService(dbService);
   late final organizations = OrganizationService(dbService);
+  late final clockInOuts = ClockInOutService(dbService);
 
   late final imgurClient = ImgurClient(Constants.imgurClientId);
 
