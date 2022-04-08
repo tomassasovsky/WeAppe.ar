@@ -1,0 +1,9 @@
+{
+  "explorer.experimental.fileNesting.enabled": true,
+  "explorer.experimental.fileNesting.expand": false,
+  "explorer.experimental.fileNesting.operateAsGroup": true,
+  "explorer.experimental.fileNesting.patterns": {
+    "build.bat": "build.bat, deploy.bat, docker-build.bat, docker-run.bat, build_runner.sh, run.bat",
+    ".env": ".env, .example.env"
+  }
+}

@@ -24,4 +24,6 @@ Future<void> main() async {
 
   const server = Server();
   await server.init();
+
+  await database.close();
 }

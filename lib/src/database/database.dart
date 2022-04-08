@@ -10,9 +10,8 @@ class DatabaseService {
   DbCollection get refreshTokensCollection => _db.collection('refreshTokens');
   DbCollection get organizationCollection => _db.collection('organization');
 
-  Future open() async => _db.open();
-
-  Future close() async => _db.close();
+  Future open() => _db.open();
+  Future close() => _db.close();
 }
 
 DatabaseService get database => GetIt.instance.get<DatabaseService>();
