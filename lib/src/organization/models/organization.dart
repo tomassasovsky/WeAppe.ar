@@ -16,8 +16,7 @@ class Organization extends DBModel<Organization> {
     this.employees,
   }) : super(database.organizationsCollection);
 
-  factory Organization.fromJson(Map<String, dynamic> json) =>
-      _$OrganizationFromJson(json);
+  factory Organization.fromJson(Map<String, dynamic> json) => _$OrganizationFromJson(json);
 
   String name;
   ObjectId admin;
@@ -35,6 +34,5 @@ class Organization extends DBModel<Organization> {
   Map<String, dynamic> toJson() => _$OrganizationToJson(this);
 
   @override
-  Organization fromJson(Map<String, dynamic> json) =>
-      Organization.fromJson(json);
+  Organization fromJson(Map<String, dynamic> json) => Organization.fromJson(json);
 }
