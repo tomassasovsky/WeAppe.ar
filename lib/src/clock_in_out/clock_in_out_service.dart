@@ -1,4 +1,4 @@
-import 'package:backend/src/clock-in-out/models/clock_in_out.dart';
+import 'package:backend/src/clock_in_out/models/clock_in_out.dart';
 import 'package:backend/src/database/database.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -19,18 +19,23 @@ class ClockInOutService {
   }
 
   Future<ClockInOut?> findLastClockIn({
-    required ObjectId organizationId,
-    required ObjectId userId,
+    required dynamic organizationId,
+    required dynamic userId,
   }) async {
+    final _userId = (userId is ObjectId) ? userId : ObjectId.parse(userId as String);
+    final _organizationId = (organizationId is ObjectId) ? organizationId : ObjectId.parse(organizationId as String);
+
     final clockIn = await dbService.clockInOutCollection.findOne(
       where
-          .eq('organizationId', organizationId)
-          .eq('userId', userId)
-          .sortBy('clockIn', descending: true),
+        ..eq('organizationId', _organizationId)
+        ..eq('userId', _userId)
+        ..sortBy('clockIn', descending: true),
     );
+
     if (clockIn == null) {
       return null;
     }
+
     return ClockInOut.fromJson(clockIn);
   }
 
@@ -40,18 +45,17 @@ class ClockInOutService {
     return dbService.clockInOutCollection.insertOne(clockIn.toJson());
   }
 
-  Future<ClockInOut?> clockOut(
+  Future<WriteResult> clockOut(
     ObjectId id,
   ) async {
     final date = DateTime.now();
     final clockIn = await findClockInById(id);
     final duration = date.difference(clockIn!.clockIn);
-    await dbService.clockInOutCollection.updateOne(
+    return dbService.clockInOutCollection.updateOne(
       where.id(id),
       modify
-          .set('clockOut', date.toIso8601String())
-          .set('durationInMiliseconds', duration.inMilliseconds),
+        ..set('clockOut', date.toIso8601String())
+        ..set('durationInMiliseconds', duration.inMilliseconds),
     );
-    return findClockInById(id);
   }
 }

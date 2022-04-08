@@ -8,9 +8,9 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
     await super.call(req, res);
     final body = await req.bodyAsJsonMap;
 
-    final dynamic id = req.params['id'] as String?;
+    final id = req.params['id'] as String?;
 
-    if (id == null || (id as String).isEmpty) {
+    if (id == null || id.isEmpty == true) {
       res.reasonPhrase = 'nameRequired';
       throw AlfredException(400, {
         'message': "the organization's id is required",
@@ -28,8 +28,7 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final organization =
-        await services.organizations.findOrganizationById(ObjectId.parse(id));
+    final organization = await services.organizations.findOrganizationById(id);
 
     if (organization == null) {
       res.reasonPhrase = 'organizationDoesNotExist';
@@ -46,8 +45,7 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    if ((photo == null || photo == organization.imageUrl) &&
-        (homePageUrl == null || homePageUrl == organization.homePageUrl)) {
+    if ((photo == null || photo == organization.imageUrl) && (homePageUrl == null || homePageUrl == organization.homePageUrl)) {
       res.reasonPhrase = 'nothingToUpdate';
       throw AlfredException(202, {
         'message': 'nothing to update!',

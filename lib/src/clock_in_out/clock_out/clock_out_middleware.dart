@@ -6,9 +6,9 @@ class ClockOutMiddleware extends AuthenticationMiddleware {
   @override
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     await super.call(req, res);
-    final user = req.store.get<User>('user');
+    final userId = req.store.get<User>('user').id;
     final params = req.params;
-    final dynamic organizationId = params['id'];
+    final organizationId = params['id'] as String?;
 
     if (organizationId == null) {
       res.reasonPhrase = 'organizationIdRequired';
@@ -17,8 +17,7 @@ class ClockOutMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final organization = await services.organizations
-        .findOrganizationById(ObjectId.parse(organizationId as String));
+    final organization = await services.organizations.findOrganizationById(organizationId);
 
     if (organization == null) {
       res.reasonPhrase = 'organizationNotFound';
@@ -28,11 +27,11 @@ class ClockOutMiddleware extends AuthenticationMiddleware {
     }
 
     final clockInQuery = await services.clockInOuts.findLastClockIn(
-      organizationId: organization.id!,
-      userId: user.id!,
+      organizationId: organizationId,
+      userId: userId,
     );
 
-    if (clockInQuery == null || clockInQuery.toJson().containsKey('clockOut')) {
+    if (clockInQuery == null || clockInQuery.clockOut != null) {
       res.reasonPhrase = 'clockInClosed';
       throw AlfredException(404, {
         'message': "you don't have any clock in open!",

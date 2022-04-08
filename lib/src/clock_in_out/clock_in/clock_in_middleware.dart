@@ -8,12 +8,14 @@ class ClockInMiddleware extends AuthenticationMiddleware {
     await super.call(req, res);
     final user = req.store.get<User>('user');
     final params = req.params;
-    final dynamic organizationId = params['id'];
+    final organizationId = params['id'] as String?;
 
-    if (user.id == null) {
-      res.reasonPhrase = 'userIdRequired';
-      throw AlfredException(400, {
-        'message': 'user id is required!',
+    final userId = user.id;
+
+    if (userId == null) {
+      res.reasonPhrase = 'userIdNotFound';
+      throw AlfredException(500, {
+        'message': 'user id was not found!',
       });
     }
 
@@ -24,8 +26,9 @@ class ClockInMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final organization = await services.organizations
-        .findOrganizationById(ObjectId.parse(organizationId as String));
+    final organization = await services.organizations.findOrganizationById(
+      organizationId,
+    );
 
     if (organization == null) {
       res.reasonPhrase = 'organizationNotFound';
@@ -34,7 +37,7 @@ class ClockInMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    if (!organization.containsUser(user.id!)) {
+    if (!organization.containsUser(userId)) {
       res.reasonPhrase = 'userNotInOrganization';
       throw AlfredException(404, {
         'message': 'user not in organization!',
@@ -42,18 +45,24 @@ class ClockInMiddleware extends AuthenticationMiddleware {
     }
 
     final clockInQuery = await services.clockInOuts.findLastClockIn(
-      organizationId: organization.id!,
-      userId: user.id!,
+      organizationId: organizationId,
+      userId: userId,
     );
 
-    if (clockInQuery != null &&
-        !clockInQuery.toJson().containsKey('clockOut')) {
-      res.reasonPhrase = 'clockInOpen';
+    if (clockInQuery == null) {
+      res.reasonPhrase = 'clockInNotFound';
       throw AlfredException(404, {
+        'message': "we haven't found an ongoing session for your user!",
+      });
+    }
+
+    if (clockInQuery.clockOut != null) {
+      res.reasonPhrase = 'clockInOpen';
+      throw AlfredException(409, {
         'message': 'you have a clock in open!',
       });
     }
 
-    req.store.set('organizationId', organization.id);
+    req.store.set('organizationId', organizationId);
   }
 }
