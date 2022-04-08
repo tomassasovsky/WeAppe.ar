@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:alfred/alfred.dart';
+import 'package:backend/src/organization/create_organization/create_organization.dart';
 import 'package:backend/src/user/current/current.dart';
 import 'package:backend/src/user/user.dart';
 import 'package:backend/src/validators/auth_validator.dart';
@@ -11,7 +12,10 @@ class Server {
   Future<void> init() async {
     // initialize alfred:
     final app = Alfred(
-      onNotFound: (req, res) => throw AlfredException(404, {'message': '${req.requestedUri.path} not found'}),
+      onNotFound: (req, res) => throw AlfredException(
+        404,
+        {'message': '${req.requestedUri.path} not found'},
+      ),
       onInternalError: errorHandler,
     )
       ..post(
@@ -38,10 +42,15 @@ class Server {
           const AuthenticationMiddleware(),
         ],
       )
+      ..post(
+        'organization/create',
+        const CreateOrganizationController(),
+        middleware: [const CreateOrganizationMiddleware()],
+      )
       ..printRoutes();
 
     // start the alfred server:
-    await app.listen(8080);
+    await app.listen(5000);
   }
 }
 

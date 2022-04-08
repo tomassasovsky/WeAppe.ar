@@ -1,0 +1,48 @@
+part of 'create_organization.dart';
+
+class CreateOrganizationController {
+  const CreateOrganizationController();
+
+  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
+    final name = req.store.get<String>('name');
+    final homePageUrl = req.store.tryGet<String>('homePageUrl');
+    final user = req.store.get<User>('user');
+
+    final organization = Organization(
+      name: name,
+      admin: user.id!.$oid,
+      homePageUrl: homePageUrl,
+    );
+
+    final organizationQuery =
+        await services.organizations.findOrganizationByNameAndUserId(
+      name: name,
+      userId: organization.admin,
+    );
+    if (organizationQuery != null) {
+      res.reasonPhrase = 'organizationAlreadyExists';
+      throw AlfredException(400, {
+        'message': 'you already created an organization with that name!',
+      });
+    }
+
+    try {
+      final result = await services.organizations.addToDatabase(organization);
+      user.organizations ??= [];
+      user.organizations?.add(result.id as ObjectId);
+      final userJson = user.toJson();
+      await user.save();
+      res.statusCode = 200;
+      await res.json(
+        <String, dynamic>{
+          'id': result.id,
+          ...organization.toJson(),
+        },
+      );
+    } catch (e) {
+      throw AlfredException(500, {
+        'message': 'an unknown error occurred',
+      });
+    }
+  }
+}

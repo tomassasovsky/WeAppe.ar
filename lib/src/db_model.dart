@@ -4,7 +4,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 abstract class DBModel<T> {
   DBModel(this.collection, {this.id});
 
-  @JsonKey(name: '_id', includeIfNull: false)
+  @JsonKey(name: '_id', includeIfNull: false, fromJson: ObjectId.parse)
   ObjectId? id;
 
   @JsonKey(ignore: true)
@@ -15,9 +15,7 @@ abstract class DBModel<T> {
       final result = await collection.modernUpdate(
         where.eq('_id', id),
         toJson(),
-        upsert: true,
       );
-
       return result;
     } else {
       final payload = toJson();

@@ -8,6 +8,7 @@ class DatabaseService {
 
   DbCollection get usersCollection => _db.collection('users');
   DbCollection get refreshTokensCollection => _db.collection('refreshTokens');
+  DbCollection get organizationCollection => _db.collection('organization');
 
   Future open() async => _db.open();
 
