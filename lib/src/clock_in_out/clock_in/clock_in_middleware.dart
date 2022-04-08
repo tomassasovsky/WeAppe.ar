@@ -49,14 +49,7 @@ class ClockInMiddleware extends AuthenticationMiddleware {
       userId: userId,
     );
 
-    if (clockInQuery == null) {
-      res.reasonPhrase = 'clockInNotFound';
-      throw AlfredException(404, {
-        'message': "we haven't found an ongoing session for your user!",
-      });
-    }
-
-    if (clockInQuery.clockOut != null) {
+    if (clockInQuery != null && clockInQuery.clockOut != null) {
       res.reasonPhrase = 'clockInOpen';
       throw AlfredException(409, {
         'message': 'you have a clock in open!',

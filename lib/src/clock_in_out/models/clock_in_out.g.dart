@@ -25,7 +25,7 @@ Map<String, dynamic> _$ClockInOutToJson(ClockInOut instance) {
     }
   }
 
-  writeNotNull('_id', instance.id?.$oid);
+  writeNotNull('_id', instance.id);
   writeNotNull('userId', instance.userId);
   writeNotNull('organizationId', instance.organizationId);
   writeNotNull('clockIn', instance.clockIn.toIso8601String());

@@ -22,8 +22,11 @@ class ClockInOutService {
     required dynamic organizationId,
     required dynamic userId,
   }) async {
-    final _userId = (userId is ObjectId) ? userId : ObjectId.parse(userId as String);
-    final _organizationId = (organizationId is ObjectId) ? organizationId : ObjectId.parse(organizationId as String);
+    final _userId =
+        (userId is ObjectId) ? userId : ObjectId.parse(userId as String);
+    final _organizationId = (organizationId is ObjectId)
+        ? organizationId
+        : ObjectId.parse(organizationId as String);
 
     final clockIn = await dbService.clockInOutCollection.findOne(
       where
@@ -51,11 +54,17 @@ class ClockInOutService {
     final date = DateTime.now();
     final clockIn = await findClockInById(id);
     final duration = date.difference(clockIn!.clockIn);
-    return dbService.clockInOutCollection.updateOne(
+    final result = await dbService.clockInOutCollection.updateOne(
       where.id(id),
       modify
         ..set('clockOut', date.toIso8601String())
         ..set('durationInMiliseconds', duration.inMilliseconds),
     );
+    result.document = <String, dynamic>{
+      ...clockIn.toJson(),
+      'clockOut': date.toIso8601String(),
+      'durationInMiliseconds': duration.inMilliseconds,
+    };
+    return result;
   }
 }
