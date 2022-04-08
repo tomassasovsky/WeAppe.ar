@@ -15,6 +15,7 @@ class User extends DBModel<User> {
     this.country,
     this.city,
     this.photo,
+    this.organizations,
   }) : super(database.usersCollection);
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -26,6 +27,7 @@ class User extends DBModel<User> {
   String? country;
   String? city;
   String? photo;
+  List<ObjectId>? organizations;
 
   @override
   Map<String, dynamic> toJson({bool showPassword = true}) => _$UserToJson(this, showPassword);

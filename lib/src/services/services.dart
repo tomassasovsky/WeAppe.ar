@@ -1,6 +1,7 @@
 import 'package:backend/backend.dart';
 import 'package:backend/src/database/database.dart';
 import 'package:backend/src/imgur/imgur_client.dart';
+import 'package:backend/src/organization/organization_service.dart';
 import 'package:backend/src/user/tokens_service.dart';
 import 'package:backend/src/user/user_service.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
@@ -13,6 +14,7 @@ class Services {
 
   late final users = UsersService(dbService);
   late final tokens = TokensService(dbService);
+  late final organizations = OrganizationService(dbService);
 
   late final imgurClient = ImgurClient(Constants.imgurClientId);
 

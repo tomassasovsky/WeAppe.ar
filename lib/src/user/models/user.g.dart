@@ -14,6 +14,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       country: json['country'] as String?,
       city: json['city'] as String?,
       photo: json['photo'] as String?,
+      organizations: json['organizations'] as List<ObjectId>?,
     )..id = json['_id'] as ObjectId?;
 
 Map<String, dynamic> _$UserToJson(User instance, [bool showPassword = true]) {
@@ -25,7 +26,7 @@ Map<String, dynamic> _$UserToJson(User instance, [bool showPassword = true]) {
     }
   }
 
-  writeNotNull('_id', instance.id?.$oid);
+  writeNotNull('_id', instance.id);
   writeNotNull('firstName', instance.firstName);
   writeNotNull('lastName', instance.lastName);
   writeNotNull('email', instance.email);
@@ -33,5 +34,6 @@ Map<String, dynamic> _$UserToJson(User instance, [bool showPassword = true]) {
   writeNotNull('country', instance.country);
   writeNotNull('city', instance.city);
   writeNotNull('photo', instance.photo);
+  writeNotNull('organizations', instance.organizations);
   return val;
 }
