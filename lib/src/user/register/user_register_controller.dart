@@ -37,6 +37,8 @@ class UserRegisterController {
         expiresIn: const Duration(days: 90),
       );
 
+      await services.tokens.addToDatabase(user.id, refreshToken);
+
       res.statusCode = HttpStatus.ok;
       await res.json({
         'user': user.toJson(showPassword: false),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:alfred/alfred.dart';
 import 'package:backend/src/organization/create_organization/create_organization.dart';
+import 'package:backend/src/organization/update/update_organization.dart';
 import 'package:backend/src/user/current/current.dart';
 import 'package:backend/src/user/user.dart';
 import 'package:backend/src/validators/auth_validator.dart';
@@ -43,9 +44,14 @@ class Server {
         ],
       )
       ..post(
-        'organization/create',
+        'organization',
         const CreateOrganizationController(),
         middleware: [const CreateOrganizationMiddleware()],
+      )
+      ..put(
+        'organization/:id',
+        const UpdateOrganizationController(),
+        middleware: [const UpdateOrganizationMiddleware()],
       )
       ..delete(
         'user/logout',
