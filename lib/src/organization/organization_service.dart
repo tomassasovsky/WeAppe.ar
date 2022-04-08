@@ -10,7 +10,8 @@ class OrganizationService {
   Future<Organization?> findOrganizationById({
     required String id,
   }) async {
-    final organization = await dbService.usersCollection.findOne(where.id(ObjectId.parse(id)));
+    final organization =
+        await dbService.usersCollection.findOne(where.id(ObjectId.parse(id)));
 
     if (organization == null || organization.isEmpty) {
       return null;
@@ -20,7 +21,7 @@ class OrganizationService {
   }
 
   Future<WriteResult> addToDatabase(Organization organization) async {
-    return dbService.organizationCollection.insertOne(
+    return dbService.organizationsCollection.insertOne(
       organization.toJson(),
     );
   }
@@ -29,7 +30,8 @@ class OrganizationService {
     required String name,
     required String userId,
   }) async {
-    final organization = await dbService.organizationCollection.findOne(where.eq('name', name).eq('admin', userId));
+    final organization = await dbService.organizationsCollection
+        .findOne(where.eq('name', name).eq('admin', userId));
 
     if (organization == null || organization.isEmpty) {
       return null;
