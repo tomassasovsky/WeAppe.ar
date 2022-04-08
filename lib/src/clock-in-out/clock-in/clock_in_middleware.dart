@@ -10,6 +10,13 @@ class ClockInMiddleware extends AuthenticationMiddleware {
     final params = req.params;
     final dynamic organizationId = params['id'];
 
+    if (user.id == null) {
+      res.reasonPhrase = 'userIdRequired';
+      throw AlfredException(400, {
+        'message': 'user id is required!',
+      });
+    }
+
     if (organizationId == null) {
       res.reasonPhrase = 'organizationIdRequired';
       throw AlfredException(400, {
@@ -18,12 +25,19 @@ class ClockInMiddleware extends AuthenticationMiddleware {
     }
 
     final organization = await services.organizations
-        .findOrganizationById(id: ObjectId.parse(organizationId as String));
+        .findOrganizationById(ObjectId.parse(organizationId as String));
 
     if (organization == null) {
       res.reasonPhrase = 'organizationNotFound';
       throw AlfredException(404, {
         'message': 'organization not found!',
+      });
+    }
+
+    if (!organization.containsUser(user.id!)) {
+      res.reasonPhrase = 'userNotInOrganization';
+      throw AlfredException(404, {
+        'message': 'user not in organization!',
       });
     }
 

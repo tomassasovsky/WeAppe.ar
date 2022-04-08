@@ -28,7 +28,8 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final organization = await services.organizations.findOrganizationById(id);
+    final organization =
+        await services.organizations.findOrganizationById(ObjectId.parse(id));
 
     if (organization == null) {
       res.reasonPhrase = 'organizationDoesNotExist';
@@ -37,7 +38,7 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    if (organization.admin != userId.$oid) {
+    if (organization.admin != userId) {
       res.reasonPhrase = 'userIsNotOrganizationAdmin';
       throw AlfredException(403, {
         'message':
@@ -45,7 +46,8 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    if ((photo == null || photo == organization.imageUrl) && (homePageUrl == null || homePageUrl == organization.homePageUrl)) {
+    if ((photo == null || photo == organization.imageUrl) &&
+        (homePageUrl == null || homePageUrl == organization.homePageUrl)) {
       res.reasonPhrase = 'nothingToUpdate';
       throw AlfredException(202, {
         'message': 'nothing to update!',

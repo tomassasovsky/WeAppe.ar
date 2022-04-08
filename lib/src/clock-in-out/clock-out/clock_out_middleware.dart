@@ -18,7 +18,7 @@ class ClockOutMiddleware extends AuthenticationMiddleware {
     }
 
     final organization = await services.organizations
-        .findOrganizationById(id: ObjectId.parse(organizationId as String));
+        .findOrganizationById(ObjectId.parse(organizationId as String));
 
     if (organization == null) {
       res.reasonPhrase = 'organizationNotFound';
