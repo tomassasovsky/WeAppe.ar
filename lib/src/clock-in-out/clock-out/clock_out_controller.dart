@@ -4,22 +4,13 @@ class ClockOutController {
   const ClockOutController();
 
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final clockInOutId = req.store.get<String>('clockInOutId');
+    final clockInOut = req.store.get<ClockInOut>('clockInOut');
 
-    final clockIn = await services.clockInOuts.findClockInById(clockInOutId);
+    final newClockInOut = await services.clockInOuts.clockOut(clockInOut.id!);
 
-    if (clockIn == null) {
-      throw AlfredException(401, {
-        'message': 'clock in not found',
-      });
-    }
-
-    try {
-      await services.clockInOuts.clockOut(clockInOutId);
-    } catch (e) {
-      throw AlfredException(500, {
-        'message': 'an unknown error occurred',
-      });
-    }
+    res.statusCode = 200;
+    await res.json(
+      newClockInOut!.toJson(),
+    );
   }
 }

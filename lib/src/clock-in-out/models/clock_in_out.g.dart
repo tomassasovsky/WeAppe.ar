@@ -10,9 +10,9 @@ ClockInOut _$ClockInOutFromJson(Map<String, dynamic> json) => ClockInOut(
       userId: json['userId'] as ObjectId,
       organizationId: json['organizationId'] as ObjectId,
       clockIn: DateTime.parse(json['clockIn'] as String),
-      clockOut: json['clockOut'] == null
-          ? null
-          : DateTime.parse(json['clockOut'] as String),
+      clockOut: (json['clockOut'] as String?) != null
+          ? DateTime.parse(json['clockOut'] as String)
+          : null,
     )..id = json['_id'] as ObjectId?;
 
 Map<String, dynamic> _$ClockInOutToJson(ClockInOut instance) {

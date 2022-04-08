@@ -13,19 +13,10 @@ class ClockInController {
       clockIn: DateTime.now(),
     );
 
-    try {
-      final result = await services.clockInOuts.clockIn(clockIn);
-      res.statusCode = 200;
-      await res.json(
-        <String, dynamic>{
-          'id': result.id,
-          ...clockIn.toJson(),
-        },
-      );
-    } catch (e) {
-      throw AlfredException(500, {
-        'message': 'an unknown error occurred',
-      });
-    }
+    await services.clockInOuts.clockIn(clockIn);
+    res.statusCode = 200;
+    await res.json(
+      clockIn.toJson(),
+    );
   }
 }

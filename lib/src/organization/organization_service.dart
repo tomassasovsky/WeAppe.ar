@@ -10,8 +10,8 @@ class OrganizationService {
   Future<Organization?> findOrganizationById({
     required String id,
   }) async {
-    final organization =
-        await dbService.usersCollection.findOne(where.id(ObjectId.parse(id)));
+    final organization = await dbService.organizationsCollection
+        .findOne(where.id(ObjectId.parse(id)));
 
     if (organization == null || organization.isEmpty) {
       return null;

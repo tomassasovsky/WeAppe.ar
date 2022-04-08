@@ -7,15 +7,30 @@ class ClockInOutService {
   final DatabaseService dbService;
 
   Future<ClockInOut?> findClockInById(
-    String id,
+    ObjectId id,
   ) async {
-    final clockIn = await dbService.clockInOutCollection
-        .findOne(where.id(ObjectId.parse(id)));
+    final clockIn = await dbService.clockInOutCollection.findOne(where.id(id));
 
     if (clockIn == null || clockIn.isEmpty) {
       return null;
     }
 
+    return ClockInOut.fromJson(clockIn);
+  }
+
+  Future<ClockInOut?> findLastClockIn({
+    required ObjectId organizationId,
+    required ObjectId userId,
+  }) async {
+    final clockIn = await dbService.clockInOutCollection.findOne(
+      where
+          .eq('organizationId', organizationId)
+          .eq('userId', userId)
+          .sortBy('clockIn', descending: true),
+    );
+    if (clockIn == null) {
+      return null;
+    }
     return ClockInOut.fromJson(clockIn);
   }
 
@@ -25,12 +40,14 @@ class ClockInOutService {
     return dbService.clockInOutCollection.insertOne(clockIn.toJson());
   }
 
-  Future<void> clockOut(
-    String id,
+  Future<ClockInOut?> clockOut(
+    ObjectId id,
   ) async {
+    final date = DateTime.now();
     await dbService.clockInOutCollection.updateOne(
-      where.id(ObjectId.parse(id)),
-      modify.set('clockOut', DateTime.now()),
+      where.id(id),
+      modify.set('clockOut', date.toIso8601String()),
     );
+    return findClockInById(id);
   }
 }

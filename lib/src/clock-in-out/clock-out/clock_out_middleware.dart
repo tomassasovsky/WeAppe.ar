@@ -1,7 +1,7 @@
-part of 'clock_in.dart';
+part of 'clock_out.dart';
 
-class ClockInMiddleware extends AuthenticationMiddleware {
-  const ClockInMiddleware();
+class ClockOutMiddleware extends AuthenticationMiddleware {
+  const ClockOutMiddleware();
 
   @override
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
@@ -32,14 +32,13 @@ class ClockInMiddleware extends AuthenticationMiddleware {
       userId: user.id!,
     );
 
-    if (clockInQuery != null &&
-        !clockInQuery.toJson().containsKey('clockOut')) {
-      res.reasonPhrase = 'clockInOpen';
+    if (clockInQuery == null || clockInQuery.toJson().containsKey('clockOut')) {
+      res.reasonPhrase = 'clockInClosed';
       throw AlfredException(404, {
-        'message': 'you have a clock in open!',
+        'message': "you don't have any clock in open!",
       });
     }
 
-    req.store.set('organizationId', organization.id);
+    req.store.set('clockInOut', clockInQuery);
   }
 }

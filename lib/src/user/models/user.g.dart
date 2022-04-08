@@ -14,7 +14,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       country: json['country'] as String?,
       city: json['city'] as String?,
       photo: json['photo'] as String?,
-      organizations: json['organizations'] as List<ObjectId>?,
+      organizations: (json['organizations'] as List?)?.cast<ObjectId>(),
     )..id = json['_id'] as ObjectId?;
 
 Map<String, dynamic> _$UserToJson(User instance, [bool showPassword = true]) {
