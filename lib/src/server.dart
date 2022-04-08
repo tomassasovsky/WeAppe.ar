@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:alfred/alfred.dart';
+import 'package:backend/src/clock_in_out/clock_in/clock_in.dart';
+import 'package:backend/src/clock_in_out/clock_out/clock_out.dart';
 import 'package:backend/src/organization/create_organization/create_organization.dart';
 import 'package:backend/src/organization/update/update_organization.dart';
 import 'package:backend/src/user/current/current.dart';
@@ -49,7 +51,7 @@ class Server {
         middleware: [const CreateOrganizationMiddleware()],
       )
       ..put(
-        'organization/:id',
+        'organization/:id:[0-9a-z]+',
         const UpdateOrganizationController(),
         middleware: [const UpdateOrganizationMiddleware()],
       )
@@ -57,6 +59,16 @@ class Server {
         'user/logout',
         const UserLogoutController(),
         middleware: [const AuthenticationMiddleware()],
+      )
+      ..post(
+        'clock/in/:id:[0-9a-z]+',
+        const ClockInController(),
+        middleware: [const ClockInMiddleware()],
+      )
+      ..post(
+        'clock/out/:id:[0-9a-z]+',
+        const ClockOutController(),
+        middleware: [const ClockOutMiddleware()],
       )
       ..printRoutes();
 

@@ -7,11 +7,11 @@ class OrganizationService {
 
   final DatabaseService dbService;
 
-  Future<Organization?> findOrganizationById(String id) async {
+  Future<Organization?> findOrganizationById(dynamic id) async {
+    final objectId = (id is ObjectId) ? id : ObjectId.parse(id as String);
+
     final organization = await dbService.organizationsCollection.findOne(
-      where.id(
-        ObjectId.parse(id),
-      ),
+      where.id(objectId),
     );
 
     if (organization == null || organization.isEmpty) {

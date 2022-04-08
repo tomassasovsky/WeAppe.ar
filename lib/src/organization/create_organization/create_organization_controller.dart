@@ -10,7 +10,7 @@ class CreateOrganizationController {
 
     final organization = Organization(
       name: name,
-      admin: user.id!.$oid,
+      admin: user.id!,
       homePageUrl: homePageUrl,
     );
 

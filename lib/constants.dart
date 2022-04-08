@@ -6,6 +6,7 @@ abstract class Constants {
   static const usersCollection = 'users';
   static const refreshTokensCollection = 'refreshTokens';
   static const organizationsCollection = 'organization';
+  static const clockInOutsCollection = 'clockInOuts';
   static final jwtRefreshSignature =
       (Platform.environment['JWT_REFRESH_TOKEN_SIGNATURE'] ??
           env['JWT_REFRESH_TOKEN_SIGNATURE'])!;

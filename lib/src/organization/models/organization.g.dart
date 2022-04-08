@@ -8,7 +8,7 @@ part of 'organization.dart';
 
 Organization _$OrganizationFromJson(Map<String, dynamic> json) => Organization(
       name: json['name'] as String,
-      admin: json['admin'] as String,
+      admin: json['admin'] as ObjectId,
       homePageUrl: json['homePageUrl'] as String?,
       imageUrl: json['imageUrl'] as String?,
       employers: json['employers'] as List<ObjectId>?,

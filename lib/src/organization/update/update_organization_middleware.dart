@@ -8,9 +8,9 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
     await super.call(req, res);
     final body = await req.bodyAsJsonMap;
 
-    final dynamic id = req.params['id'] as String?;
+    final id = req.params['id'] as String?;
 
-    if (id == null || (id as String).isEmpty) {
+    if (id == null || id.isEmpty == true) {
       res.reasonPhrase = 'nameRequired';
       throw AlfredException(400, {
         'message': "the organization's id is required",
@@ -37,7 +37,7 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    if (organization.admin != userId.$oid) {
+    if (organization.admin != userId) {
       res.reasonPhrase = 'userIsNotOrganizationAdmin';
       throw AlfredException(403, {
         'message':
