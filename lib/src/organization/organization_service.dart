@@ -7,11 +7,10 @@ class OrganizationService {
 
   final DatabaseService dbService;
 
-  Future<Organization?> findOrganizationById({
-    required ObjectId id,
-  }) async {
-    final organization =
-        await dbService.organizationsCollection.findOne(where.id(id));
+  Future<Organization?> findOrganizationById(ObjectId id) async {
+    final organization = await dbService.organizationsCollection.findOne(
+      where.id(id),
+    );
 
     if (organization == null || organization.isEmpty) {
       return null;
@@ -30,8 +29,11 @@ class OrganizationService {
     required String name,
     required String userId,
   }) async {
-    final organization = await dbService.organizationsCollection
-        .findOne(where.eq('name', name).eq('admin', userId));
+    final organization = await dbService.organizationsCollection.findOne(
+      where
+        ..eq('name', name)
+        ..eq('admin', userId),
+    );
 
     if (organization == null || organization.isEmpty) {
       return null;
