@@ -31,11 +31,13 @@ class CreateOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final organizationExists = await services.organizations.findOrganizationByNameAndUserId(name: name, userId: userId.$oid) != null;
+    final organizationExists = await services.organizations
+            .findOrganizationByNameAndUserId(name: name, userId: userId.$oid) !=
+        null;
 
     if (organizationExists) {
       res.reasonPhrase = 'organizationAlreadyExists';
-      throw AlfredException(400, {
+      throw AlfredException(409, {
         'message': 'you already created an organization with that name!',
       });
     }

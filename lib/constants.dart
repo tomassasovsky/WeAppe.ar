@@ -5,7 +5,7 @@ import 'package:dotenv/dotenv.dart';
 abstract class Constants {
   static const usersCollection = 'users';
   static const refreshTokensCollection = 'refreshTokens';
-  static const organizationCollection = 'organization';
+  static const organizationsCollection = 'organization';
   static final jwtRefreshSignature =
       (Platform.environment['JWT_REFRESH_TOKEN_SIGNATURE'] ??
           env['JWT_REFRESH_TOKEN_SIGNATURE'])!;

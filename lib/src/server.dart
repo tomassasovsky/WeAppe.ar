@@ -46,6 +46,7 @@ class Server {
         'organization/create',
         const CreateOrganizationController(),
         middleware: [const CreateOrganizationMiddleware()],
+      )
       ..delete(
         'user/logout',
         const UserLogoutController(),
