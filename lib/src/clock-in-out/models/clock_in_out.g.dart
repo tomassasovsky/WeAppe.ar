@@ -13,6 +13,7 @@ ClockInOut _$ClockInOutFromJson(Map<String, dynamic> json) => ClockInOut(
       clockOut: (json['clockOut'] as String?) != null
           ? DateTime.parse(json['clockOut'] as String)
           : null,
+      durationInMiliseconds: json['durationInMiliseconds'] as int?,
     )..id = json['_id'] as ObjectId?;
 
 Map<String, dynamic> _$ClockInOutToJson(ClockInOut instance) {
@@ -29,5 +30,6 @@ Map<String, dynamic> _$ClockInOutToJson(ClockInOut instance) {
   writeNotNull('organizationId', instance.organizationId);
   writeNotNull('clockIn', instance.clockIn.toIso8601String());
   writeNotNull('clockOut', instance.clockOut?.toIso8601String());
+  writeNotNull('durationInMiliseconds', instance.durationInMiliseconds);
   return val;
 }

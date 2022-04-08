@@ -55,12 +55,12 @@ class Server {
         middleware: [const AuthenticationMiddleware()],
       )
       ..post(
-        'clock/in',
+        'clock/in/:id',
         const ClockInController(),
         middleware: [const ClockInMiddleware()],
       )
       ..post(
-        'clock/out',
+        'clock/out/:id',
         const ClockOutController(),
         middleware: [const ClockOutMiddleware()],
       )

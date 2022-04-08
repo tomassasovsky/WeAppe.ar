@@ -7,8 +7,8 @@ class ClockInMiddleware extends AuthenticationMiddleware {
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     await super.call(req, res);
     final user = req.store.get<User>('user');
-    final body = await req.bodyAsJsonMap;
-    final dynamic organizationId = body['organizationId'];
+    final params = req.params;
+    final dynamic organizationId = params['id'];
 
     if (organizationId == null) {
       res.reasonPhrase = 'organizationIdRequired';
@@ -18,7 +18,7 @@ class ClockInMiddleware extends AuthenticationMiddleware {
     }
 
     final organization = await services.organizations
-        .findOrganizationById(id: organizationId as String);
+        .findOrganizationById(id: ObjectId.parse(organizationId as String));
 
     if (organization == null) {
       res.reasonPhrase = 'organizationNotFound';

@@ -12,6 +12,7 @@ class ClockInOut extends DBModel<ClockInOut> {
     required this.organizationId,
     required this.clockIn,
     this.clockOut,
+    this.durationInMiliseconds,
   }) : super(database.clockInOutCollection);
 
   factory ClockInOut.fromJson(Map<String, dynamic> json) =>
@@ -21,6 +22,7 @@ class ClockInOut extends DBModel<ClockInOut> {
   final ObjectId organizationId;
   final DateTime clockIn;
   final DateTime? clockOut;
+  final int? durationInMiliseconds;
 
   @override
   ClockInOut fromJson(Map<String, dynamic> json) => _$ClockInOutFromJson(json);

@@ -44,9 +44,13 @@ class ClockInOutService {
     ObjectId id,
   ) async {
     final date = DateTime.now();
+    final clockIn = await findClockInById(id);
+    final duration = date.difference(clockIn!.clockIn);
     await dbService.clockInOutCollection.updateOne(
       where.id(id),
-      modify.set('clockOut', date.toIso8601String()),
+      modify
+          .set('clockOut', date.toIso8601String())
+          .set('durationInMiliseconds', duration.inMilliseconds),
     );
     return findClockInById(id);
   }
