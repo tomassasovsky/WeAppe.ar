@@ -10,6 +10,7 @@ class DatabaseService {
   DbCollection get refreshTokensCollection => _db.collection('refreshTokens');
   DbCollection get organizationsCollection => _db.collection('organizations');
   DbCollection get clockInOutCollection => _db.collection('clockInOut');
+  DbCollection get invitesCollection => _db.collection('invites');
 
   Future open() => _db.open();
   Future close() => _db.close();

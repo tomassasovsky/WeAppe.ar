@@ -1,10 +1,12 @@
 import 'package:alfred/alfred.dart';
 import 'package:backend/src/services/services.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:meta/meta.dart';
 
 class AuthenticationMiddleware {
   const AuthenticationMiddleware();
 
+  @mustCallSuper
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     final authHeader = req.headers.value('Authorization');
 

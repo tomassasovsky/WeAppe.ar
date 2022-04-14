@@ -2,6 +2,7 @@ import 'package:backend/backend.dart';
 import 'package:backend/src/clock_in_out/clock_in_out_service.dart';
 import 'package:backend/src/database/database.dart';
 import 'package:backend/src/imgur/imgur_client.dart';
+import 'package:backend/src/invite/invite_service.dart';
 import 'package:backend/src/organization/organization_service.dart';
 import 'package:backend/src/user/tokens_service.dart';
 import 'package:backend/src/user/user_service.dart';
@@ -17,6 +18,7 @@ class Services {
   late final tokens = TokensService(dbService);
   late final organizations = OrganizationService(dbService);
   late final clockInOuts = ClockInOutService(dbService);
+  late final invites = InviteService(dbService);
 
   late final imgurClient = ImgurClient(Constants.imgurClientId);
 
