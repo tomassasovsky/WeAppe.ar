@@ -7,6 +7,8 @@ class InviteCreateController {
     final user = req.store.get<User>('user');
     final organization = req.store.get<Organization>('organization');
     final recipientEmail = req.store.get<String>('recipientEmail');
+    final message = req.store.get<String?>('message');
+    final userType = req.store.get<UserType>('userType');
 
     final userId = user.id;
 
@@ -30,8 +32,8 @@ class InviteCreateController {
       recipient: recipientEmail,
       organization: organizationId,
       refId: const Uuid().v4(),
-      userType: UserType.employee,
-      message: 'asdas',
+      userType: userType,
+      message: message,
     );
 
     final result = await services.invites.addToDatabase(

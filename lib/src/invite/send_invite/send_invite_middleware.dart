@@ -11,6 +11,8 @@ class InviteCreateMiddleware extends AuthenticationMiddleware {
     final user = req.store.get<User>('user');
     final organizationName = body['organizationName'] as String?;
     final recipientEmail = body['recipientEmail'] as String?;
+    final message = body['message'] as String?;
+    final rawUserType = body['userType'] as String?;
 
     final userId = user.id;
 
@@ -26,6 +28,17 @@ class InviteCreateMiddleware extends AuthenticationMiddleware {
       });
     }
 
+    if (rawUserType == null) {
+      throw AlfredException(500, {
+        'message': 'userId not available',
+      });
+    }
+
+    final userType = UserType.values.firstWhere(
+      (e) => e.name == rawUserType,
+      orElse: () => UserType.employee,
+    );
+
     final organization = await services.organizations.findOrganizationByNameAndUserId(
       userId: userId.$oid,
       name: organizationName,
@@ -39,5 +52,7 @@ class InviteCreateMiddleware extends AuthenticationMiddleware {
 
     req.store.set('organization', organization);
     req.store.set('recipientEmail', recipientEmail);
+    req.store.set('message', message);
+    req.store.set('userType', userType);
   }
 }
