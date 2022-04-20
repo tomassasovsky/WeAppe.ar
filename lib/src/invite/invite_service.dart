@@ -3,7 +3,7 @@ import 'package:backend/src/invite/models/invite.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class InviteService {
-  InviteService(this.dbService);
+  const InviteService(this.dbService);
 
   final DatabaseService dbService;
 
@@ -19,27 +19,6 @@ class InviteService {
 
     final invite = await dbService.invitesCollection.findOne(
       where.id(objectId),
-    );
-
-    if (invite == null || invite.isEmpty) {
-      return null;
-    }
-
-    return Invite.fromJson(invite);
-  }
-
-  Future<Invite?> findInviteByRefId({
-    required String name,
-    required String userId,
-  }) async {
-    final invite = await dbService.invitesCollection.findOne(
-      where
-        ..eq('name', name)
-        ..and(
-          where
-            ..match('employer', userId)
-            ..or(where.eq('admin', userId)),
-        ),
     );
 
     if (invite == null || invite.isEmpty) {
