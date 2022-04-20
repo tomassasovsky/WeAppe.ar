@@ -1,6 +1,7 @@
 import 'package:backend/backend.dart';
 import 'package:backend/src/clock_in_out/clock_in_out_service.dart';
 import 'package:backend/src/database/database.dart';
+import 'package:backend/src/email_sender/email_sender.dart';
 import 'package:backend/src/imgur/imgur_client.dart';
 import 'package:backend/src/invite/invite_service.dart';
 import 'package:backend/src/organization/organization_service.dart';
@@ -21,6 +22,7 @@ class Services {
   late final invites = InviteService(dbService);
 
   late final imgurClient = ImgurClient(Constants.imgurClientId);
+  late final emailSender = EmailSenderService();
 
   final jwtAccessSigner = SecretKey(Constants.jwtAccessSignature);
   final jwtRefreshSigner = SecretKey(Constants.jwtRefreshSignature);

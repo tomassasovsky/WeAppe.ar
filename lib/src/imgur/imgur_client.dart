@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 class ImgurClient {
-  ImgurClient(this.clientId);
+  const ImgurClient(this.clientId);
   final String clientId;
 
   Future<ImgurUploadResponse?> uploadImage(HttpBodyFileUpload image) async {

@@ -45,5 +45,6 @@ class OrganizationService {
     if (organization.hasAdminPrivileges(userIdAsObjectId)) {
       return organization;
     }
+    return null;
   }
 }

@@ -16,6 +16,19 @@ class InviteCreateMiddleware extends AuthenticationMiddleware {
 
     final userId = user.id;
 
+    if (recipientEmail == null || recipientEmail.isEmpty) {
+      throw AlfredException(400, {
+        'message': 'recipientEmail is required',
+      });
+    }
+
+    final isValidEmail = Constants.emailRegExp.hasMatch(recipientEmail);
+    if (!isValidEmail) {
+      throw AlfredException(400, {
+        'message': 'recipientEmail is invalid',
+      });
+    }
+
     if (organizationName == null || organizationName.isEmpty) {
       throw AlfredException(403, {
         'message': 'organization name is required',

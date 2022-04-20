@@ -26,7 +26,6 @@ class InviteCreateController {
       });
     }
 
-    // TODO(tomassasovsky): send email with the invite link
     final invite = Invite(
       emitter: userId,
       recipient: recipientEmail,
@@ -35,6 +34,19 @@ class InviteCreateController {
       userType: userType,
       message: message,
     );
+
+    final wasSent = await services.emailSender.sendInvite(
+      to: recipientEmail,
+      organization: organization,
+      message: message,
+      refId: invite.refId,
+    );
+
+    if (!wasSent) {
+      throw AlfredException(500, {
+        'message': 'Failed to send invite. Contact the administrator to set up the email configurations.',
+      });
+    }
 
     final result = await services.invites.addToDatabase(
       invite,
