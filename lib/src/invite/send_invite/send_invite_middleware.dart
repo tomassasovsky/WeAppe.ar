@@ -63,6 +63,27 @@ class InviteCreateMiddleware extends AuthenticationMiddleware {
       });
     }
 
+    final userWithEmail = await services.users.findUserByEmail(email: recipientEmail);
+    if (userWithEmail != null) {
+      if ((organization.employees ?? []).contains(userWithEmail.id) && userType == UserType.employee) {
+        throw AlfredException(400, {
+          'message': 'User is already a member of this organization as an employee',
+        });
+      }
+
+      if ((organization.employers ?? []).contains(userWithEmail.id) && userType == UserType.employer) {
+        throw AlfredException(400, {
+          'message': 'User is already a member of this organization as an employer',
+        });
+      }
+
+      if (organization.admin == userId) {
+        throw AlfredException(400, {
+          'message': "User is already this organization's admin",
+        });
+      }
+    }
+
     req.store.set('organization', organization);
     req.store.set('recipientEmail', recipientEmail);
     req.store.set('message', message);
