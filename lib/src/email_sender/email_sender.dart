@@ -31,8 +31,7 @@ class EmailSenderService {
       )
       ..recipients.add(to)
       ..subject = 'Invitation to join the ${organization.name} organization'
-      ..html =
-          "<h1>Here's your invite link:</h1>\n<p>https://${Constants.host}/organization/join/$refId</p>\n<p>This link will expire in one week.</p>\n<p>If you don't want to join the organization, you can ignore this email.</p>\n<h2>$message</h2>\n<p>Thanks,</p>\n<p>${Constants.inviteEmailUserName}</p>";
+      ..html = _createHtml(refId, message);
 
     try {
       await connection.send(email);
@@ -40,5 +39,18 @@ class EmailSenderService {
     } on MailerException catch (_) {
       return false;
     }
+  }
+
+  String _createHtml(String refId, String? message) {
+    final stringBuffer = StringBuffer()
+      ..writeln("<h1>Here's your invite link:</h1>")
+      ..writeln('<p>https://${Constants.host}/organization/join/$refId</p>')
+      ..writeln('<p>This link will expire in one week.</p>')
+      ..writeln("<p>If you don't want to join the organization, you can ignore this email.</p>")
+      ..writeln('<h2>$message</h2>')
+      ..writeln('<p>Thanks,</p>')
+      ..writeln('<p>${Constants.inviteEmailUserName}</p>');
+
+    return stringBuffer.toString();
   }
 }
