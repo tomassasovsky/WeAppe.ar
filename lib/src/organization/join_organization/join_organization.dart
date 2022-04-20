@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:alfred/alfred.dart';
+import 'package:backend/src/invite/models/invite.dart';
 import 'package:backend/src/organization/models/organization.dart';
 import 'package:backend/src/services/services.dart';
 import 'package:backend/src/user/user.dart';

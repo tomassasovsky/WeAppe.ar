@@ -57,6 +57,11 @@ class Server {
         const UpdateOrganizationController(),
         middleware: [const UpdateOrganizationMiddleware()],
       )
+      ..post(
+        'organization/join/:refId:uuid',
+        const JoinOrganizationController(),
+        middleware: [const JoinOrganizationMiddleware()],
+      )
       ..delete(
         'user/logout',
         const UserLogoutController(),
@@ -76,11 +81,6 @@ class Server {
         'invite/send/',
         const InviteCreateController(),
         middleware: [const InviteCreateMiddleware()],
-      )
-      ..post(
-        'organization/join/:refId:uuid',
-        const JoinOrganizationController(),
-        middleware: [const JoinOrganizationMiddleware()],
       )
       ..printRoutes();
 

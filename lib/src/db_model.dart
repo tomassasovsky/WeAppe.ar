@@ -56,10 +56,7 @@ abstract class DBModel<T> {
     return findOne(<String, dynamic>{'_id': id});
   }
 
-  Future<void> delete() async {
-    await collection.remove(<String, dynamic>{'_id': id});
-    return;
-  }
+  Future<void> delete() => collection.remove(<String, dynamic>{'_id': id});
 
   Map<String, dynamic> toJson();
   T fromJson(Map<String, dynamic> json);

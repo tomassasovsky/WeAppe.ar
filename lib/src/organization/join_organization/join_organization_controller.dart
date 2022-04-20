@@ -5,6 +5,7 @@ class JoinOrganizationController {
 
   FutureOr<dynamic> call(HttpRequest req, HttpResponse res) async {
     final organization = req.store.get<Organization>('organization');
+    final invite = req.store.get<Invite>('invite');
     final user = req.store.get<User>('user');
 
     final userId = user.id;
@@ -16,7 +17,14 @@ class JoinOrganizationController {
     }
 
     organization.employers?.add(userId);
-    await organization.save();
+    final result = await organization.save();
+    if (result == null) {
+      throw AlfredException(500, {
+        'message': 'Could not join organization',
+      });
+    }
+
+    await invite.delete();
 
     await res.json(organization);
   }
