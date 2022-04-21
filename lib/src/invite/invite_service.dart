@@ -1,5 +1,5 @@
 import 'package:backend/src/database/database.dart';
-import 'package:backend/src/invite/models/invite.dart';
+import 'package:backend/src/invite/invite.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class InviteService {

@@ -1,5 +1,5 @@
 import 'package:backend/src/database/database.dart';
-import 'package:backend/src/user/models/user.dart';
+import 'package:backend/src/user/user.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class UsersService {

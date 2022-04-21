@@ -28,16 +28,16 @@ class UserRegisterController {
       );
 
       final accessToken = jwt.sign(
-        services.jwtAccessSigner,
+        Services().jwtAccessSigner,
         expiresIn: const Duration(days: 7),
       );
 
       final refreshToken = jwt.sign(
-        services.jwtRefreshSigner,
+        Services().jwtRefreshSigner,
         expiresIn: const Duration(days: 90),
       );
 
-      await services.tokens.addToDatabase(user.id, refreshToken);
+      await Services().tokens.addToDatabase(user.id, refreshToken);
 
       res.statusCode = HttpStatus.ok;
       await res.json({

@@ -6,7 +6,7 @@ class UserLogoutController {
   Future<void> call(HttpRequest req, HttpResponse res) async {
     final token = req.store.get<String>('token');
 
-    final result = await services.tokens.deleteFromDatabase(token);
+    final result = await Services().tokens.deleteFromDatabase(token);
 
     if (result.isFailure) {
       res

@@ -1,4 +1,4 @@
-import 'package:backend/src/clock_in_out/models/clock_in_out.dart';
+import 'package:backend/src/clock_in_out/clock_in_out.dart';
 import 'package:backend/src/database/database.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 

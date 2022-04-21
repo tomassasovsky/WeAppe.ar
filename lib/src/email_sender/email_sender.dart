@@ -1,5 +1,4 @@
 import 'package:backend/backend.dart';
-import 'package:backend/src/organization/models/organization.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 

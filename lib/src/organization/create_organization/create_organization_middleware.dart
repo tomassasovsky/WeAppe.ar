@@ -31,9 +31,7 @@ class CreateOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final organizationExists = await services.organizations
-            .findOrganizationByNameAndUserId(name: name, userId: userId.$oid) !=
-        null;
+    final organizationExists = await Services().organizations.findOrganizationByNameAndUserId(name: name, userId: userId.$oid) != null;
 
     if (organizationExists) {
       res.reasonPhrase = 'organizationAlreadyExists';

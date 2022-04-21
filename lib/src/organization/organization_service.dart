@@ -1,5 +1,5 @@
 import 'package:backend/src/database/database.dart';
-import 'package:backend/src/organization/models/organization.dart';
+import 'package:backend/src/organization/organization.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class OrganizationService {

@@ -7,9 +7,9 @@ class UserLoginController {
     final email = req.store.get<String>('email');
     final password = req.store.get<String>('password');
 
-    final user = await services.users.findUserByEmail(
-      email: email,
-    );
+    final user = await Services().users.findUserByEmail(
+          email: email,
+        );
 
     if (user == null || user.password.isEmpty) {
       throw AlfredException(401, {
@@ -35,17 +35,17 @@ class UserLoginController {
       );
 
       final accessToken = jwt.sign(
-        services.jwtAccessSigner,
+        Services().jwtAccessSigner,
         expiresIn: const Duration(days: 7),
       );
 
       final refreshToken = jwt.sign(
-        services.jwtRefreshSigner,
+        Services().jwtRefreshSigner,
         expiresIn: const Duration(days: 90),
       );
 
       // save the refresh token in the database:
-      await services.tokens.addToDatabase(user.id, refreshToken);
+      await Services().tokens.addToDatabase(user.id, refreshToken);
 
       return {
         'user': user.toJson(showPassword: false),

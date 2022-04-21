@@ -28,7 +28,7 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final organization = await services.organizations.findOrganizationById(id);
+    final organization = await Services().organizations.findOrganizationById(id);
 
     if (organization == null) {
       res.reasonPhrase = 'organizationDoesNotExist';

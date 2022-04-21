@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:alfred/alfred.dart';
-import 'package:backend/src/imgur/imgur_upload_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+
+part 'imgur_upload_response.dart';
 
 class ImgurClient {
   const ImgurClient(this.clientId);

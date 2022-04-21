@@ -12,7 +12,7 @@ class UpdateOrganizationController {
       organization.homePageUrl = homePageUrl ?? organization.homePageUrl;
 
       if (photo != null) {
-        final result = await services.imgurClient.uploadImage(photo);
+        final result = await Services().imgurClient.uploadImage(photo);
         organization.imageUrl = result?.data?.link;
       }
 

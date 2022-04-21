@@ -51,7 +51,7 @@ class UserRegisterMiddleware {
       });
     }
 
-    final savedUser = await services.users.findUserByEmail(email: email);
+    final savedUser = await Services().users.findUserByEmail(email: email);
     final found = savedUser != null;
     if (found) {
       res.reasonPhrase = 'userExists';

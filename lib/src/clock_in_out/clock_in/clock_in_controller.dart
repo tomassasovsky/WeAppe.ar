@@ -19,7 +19,7 @@ class ClockInController {
       clockIn: DateTime.now(),
     );
 
-    final result = await services.clockInOuts.clockIn(clockIn);
+    final result = await Services().clockInOuts.clockIn(clockIn);
 
     if (result.failure) {
       throw AlfredException(500, {

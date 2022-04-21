@@ -1,15 +1,11 @@
 import 'dart:async';
 
 import 'package:alfred/alfred.dart';
-import 'package:backend/src/clock_in_out/clock_in/clock_in.dart';
-import 'package:backend/src/clock_in_out/clock_out/clock_out.dart';
+import 'package:backend/src/clock_in_out/clock_in_out.dart';
 import 'package:backend/src/invite/send_invite/send_invite.dart';
-import 'package:backend/src/organization/create_organization/create_organization.dart';
-import 'package:backend/src/organization/join_organization/join_organization.dart';
-import 'package:backend/src/organization/update/update_organization.dart';
-import 'package:backend/src/user/current/current.dart';
+import 'package:backend/src/organization/organization.dart';
 import 'package:backend/src/user/user.dart';
-import 'package:backend/src/validators/auth_validator.dart';
+import 'package:backend/src/validators/validators.dart';
 
 class Server {
   const Server();
@@ -82,7 +78,8 @@ class Server {
         const InviteCreateController(),
         middleware: [const InviteCreateMiddleware()],
       )
-      ..printRoutes();
+      ..printRoutes()
+      ..registerOnDoneListener(errorPluginOnDoneHandler);
 
     // start the alfred server:
     await app.listen(8080);

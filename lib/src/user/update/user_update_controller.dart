@@ -17,7 +17,7 @@ class UserUpdateController {
     await user.save();
 
     if (photo != null) {
-      final result = await services.imgurClient.uploadImage(photo);
+      final result = await Services().imgurClient.uploadImage(photo);
       user.photo = result?.data?.link;
 
       await user.save();

@@ -16,7 +16,7 @@ class JoinOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final invite = await services.invites.findByRefId(refId);
+    final invite = await Services().invites.findByRefId(refId);
 
     if (invite == null) {
       throw AlfredException(404, {
@@ -30,9 +30,9 @@ class JoinOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final organization = await services.organizations.findOrganizationById(
-      invite.organization,
-    );
+    final organization = await Services().organizations.findOrganizationById(
+          invite.organization,
+        );
 
     if (organization == null) {
       throw AlfredException(404, {

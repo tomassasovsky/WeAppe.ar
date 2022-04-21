@@ -35,7 +35,7 @@ class InviteCreateController {
       message: message,
     );
 
-    final wasSent = await services.emailSender.sendInvite(
+    final wasSent = await Services().emailSender.sendInvite(
       to: recipientEmail,
       organization: organization,
       message: message,
@@ -48,7 +48,7 @@ class InviteCreateController {
       });
     }
 
-    final result = await services.invites.addToDatabase(
+    final result = await Services().invites.addToDatabase(
       invite,
     );
 

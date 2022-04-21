@@ -26,9 +26,9 @@ class ClockInMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final organization = await services.organizations.findOrganizationById(
-      organizationId,
-    );
+    final organization = await Services().organizations.findOrganizationById(
+          organizationId,
+        );
 
     if (organization == null) {
       res.reasonPhrase = 'organizationNotFound';
@@ -44,7 +44,7 @@ class ClockInMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final clockInQuery = await services.clockInOuts.findLastClockIn(
+    final clockInQuery = await Services().clockInOuts.findLastClockIn(
       organizationId: organizationId,
       userId: userId,
     );

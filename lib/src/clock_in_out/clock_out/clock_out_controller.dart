@@ -6,7 +6,7 @@ class ClockOutController {
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     final clockInOut = req.store.get<ClockInOut>('clockInOut');
 
-    final result = await services.clockInOuts.clockOut(clockInOut.id!);
+    final result = await Services().clockInOuts.clockOut(clockInOut.id!);
     final document = result.document;
 
     if (result.isFailure || document == null) {

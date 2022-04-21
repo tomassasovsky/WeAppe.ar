@@ -1,7 +1,4 @@
-import 'package:alfred/alfred.dart';
-import 'package:backend/src/services/services.dart';
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-import 'package:meta/meta.dart';
+part of 'validators.dart';
 
 class AuthenticationMiddleware {
   const AuthenticationMiddleware();
@@ -28,7 +25,7 @@ class AuthenticationMiddleware {
     try {
       parsedToken = JWT.verify(
         token,
-        services.jwtAccessSigner,
+        Services().jwtAccessSigner,
       );
     } catch (e) {
       throw AlfredException(401, {
@@ -38,7 +35,7 @@ class AuthenticationMiddleware {
 
     try {
       final userId = (parsedToken.payload as Map<String, dynamic>)['userId'] as String;
-      final user = await services.users.findUserById(userId);
+      final user = await Services().users.findUserById(userId);
 
       if (user == null) {
         throw AlfredException(401, {

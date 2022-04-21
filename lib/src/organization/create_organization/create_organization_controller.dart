@@ -15,9 +15,9 @@ class CreateOrganizationController {
     );
 
     try {
-      final result = await services.organizations.addToDatabase(
-        organization,
-      );
+      final result = await Services().organizations.addToDatabase(
+            organization,
+          );
 
       user.organizations ??= [];
       user.organizations?.add(result.id as ObjectId);

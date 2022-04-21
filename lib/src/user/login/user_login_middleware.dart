@@ -39,7 +39,7 @@ class UserLoginMiddleware {
       });
     }
 
-    final found = await services.users.findUserByEmail(email: email) != null;
+    final found = await Services().users.findUserByEmail(email: email) != null;
     if (!found) {
       res.reasonPhrase = 'invalidCredentials';
       throw AlfredException(400, {
