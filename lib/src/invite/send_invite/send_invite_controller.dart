@@ -1,31 +1,27 @@
 part of 'send_invite.dart';
 
-class InviteCreateController {
-  const InviteCreateController();
+class InviteCreateController extends Controller {
+  late final User user;
+  late final Organization organization;
+  late final ObjectId organizationId;
+  late final String recipientEmail;
+  late final String? message;
+  late final UserType userType;
+  late final ObjectId userId;
 
-  FutureOr<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final user = req.store.get<User>('user');
-    final organization = req.store.get<Organization>('organization');
-    final recipientEmail = req.store.get<String>('recipientEmail');
-    final message = req.store.get<String?>('message');
-    final userType = req.store.get<UserType>('userType');
+  @override
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) {
+    user = req.store.get<User>('user');
+    organization = req.store.get<Organization>('organization');
+    organizationId = req.store.get<ObjectId>('organizationId');
+    recipientEmail = req.store.get<String>('recipientEmail');
+    message = req.store.get<String?>('message');
+    userType = req.store.get<UserType>('userType');
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final userId = user.id;
-
-    if (userId == null) {
-      throw AlfredException(500, {
-        'message': 'userId not available',
-      });
-    }
-
-    final organizationId = organization.id;
-
-    if (organizationId == null) {
-      throw AlfredException(500, {
-        'message': 'organizationId not available',
-      });
-    }
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final invite = Invite(
       emitter: userId,
       recipient: recipientEmail,
@@ -36,11 +32,11 @@ class InviteCreateController {
     );
 
     final wasSent = await Services().emailSender.sendInvite(
-      to: recipientEmail,
-      organization: organization,
-      message: message,
-      refId: invite.refId,
-    );
+          to: recipientEmail,
+          organization: organization,
+          message: message,
+          refId: invite.refId,
+        );
 
     if (!wasSent) {
       throw AlfredException(500, {
@@ -49,8 +45,8 @@ class InviteCreateController {
     }
 
     final result = await Services().invites.addToDatabase(
-      invite,
-    );
+          invite,
+        );
 
     if (result.isFailure) {
       throw AlfredException(500, {

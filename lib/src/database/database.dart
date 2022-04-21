@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:mongo_dart/mongo_dart.dart';
 
 class DatabaseService {
@@ -20,6 +22,6 @@ class DatabaseService {
   DbCollection get clockInOutCollection => _db.collection('clockInOut');
   DbCollection get invitesCollection => _db.collection('invites');
 
-  Future open() => _db.open();
-  Future close() => _db.close();
+  FutureOr open() => _db.open();
+  FutureOr close() => _db.close();
 }

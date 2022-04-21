@@ -10,7 +10,7 @@ import 'package:backend/src/validators/validators.dart';
 class Server {
   const Server();
 
-  Future<void> init() async {
+  FutureOr<void> init() async {
     // initialize alfred:
     final app = Alfred(
       onNotFound: (req, res) => throw AlfredException(
@@ -21,62 +21,84 @@ class Server {
     )
       ..post(
         'user/register',
-        const UserRegisterController(),
-        middleware: [const UserRegisterMiddleware()],
+        UserRegisterController(),
+        middleware: [
+          UserRegisterMiddleware(),
+        ],
       )
       ..put(
         'user/update',
-        const UserUpdateController(),
-        middleware: [const UserUpdateMiddleware()],
+        UserUpdateController(),
+        middleware: [
+          UserUpdateMiddleware(),
+        ],
       )
       ..post(
         'user/login',
-        const UserLoginController(),
+        UserLoginController(),
         middleware: [
-          const UserLoginMiddleware(),
+          UserLoginMiddleware(),
         ],
       )
       ..get(
         'user',
-        const UserCurrentController(),
+        UserCurrentController(),
         middleware: [
-          const AuthenticationMiddleware(),
+          AuthenticationMiddleware(),
         ],
       )
       ..post(
         'organization',
-        const CreateOrganizationController(),
-        middleware: [const CreateOrganizationMiddleware()],
+        CreateOrganizationController(),
+        middleware: [
+          CreateOrganizationMiddleware(),
+        ],
       )
       ..put(
         'organization/:id:[0-9a-z]+',
-        const UpdateOrganizationController(),
-        middleware: [const UpdateOrganizationMiddleware()],
+        UpdateOrganizationController(),
+        middleware: [
+          UpdateOrganizationMiddleware(),
+        ],
       )
       ..post(
         'organization/join/:refId:uuid',
-        const JoinOrganizationController(),
-        middleware: [const JoinOrganizationMiddleware()],
+        JoinOrganizationController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          JoinOrganizationMiddleware(),
+        ],
       )
       ..delete(
         'user/logout',
-        const UserLogoutController(),
-        middleware: [const AuthenticationMiddleware()],
+        UserLogoutController(),
+        middleware: [
+          AuthenticationMiddleware(),
+        ],
       )
       ..post(
         'clock/in/:id:[0-9a-z]+',
-        const ClockInController(),
-        middleware: [const ClockInMiddleware()],
+        ClockInController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          ClockInMiddleware(),
+        ],
       )
       ..post(
         'clock/out/:id:[0-9a-z]+',
-        const ClockOutController(),
-        middleware: [const ClockOutMiddleware()],
+        ClockOutController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          ClockOutMiddleware(),
+        ],
       )
       ..post(
         'invite/send/',
-        const InviteCreateController(),
-        middleware: [const InviteCreateMiddleware()],
+        InviteCreateController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          InviteCreateMiddleware(),
+        ],
       )
       ..printRoutes()
       ..registerOnDoneListener(errorPluginOnDoneHandler);

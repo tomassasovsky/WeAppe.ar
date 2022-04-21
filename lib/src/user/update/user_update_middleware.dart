@@ -1,18 +1,19 @@
 part of 'update.dart';
 
-class UserUpdateMiddleware extends AuthenticationMiddleware {
-  const UserUpdateMiddleware();
+class UserUpdateMiddleware extends Middleware {
+  String? country;
+  String? city;
+  HttpBodyFileUpload? photo;
 
   @override
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    await super.call(req, res);
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    country = await InputVariableValidator<String>(req, 'country').optional();
+    city = await InputVariableValidator<String>(req, 'city').optional();
+    photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional();
+  }
 
-    final country = await InputVariableValidator<String>(req, 'country').optional();
-    final city = await InputVariableValidator<String>(req, 'city').optional();
-    final photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional();
-
-    req.validate();
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     if (country == null && city == null && photo == null) {
       res.reasonPhrase = 'nothingToUpdate';
       throw AlfredException(202, {

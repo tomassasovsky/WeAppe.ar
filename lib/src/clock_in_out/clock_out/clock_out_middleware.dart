@@ -1,16 +1,17 @@
 part of 'clock_out.dart';
 
-class ClockOutMiddleware extends AuthenticationMiddleware {
-  const ClockOutMiddleware();
+class ClockOutMiddleware extends Middleware {
+  late final String organizationId;
+  late final ObjectId userId;
 
   @override
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    await super.call(req, res);
-    final userId = req.store.get<User>('user').id;
+  FutureOr<dynamic> defineVars(HttpRequest req, HttpResponse res) async {
+    organizationId = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final organizationId = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
-    req.validate();
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final organization = await Services().organizations.findOrganizationById(organizationId);
 
     if (organization == null) {
@@ -25,13 +26,15 @@ class ClockOutMiddleware extends AuthenticationMiddleware {
           userId: userId,
         );
 
-    if (clockInQuery == null || clockInQuery.clockOut != null) {
+    final clockInId = clockInQuery?.id;
+
+    if (clockInQuery == null || clockInQuery.clockOut != null || clockInId == null) {
       res.reasonPhrase = 'clockInClosed';
       throw AlfredException(404, {
         'message': "you don't have any clock in open!",
       });
     }
 
-    req.store.set('clockInOut', clockInQuery);
+    req.store.set('clockInOutId', clockInId);
   }
 }

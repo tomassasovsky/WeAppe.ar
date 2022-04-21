@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:backend/backend.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
@@ -17,7 +19,7 @@ class EmailSenderService {
     smtpServer,
   );
 
-  Future<bool> sendInvite({
+  FutureOr<bool> sendInvite({
     required String to,
     required Organization organization,
     required String refId,

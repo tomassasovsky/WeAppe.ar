@@ -1,33 +1,29 @@
 part of 'send_invite.dart';
 
-class InviteCreateMiddleware extends AuthenticationMiddleware {
-  const InviteCreateMiddleware();
+class InviteCreateMiddleware extends Middleware {
+  InviteCreateMiddleware();
+
+  late final String organizationName;
+  late final String recipientEmail;
+  late final ObjectId userId;
+  String? message;
+  String? rawUserType;
 
   @override
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    await super.call(req, res);
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    organizationName = await InputVariableValidator<String>(req, 'organizationName').required();
+    recipientEmail = await InputVariableValidator<String>(req, 'recipientEmail').required();
+    message = await InputVariableValidator<String>(req, 'message').optional();
+    rawUserType = await InputVariableValidator<String>(req, 'userType').optional();
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final user = req.store.get<User>('user');
-
-    final organizationName = await InputVariableValidator<String>(req, 'organizationName').required();
-    final recipientEmail = await InputVariableValidator<String>(req, 'recipientEmail').required();
-    final message = await InputVariableValidator<String>(req, 'message').optional();
-    final rawUserType = await InputVariableValidator<String>(req, 'userType').optional();
-
-    req.validate();
-
-    final userId = user.id;
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final isValidEmail = Constants.emailRegExp.hasMatch(recipientEmail);
     if (!isValidEmail) {
       throw AlfredException(400, {
         'message': 'recipientEmail is invalid',
-      });
-    }
-
-    if (userId == null) {
-      throw AlfredException(500, {
-        'message': 'userId not available',
       });
     }
 
@@ -41,7 +37,9 @@ class InviteCreateMiddleware extends AuthenticationMiddleware {
           name: organizationName,
         );
 
-    if (organization == null) {
+    final organizationId = organization?.id;
+
+    if (organization == null || organizationId == null) {
       throw AlfredException(404, {
         'message': 'organization not found',
       });
@@ -69,6 +67,7 @@ class InviteCreateMiddleware extends AuthenticationMiddleware {
     }
 
     req.store.set('organization', organization);
+    req.store.set('organizationId', organizationId);
     req.store.set('recipientEmail', recipientEmail);
     req.store.set('message', message);
     req.store.set('userType', userType);

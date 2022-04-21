@@ -1,16 +1,21 @@
 part of 'register.dart';
 
-class UserRegisterMiddleware {
-  const UserRegisterMiddleware();
+class UserRegisterMiddleware extends Middleware {
+  late final String email;
+  late final String password;
+  late final String firstName;
+  late final String lastName;
 
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final email = await InputVariableValidator<String>(req, 'email').required();
-    final password = await InputVariableValidator<String>(req, 'password').required();
-    final firstName = await InputVariableValidator<String>(req, 'firstName').required();
-    final lastName = await InputVariableValidator<String>(req, 'lastName').required();
+  @override
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    email = await InputVariableValidator<String>(req, 'email').required();
+    password = await InputVariableValidator<String>(req, 'password').required();
+    firstName = await InputVariableValidator<String>(req, 'firstName').required();
+    lastName = await InputVariableValidator<String>(req, 'lastName').required();
+  }
 
-    req.validate();
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final passwordIsValid = Constants.passwordRegExp.hasMatch(password);
     final emailIsValid = Constants.emailRegExp.hasMatch(email);
 

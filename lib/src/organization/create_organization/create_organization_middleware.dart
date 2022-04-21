@@ -1,25 +1,19 @@
 part of 'create_organization.dart';
 
-class CreateOrganizationMiddleware extends AuthenticationMiddleware {
-  const CreateOrganizationMiddleware();
+class CreateOrganizationMiddleware extends Middleware {
+  late final String name;
+  late final ObjectId userId;
+  String? homePageUrl;
 
   @override
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    await super.call(req, res);
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    name = await InputVariableValidator<String>(req, 'name').required();
+    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional();
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final name = await InputVariableValidator<String>(req, 'name').required();
-    final homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional();
-
-    req.validate();
-
-    final userId = req.store.get<User>('user').id;
-    if (userId == null) {
-      res.reasonPhrase = 'userIdNotFound';
-      throw AlfredException(500, {
-        'message': 'userId is null',
-      });
-    }
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final organizationExists = await Services().organizations.findOrganizationByNameAndUserId(name: name, userId: userId.$oid) != null;
 
     if (organizationExists) {

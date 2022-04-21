@@ -1,10 +1,8 @@
 part of 'validators.dart';
 
-class AuthenticationMiddleware {
-  const AuthenticationMiddleware();
-
-  @mustCallSuper
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
+class AuthenticationMiddleware extends Middleware {
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final authHeader = await InputVariableValidator<String>(
       req,
       'Authorization',
@@ -34,10 +32,11 @@ class AuthenticationMiddleware {
     }
 
     try {
-      final userId = (parsedToken.payload as Map<String, dynamic>)['userId'] as String;
-      final user = await Services().users.findUserById(userId);
+      final rawUserId = (parsedToken.payload as Map<String, dynamic>)['userId'] as String;
+      final user = await Services().users.findUserById(rawUserId);
+      final userId = user?.id;
 
-      if (user == null) {
+      if (user == null || userId == null) {
         throw AlfredException(401, {
           'message': 'user not found',
         });
@@ -45,6 +44,7 @@ class AuthenticationMiddleware {
 
       req.store.set('token', parsedToken);
       req.store.set('user', user);
+      req.store.set('userId', userId);
     } catch (e) {
       throw AlfredException(401, {
         'message': 'unauthorized',

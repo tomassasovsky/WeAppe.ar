@@ -1,13 +1,17 @@
 part of 'login.dart';
 
-class UserLoginMiddleware {
-  const UserLoginMiddleware();
+class UserLoginMiddleware extends Middleware {
+  late final String email;
+  late final String password;
 
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final email = await InputVariableValidator<String>(req, 'email').required();
-    final password = await InputVariableValidator<String>(req, 'password').required();
-    req.validate();
+  @override
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    email = await InputVariableValidator<String>(req, 'email').required();
+    password = await InputVariableValidator<String>(req, 'password').required();
+  }
 
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final passwordIsValid = Constants.passwordRegExp.hasMatch(password);
     final emailIsValid = Constants.emailRegExp.hasMatch(email);
 

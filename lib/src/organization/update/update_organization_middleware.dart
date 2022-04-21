@@ -1,26 +1,21 @@
 part of 'update_organization.dart';
 
-class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
-  const UpdateOrganizationMiddleware();
+class UpdateOrganizationMiddleware extends Middleware {
+  late final String id;
+  String? homePageUrl;
+  HttpBodyFileUpload? photo;
+  late final ObjectId userId;
 
   @override
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    await super.call(req, res);
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    id = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
+    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional();
+    photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional();
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final id = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
-    final homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional();
-    final photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional();
-
-    req.validate();
-
-    final userId = req.store.get<User>('user').id;
-    if (userId == null) {
-      res.reasonPhrase = 'userIdNotFound';
-      throw AlfredException(500, {
-        'message': 'userId is null',
-      });
-    }
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final organization = await Services().organizations.findOrganizationById(id);
 
     if (organization == null) {

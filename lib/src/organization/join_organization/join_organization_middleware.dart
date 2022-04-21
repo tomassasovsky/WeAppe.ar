@@ -1,18 +1,18 @@
 part of 'join_organization.dart';
 
-class JoinOrganizationMiddleware extends AuthenticationMiddleware {
-  const JoinOrganizationMiddleware();
+class JoinOrganizationMiddleware extends Middleware {
+  late final String refId;
+
+  late final ObjectId userId;
 
   @override
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    await super.call(req, res);
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    refId = await InputVariableValidator<String>(req, 'refId', source: Source.query).required();
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final refId = await InputVariableValidator<String>(req, 'refId', source: Source.query).required();
-
-    req.validate();
-
-    final userId = req.store.get<ObjectId>('userId');
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final invite = await Services().invites.findByRefId(refId);
 
     if (invite == null) {

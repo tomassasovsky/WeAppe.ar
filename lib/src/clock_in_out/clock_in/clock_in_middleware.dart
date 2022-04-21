@@ -1,25 +1,17 @@
 part of 'clock_in.dart';
 
-class ClockInMiddleware extends AuthenticationMiddleware {
-  const ClockInMiddleware();
+class ClockInMiddleware extends Middleware {
+  late final String organizationId;
+  late final ObjectId userId;
 
   @override
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    await super.call(req, res);
-    final user = req.store.get<User>('user');
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    organizationId = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final organizationId = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
-    req.validate();
-
-    final userId = user.id;
-
-    if (userId == null) {
-      res.reasonPhrase = 'userIdNotFound';
-      throw AlfredException(500, {
-        'message': 'user id was not found!',
-      });
-    }
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final organization = await Services().organizations.findOrganizationById(
           organizationId,
         );

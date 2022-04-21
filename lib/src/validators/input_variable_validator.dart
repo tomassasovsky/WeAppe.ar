@@ -42,7 +42,7 @@ class InputVariableValidator<T> {
     return value;
   }
 
-  Future<T?> optional() async {
+  FutureOr<T?> optional() async {
     final dynamic value = await _parseParameter();
 
     if (value == null || (value is String && value.isEmpty)) {

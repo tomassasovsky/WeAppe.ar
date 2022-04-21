@@ -1,12 +1,17 @@
 part of 'login.dart';
 
-class UserLoginController {
-  const UserLoginController();
+class UserLoginController extends Controller {
+  late final String email;
+  late final String password;
 
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final email = req.store.get<String>('email');
-    final password = req.store.get<String>('password');
+  @override
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    password = req.store.get<String>('password');
+    email = req.store.get<String>('email');
+  }
 
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final user = await Services().users.findUserByEmail(
           email: email,
         );

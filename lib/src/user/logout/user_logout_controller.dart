@@ -1,11 +1,14 @@
 part of 'logout.dart';
 
-class UserLogoutController {
-  const UserLogoutController();
+class UserLogoutController extends Controller {
+  late final String token;
+  @override
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    token = req.store.get<String>('token');
+  }
 
-  Future<void> call(HttpRequest req, HttpResponse res) async {
-    final token = req.store.get<String>('token');
-
+  @override
+  FutureOr<void> run(HttpRequest req, HttpResponse res) async {
     final result = await Services().tokens.deleteFromDatabase(token);
 
     if (result.isFailure) {

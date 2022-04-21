@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:backend/src/database/database.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -6,7 +8,7 @@ class TokensService {
 
   final DatabaseService dbService;
 
-  Future<WriteResult> addToDatabase(dynamic userId, String refreshToken) {
+  FutureOr<WriteResult> addToDatabase(dynamic userId, String refreshToken) {
     return dbService.refreshTokensCollection.insertOne(
       <String, dynamic>{
         'userId': userId,
@@ -15,7 +17,7 @@ class TokensService {
     );
   }
 
-  Future<WriteResult> deleteFromDatabase(String token) {
+  FutureOr<WriteResult> deleteFromDatabase(String token) {
     return dbService.refreshTokensCollection.deleteOne(
       where.eq('refreshToken', token),
     );
