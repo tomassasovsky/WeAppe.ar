@@ -1,15 +1,21 @@
 part of 'register.dart';
 
-class UserRegisterController {
-  const UserRegisterController();
+class UserRegisterController extends Controller {
+  late final String firstName;
+  late final String lastName;
+  late final String email;
+  late final String password;
 
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    // grab the properties from the request
-    final firstName = req.store.get<String>('firstName');
-    final lastName = req.store.get<String>('lastName');
-    final email = req.store.get<String>('email');
-    final password = req.store.get<String>('password');
+  @override
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) {
+    firstName = req.store.get<String>('firstName');
+    lastName = req.store.get<String>('lastName');
+    email = req.store.get<String>('email');
+    password = req.store.get<String>('password');
+  }
 
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final hashedPassword = DBCrypt().hashpw(password, DBCrypt().gensalt());
 
     final user = User(
@@ -28,16 +34,16 @@ class UserRegisterController {
       );
 
       final accessToken = jwt.sign(
-        services.jwtAccessSigner,
+        Services().jwtAccessSigner,
         expiresIn: const Duration(days: 7),
       );
 
       final refreshToken = jwt.sign(
-        services.jwtRefreshSigner,
+        Services().jwtRefreshSigner,
         expiresIn: const Duration(days: 90),
       );
 
-      await services.tokens.addToDatabase(user.id, refreshToken);
+      await Services().tokens.addToDatabase(user.id, refreshToken);
 
       res.statusCode = HttpStatus.ok;
       await res.json({

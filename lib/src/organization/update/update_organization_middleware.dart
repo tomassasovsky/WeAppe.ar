@@ -1,34 +1,22 @@
 part of 'update_organization.dart';
 
-class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
-  const UpdateOrganizationMiddleware();
+class UpdateOrganizationMiddleware extends Middleware {
+  late final String id;
+  String? homePageUrl;
+  HttpBodyFileUpload? photo;
+  late final ObjectId userId;
 
   @override
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    await super.call(req, res);
-    final body = await req.bodyAsJsonMap;
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    id = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
+    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional();
+    photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional();
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final id = req.params['id'] as String?;
-
-    if (id == null || id.isEmpty == true) {
-      res.reasonPhrase = 'nameRequired';
-      throw AlfredException(400, {
-        'message': "the organization's id is required",
-      });
-    }
-
-    final dynamic homePageUrl = body['homePageUrl'];
-    final dynamic photo = body['photo'] as HttpBodyFileUpload?;
-
-    final userId = req.store.get<User>('user').id;
-    if (userId == null) {
-      res.reasonPhrase = 'userIdNotFound';
-      throw AlfredException(500, {
-        'message': 'userId is null',
-      });
-    }
-
-    final organization = await services.organizations.findOrganizationById(id);
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
+    final organization = await Services().organizations.findOrganizationById(id);
 
     if (organization == null) {
       res.reasonPhrase = 'organizationDoesNotExist';
@@ -45,7 +33,7 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    if ((photo == null || photo == organization.imageUrl) && (homePageUrl == null || homePageUrl == organization.homePageUrl)) {
+    if ((photo == null) && (homePageUrl == null || homePageUrl == organization.homePageUrl)) {
       res.reasonPhrase = 'nothingToUpdate';
       throw AlfredException(202, {
         'message': 'nothing to update!',

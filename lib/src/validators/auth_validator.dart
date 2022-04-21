@@ -1,21 +1,19 @@
-import 'package:alfred/alfred.dart';
-import 'package:backend/src/services/services.dart';
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-import 'package:meta/meta.dart';
+part of 'validators.dart';
 
-class AuthenticationMiddleware {
-  const AuthenticationMiddleware();
+class AuthenticationMiddleware extends Middleware {
+  late final String authHeader;
 
-  @mustCallSuper
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final authHeader = req.headers.value('Authorization');
+  @override
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    authHeader = await InputVariableValidator<String>(
+      req,
+      'Authorization',
+      source: Source.headers,
+    ).required();
+  }
 
-    if (authHeader == null) {
-      throw AlfredException(401, {
-        'message': 'no auth header provided',
-      });
-    }
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final token = authHeader.replaceAll('Bearer ', '');
 
     if (token.isEmpty) {
@@ -28,7 +26,7 @@ class AuthenticationMiddleware {
     try {
       parsedToken = JWT.verify(
         token,
-        services.jwtAccessSigner,
+        Services().jwtAccessSigner,
       );
     } catch (e) {
       throw AlfredException(401, {
@@ -37,10 +35,11 @@ class AuthenticationMiddleware {
     }
 
     try {
-      final userId = (parsedToken.payload as Map<String, dynamic>)['userId'] as String;
-      final user = await services.users.findUserById(userId);
+      final rawUserId = (parsedToken.payload as Map<String, dynamic>)['userId'] as String;
+      final user = await Services().users.findUserById(rawUserId);
+      final userId = user?.id;
 
-      if (user == null) {
+      if (user == null || userId == null) {
         throw AlfredException(401, {
           'message': 'user not found',
         });
@@ -48,6 +47,7 @@ class AuthenticationMiddleware {
 
       req.store.set('token', parsedToken);
       req.store.set('user', user);
+      req.store.set('userId', userId);
     } catch (e) {
       throw AlfredException(401, {
         'message': 'unauthorized',

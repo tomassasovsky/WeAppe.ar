@@ -1,21 +1,21 @@
 part of 'join_organization.dart';
 
-class JoinOrganizationController {
-  const JoinOrganizationController();
+class JoinOrganizationController extends Controller {
+  late final Organization organization;
+  late final Invite invite;
+  late final User user;
+  late final ObjectId userId;
 
-  FutureOr<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final organization = req.store.get<Organization>('organization');
-    final invite = req.store.get<Invite>('invite');
-    final user = req.store.get<User>('user');
+  @override
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) {
+    organization = req.store.get<Organization>('organization');
+    invite = req.store.get<Invite>('invite');
+    user = req.store.get<User>('user');
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final userId = user.id;
-
-    if (userId == null) {
-      throw AlfredException(404, {
-        'message': 'No user found',
-      });
-    }
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     organization.employers?.add(userId);
     final result = await organization.save();
     if (result == null) {

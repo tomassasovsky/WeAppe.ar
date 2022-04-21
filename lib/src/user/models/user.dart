@@ -16,7 +16,7 @@ class User extends DBModel<User> {
     this.city,
     this.photo,
     this.organizations,
-  }) : super(database.usersCollection);
+  }) : super(DatabaseService().usersCollection);
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 

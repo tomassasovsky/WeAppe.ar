@@ -1,39 +1,20 @@
 part of 'create_organization.dart';
 
-class CreateOrganizationMiddleware extends AuthenticationMiddleware {
-  const CreateOrganizationMiddleware();
+class CreateOrganizationMiddleware extends Middleware {
+  late final String name;
+  late final ObjectId userId;
+  String? homePageUrl;
 
   @override
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    await super.call(req, res);
-    final body = await req.bodyAsJsonMap;
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    name = await InputVariableValidator<String>(req, 'name').required();
+    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional();
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final dynamic name = body['name'];
-    final dynamic homePageUrl = body['homePageUrl'];
-
-    if (name == null || (name as String).isEmpty) {
-      res.reasonPhrase = 'nameRequired';
-      throw AlfredException(400, {
-        'message': 'name is required!',
-      });
-    } else if (name.length > 30) {
-      res.reasonPhrase = 'nameTooLong';
-      throw AlfredException(400, {
-        'message': 'name is too long. max length is 30!',
-      });
-    }
-
-    final userId = req.store.get<User>('user').id;
-    if (userId == null) {
-      res.reasonPhrase = 'userIdNotFound';
-      throw AlfredException(500, {
-        'message': 'userId is null',
-      });
-    }
-
-    final organizationExists = await services.organizations
-            .findOrganizationByNameAndUserId(name: name, userId: userId.$oid) !=
-        null;
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
+    final organizationExists = await Services().organizations.findOrganizationByNameAndUserId(name: name, userId: userId.$oid) != null;
 
     if (organizationExists) {
       res.reasonPhrase = 'organizationAlreadyExists';

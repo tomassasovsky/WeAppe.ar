@@ -1,10 +1,20 @@
-import 'package:get_it/get_it.dart';
+import 'dart:async';
+
 import 'package:mongo_dart/mongo_dart.dart';
 
 class DatabaseService {
-  DatabaseService(this._db);
+  factory DatabaseService([Db? db]) {
+    if (db != null) {
+      _inst._db = db;
+    }
+    return _inst;
+  }
 
-  final Db _db;
+  DatabaseService._internal();
+
+  static final DatabaseService _inst = DatabaseService._internal();
+
+  late Db _db;
 
   DbCollection get usersCollection => _db.collection('users');
   DbCollection get refreshTokensCollection => _db.collection('refreshTokens');
@@ -12,8 +22,6 @@ class DatabaseService {
   DbCollection get clockInOutCollection => _db.collection('clockInOut');
   DbCollection get invitesCollection => _db.collection('invites');
 
-  Future open() => _db.open();
-  Future close() => _db.close();
+  FutureOr open() => _db.open();
+  FutureOr close() => _db.close();
 }
-
-DatabaseService get database => GetIt.instance.get<DatabaseService>();

@@ -1,22 +1,19 @@
 part of 'join_organization.dart';
 
-class JoinOrganizationMiddleware extends AuthenticationMiddleware {
-  const JoinOrganizationMiddleware();
+class JoinOrganizationMiddleware extends Middleware {
+  late final String refId;
+
+  late final ObjectId userId;
 
   @override
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    await super.call(req, res);
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    refId = await InputVariableValidator<String>(req, 'refId', source: Source.query).required();
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final refId = req.params['refId'] as String?;
-    final userId = req.store.get<ObjectId>('userId');
-
-    if (refId == null) {
-      throw AlfredException(404, {
-        'message': 'No refId provided',
-      });
-    }
-
-    final invite = await services.invites.findByRefId(refId);
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
+    final invite = await Services().invites.findByRefId(refId);
 
     if (invite == null) {
       throw AlfredException(404, {
@@ -30,9 +27,9 @@ class JoinOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final organization = await services.organizations.findOrganizationById(
-      invite.organization,
-    );
+    final organization = await Services().organizations.findOrganizationById(
+          invite.organization,
+        );
 
     if (organization == null) {
       throw AlfredException(404, {

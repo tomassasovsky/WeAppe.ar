@@ -1,27 +1,17 @@
 part of 'login.dart';
 
-class UserLoginMiddleware {
-  const UserLoginMiddleware();
+class UserLoginMiddleware extends Middleware {
+  late final String email;
+  late final String password;
 
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final body = await req.bodyAsJsonMap;
-    final dynamic email = body['email'];
-    final dynamic password = body['password'];
+  @override
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    email = await InputVariableValidator<String>(req, 'email').required();
+    password = await InputVariableValidator<String>(req, 'password').required();
+  }
 
-    if (email == null || password == null) {
-      res.reasonPhrase = 'fieldsRequired';
-      throw AlfredException(400, {
-        'message': 'fields are required: email, password',
-      });
-    }
-
-    if (email is! String || password is! String) {
-      res.reasonPhrase = 'strings required';
-      throw AlfredException(400, {
-        'message': 'fields must be strings',
-      });
-    }
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final passwordIsValid = Constants.passwordRegExp.hasMatch(password);
     final emailIsValid = Constants.emailRegExp.hasMatch(email);
 
@@ -39,7 +29,7 @@ class UserLoginMiddleware {
       });
     }
 
-    final found = await services.users.findUserByEmail(email: email) != null;
+    final found = await Services().users.findUserByEmail(email: email) != null;
     if (!found) {
       res.reasonPhrase = 'invalidCredentials';
       throw AlfredException(400, {

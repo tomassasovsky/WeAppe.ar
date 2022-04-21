@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'package:backend/src/database/database.dart';
-import 'package:backend/src/user/models/user.dart';
+import 'package:backend/src/user/user.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class UsersService {
@@ -7,7 +9,7 @@ class UsersService {
 
   final DatabaseService dbService;
 
-  Future<User?> findUserByEmail({
+  FutureOr<User?> findUserByEmail({
     required String email,
   }) async {
     final user = await dbService.usersCollection.findOne(where.eq('email', email));
@@ -19,7 +21,7 @@ class UsersService {
     return User.fromJson(user);
   }
 
-  Future<User?> findUserById(
+  FutureOr<User?> findUserById(
     String id,
   ) async {
     final user = await dbService.usersCollection.findOne(where.id(ObjectId.parse(id)));

@@ -1,13 +1,17 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:alfred/alfred.dart';
-import 'package:backend/src/imgur/imgur_upload_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+
+part 'imgur_upload_response.dart';
 
 class ImgurClient {
   const ImgurClient(this.clientId);
   final String clientId;
 
-  Future<ImgurUploadResponse?> uploadImage(HttpBodyFileUpload image) async {
+  FutureOr<ImgurUploadResponse?> uploadImage(HttpBodyFileUpload image) async {
     final content = image.content as List<int>;
 
     final file = http.MultipartFile.fromBytes(

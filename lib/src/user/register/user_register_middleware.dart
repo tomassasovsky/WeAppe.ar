@@ -1,34 +1,23 @@
 part of 'register.dart';
 
-class UserRegisterMiddleware {
-  const UserRegisterMiddleware();
+class UserRegisterMiddleware extends Middleware {
+  late final String email;
+  late final String password;
+  late final String firstName;
+  late final String lastName;
 
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final body = await req.bodyAsJsonMap;
-    final dynamic email = body['email'];
-    final dynamic password = body['password'];
-    final dynamic firstName = body['firstName'];
-    final dynamic lastName = body['lastName'];
+  @override
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    email = await InputVariableValidator<String>(req, 'email').required();
+    password = await InputVariableValidator<String>(req, 'password').required();
+    firstName = await InputVariableValidator<String>(req, 'firstName').required();
+    lastName = await InputVariableValidator<String>(req, 'lastName').required();
+  }
 
-    if (email == null || password == null || firstName == null || lastName == null) {
-      res.reasonPhrase = 'fieldsRequired';
-      throw AlfredException(400, {
-        'message': 'fields are required: email, password, firstName, lastName',
-      });
-    }
-
-    if (email is! String || password is! String || firstName is! String || lastName is! String) {
-      res.reasonPhrase = 'strings required';
-      throw AlfredException(400, {
-        'message': 'fields must be strings',
-      });
-    }
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final passwordIsValid = Constants.passwordRegExp.hasMatch(password);
     final emailIsValid = Constants.emailRegExp.hasMatch(email);
-
-    final firstNameIsValid = firstName.isNotEmpty;
-    final lastNameIsValid = lastName.isNotEmpty;
 
     if (!passwordIsValid) {
       res.reasonPhrase = 'passwordError';
@@ -44,14 +33,7 @@ class UserRegisterMiddleware {
       });
     }
 
-    if (!firstNameIsValid || !lastNameIsValid) {
-      res.reasonPhrase = 'nameError';
-      throw AlfredException(400, {
-        'message': 'first and last name are required',
-      });
-    }
-
-    final savedUser = await services.users.findUserByEmail(email: email);
+    final savedUser = await Services().users.findUserByEmail(email: email);
     final found = savedUser != null;
     if (found) {
       res.reasonPhrase = 'userExists';

@@ -1,49 +1,29 @@
 part of 'send_invite.dart';
 
-class InviteCreateMiddleware extends AuthenticationMiddleware {
-  const InviteCreateMiddleware();
+class InviteCreateMiddleware extends Middleware {
+  InviteCreateMiddleware();
+
+  late final String organizationName;
+  late final String recipientEmail;
+  late final ObjectId userId;
+  String? message;
+  String? rawUserType;
 
   @override
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    await super.call(req, res);
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    organizationName = await InputVariableValidator<String>(req, 'organizationName').required();
+    recipientEmail = await InputVariableValidator<String>(req, 'recipientEmail').required();
+    message = await InputVariableValidator<String>(req, 'message').optional();
+    rawUserType = await InputVariableValidator<String>(req, 'userType').optional();
+    userId = req.store.get<ObjectId>('userId');
+  }
 
-    final body = await req.bodyAsJsonMap;
-    final user = req.store.get<User>('user');
-    final organizationName = body['organizationName'] as String?;
-    final recipientEmail = body['recipientEmail'] as String?;
-    final message = body['message'] as String?;
-    final rawUserType = body['userType'] as String?;
-
-    final userId = user.id;
-
-    if (recipientEmail == null || recipientEmail.isEmpty) {
-      throw AlfredException(400, {
-        'message': 'recipientEmail is required',
-      });
-    }
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final isValidEmail = Constants.emailRegExp.hasMatch(recipientEmail);
     if (!isValidEmail) {
       throw AlfredException(400, {
         'message': 'recipientEmail is invalid',
-      });
-    }
-
-    if (organizationName == null || organizationName.isEmpty) {
-      throw AlfredException(403, {
-        'message': 'organization name is required',
-      });
-    }
-
-    if (userId == null) {
-      throw AlfredException(500, {
-        'message': 'userId not available',
-      });
-    }
-
-    if (rawUserType == null) {
-      throw AlfredException(500, {
-        'message': 'userId not available',
       });
     }
 
@@ -52,18 +32,20 @@ class InviteCreateMiddleware extends AuthenticationMiddleware {
       orElse: () => UserType.employee,
     );
 
-    final organization = await services.organizations.findOrganizationByNameAndUserId(
-      userId: userId.$oid,
-      name: organizationName,
-    );
+    final organization = await Services().organizations.findOrganizationByNameAndUserId(
+          userId: userId.$oid,
+          name: organizationName,
+        );
 
-    if (organization == null) {
+    final organizationId = organization?.id;
+
+    if (organization == null || organizationId == null) {
       throw AlfredException(404, {
         'message': 'organization not found',
       });
     }
 
-    final userWithEmail = await services.users.findUserByEmail(email: recipientEmail);
+    final userWithEmail = await Services().users.findUserByEmail(email: recipientEmail);
     if (userWithEmail != null) {
       if ((organization.employees ?? []).contains(userWithEmail.id) && userType == UserType.employee) {
         throw AlfredException(400, {
@@ -85,6 +67,7 @@ class InviteCreateMiddleware extends AuthenticationMiddleware {
     }
 
     req.store.set('organization', organization);
+    req.store.set('organizationId', organizationId);
     req.store.set('recipientEmail', recipientEmail);
     req.store.set('message', message);
     req.store.set('userType', userType);
