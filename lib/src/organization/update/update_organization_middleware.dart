@@ -9,8 +9,8 @@ class UpdateOrganizationMiddleware extends Middleware {
   @override
   FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
     id = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
-    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional();
-    photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional();
+    photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional().catchError((dynamic _) {});
+    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional().catchError((dynamic _) {});
     userId = req.store.get<ObjectId>('userId');
   }
 
@@ -33,7 +33,7 @@ class UpdateOrganizationMiddleware extends Middleware {
       });
     }
 
-    if ((photo == null) && (homePageUrl == null || homePageUrl == organization.homePageUrl)) {
+    if ((photo == null) && (homePageUrl == null || homePageUrl == organization.homePageUrl) && photo == null) {
       res.reasonPhrase = 'nothingToUpdate';
       throw AlfredException(202, {
         'message': 'nothing to update!',
