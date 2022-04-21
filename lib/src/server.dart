@@ -1,11 +1,7 @@
 import 'dart:async';
 
 import 'package:alfred/alfred.dart';
-import 'package:backend/src/clock_in_out/clock_in_out.dart';
-import 'package:backend/src/invite/send_invite/send_invite.dart';
-import 'package:backend/src/organization/organization.dart';
-import 'package:backend/src/user/user.dart';
-import 'package:backend/src/validators/validators.dart';
+import 'package:backend/backend.dart';
 
 class Server {
   const Server();
@@ -23,6 +19,7 @@ class Server {
         'user/register',
         UserRegisterController(),
         middleware: [
+          AuthenticationMiddleware(),
           UserRegisterMiddleware(),
         ],
       )
@@ -30,6 +27,7 @@ class Server {
         'user/update',
         UserUpdateController(),
         middleware: [
+          AuthenticationMiddleware(),
           UserUpdateMiddleware(),
         ],
       )
@@ -51,6 +49,7 @@ class Server {
         'organization',
         CreateOrganizationController(),
         middleware: [
+          AuthenticationMiddleware(),
           CreateOrganizationMiddleware(),
         ],
       )
@@ -58,6 +57,7 @@ class Server {
         'organization/:id:[0-9a-z]+',
         UpdateOrganizationController(),
         middleware: [
+          AuthenticationMiddleware(),
           UpdateOrganizationMiddleware(),
         ],
       )
@@ -96,8 +96,8 @@ class Server {
         'invite/send/',
         InviteCreateController(),
         middleware: [
-          AuthenticationMiddleware(),
-          InviteCreateMiddleware(),
+          (req, res) => AuthenticationMiddleware().call,
+          (req, res) => InviteCreateMiddleware().call,
         ],
       )
       ..printRoutes()

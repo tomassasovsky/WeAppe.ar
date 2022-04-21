@@ -1,16 +1,19 @@
 part of 'validators.dart';
 
 class AuthenticationMiddleware extends Middleware {
+  late final String authHeader;
+
   @override
-  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
-    final authHeader = await InputVariableValidator<String>(
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    authHeader = await InputVariableValidator<String>(
       req,
       'Authorization',
       source: Source.headers,
     ).required();
+  }
 
-    req.validate();
-
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final token = authHeader.replaceAll('Bearer ', '');
 
     if (token.isEmpty) {
