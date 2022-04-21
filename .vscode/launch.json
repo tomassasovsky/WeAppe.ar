@@ -5,9 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "weappear_backend",
+      "name": "Launch Backend",
       "request": "launch",
-      "type": "dart"
+      "type": "dart",
+      "program": "bin/server.dart",
     }
   ]
 }

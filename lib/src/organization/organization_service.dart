@@ -31,16 +31,20 @@ class OrganizationService {
     required String name,
     required String userId,
   }) async {
-    final organization = await dbService.organizationsCollection.findOne(
-      where
-        ..eq('name', name)
-        ..eq('admin', userId),
+    final rawOrganization = await dbService.organizationsCollection.findOne(
+      where.eq('name', name),
     );
 
-    if (organization == null || organization.isEmpty) {
+    if (rawOrganization == null || rawOrganization.isEmpty) {
       return null;
     }
 
-    return Organization.fromJson(organization);
+    final organization = Organization.fromJson(rawOrganization);
+
+    final userIdAsObjectId = ObjectId.parse(userId);
+    if (organization.hasAdminPrivileges(userIdAsObjectId)) {
+      return organization;
+    }
+    return null;
   }
 }

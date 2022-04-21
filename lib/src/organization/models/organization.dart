@@ -29,6 +29,10 @@ class Organization extends DBModel<Organization> {
       (employers?.contains(userId) ?? false) ||
       (employees?.contains(userId) ?? false) ||
       (admin == userId);
+      
+  bool hasAdminPrivileges(ObjectId userId) =>
+      (employers?.contains(userId) ?? false) ||
+      (admin == userId);
 
   @override
   Map<String, dynamic> toJson() => _$OrganizationToJson(this);
