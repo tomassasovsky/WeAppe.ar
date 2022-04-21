@@ -12,11 +12,12 @@ import 'package:backend/src/user/user.dart';
 import 'package:backend/src/validators/auth_validator.dart';
 
 class Server {
-  const Server();
+  Server();
+  Alfred? _app;
 
   Future<void> init() async {
     // initialize alfred:
-    final app = Alfred(
+    _app = Alfred(
       onNotFound: (req, res) => throw AlfredException(
         404,
         {'message': '${req.requestedUri.path} not found'},
@@ -85,7 +86,14 @@ class Server {
       ..printRoutes();
 
     // start the alfred server:
-    await app.listen(8080);
+    await _app?.listen(8080);
+  }
+
+  Future<void>? restart() async {
+    try {
+      await _app?.close();
+    } catch (_) {}
+    await _app?.listen(8080);
   }
 }
 

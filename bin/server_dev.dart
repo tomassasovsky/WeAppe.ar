@@ -7,6 +7,9 @@ import 'package:backend/src/services/services.dart';
 import 'package:dotenv/dotenv.dart' as dotenv;
 import 'package:get_it/get_it.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:recharge/recharge.dart';
+
+final server = Server();
 
 Future<void> main() async {
   final envFileExists = File.fromUri(Uri.parse('.env')).existsSync();
@@ -22,6 +25,13 @@ Future<void> main() async {
 
   await database.open();
 
-  final server = Server();
   await server.init();
+
+  final recharge = Recharge(
+    path: './lib',
+    onReload: () async => runServer(),
+  );
+  await recharge.init();
 }
+
+Future<void>? runServer() => server.restart();
