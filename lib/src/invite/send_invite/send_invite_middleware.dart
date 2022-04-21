@@ -7,21 +7,13 @@ class InviteCreateMiddleware extends AuthenticationMiddleware {
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     await super.call(req, res);
 
-    // input variables can come from:
-    // - req.body
-    // - req.headers
-    // - req.params
-
-    // input variables need to be validated against:
-    //! - data type
-    //! - optional/required fields
-
     final user = req.store.get<User>('user');
 
     final organizationName = await InputVariableValidator<String>(req, 'organizationName').required();
     final recipientEmail = await InputVariableValidator<String>(req, 'recipientEmail').required();
     final message = await InputVariableValidator<String>(req, 'message').optional();
     final rawUserType = await InputVariableValidator<String>(req, 'userType').optional();
+
     req.validate();
 
     final userId = user.id;

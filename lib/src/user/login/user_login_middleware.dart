@@ -4,23 +4,9 @@ class UserLoginMiddleware {
   const UserLoginMiddleware();
 
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final body = await req.bodyAsJsonMap;
-    final dynamic email = body['email'];
-    final dynamic password = body['password'];
-
-    if (email == null || password == null) {
-      res.reasonPhrase = 'fieldsRequired';
-      throw AlfredException(400, {
-        'message': 'fields are required: email, password',
-      });
-    }
-
-    if (email is! String || password is! String) {
-      res.reasonPhrase = 'strings required';
-      throw AlfredException(400, {
-        'message': 'fields must be strings',
-      });
-    }
+    final email = await InputVariableValidator<String>(req, 'email').required();
+    final password = await InputVariableValidator<String>(req, 'password').required();
+    req.validate();
 
     final passwordIsValid = Constants.passwordRegExp.hasMatch(password);
     final emailIsValid = Constants.emailRegExp.hasMatch(email);

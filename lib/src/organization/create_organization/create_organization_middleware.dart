@@ -6,22 +6,11 @@ class CreateOrganizationMiddleware extends AuthenticationMiddleware {
   @override
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     await super.call(req, res);
-    final body = await req.bodyAsJsonMap;
 
-    final dynamic name = body['name'];
-    final dynamic homePageUrl = body['homePageUrl'];
+    final name = await InputVariableValidator<String>(req, 'name').required();
+    final homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional();
 
-    if (name == null || (name as String).isEmpty) {
-      res.reasonPhrase = 'nameRequired';
-      throw AlfredException(400, {
-        'message': 'name is required!',
-      });
-    } else if (name.length > 30) {
-      res.reasonPhrase = 'nameTooLong';
-      throw AlfredException(400, {
-        'message': 'name is too long. max length is 30!',
-      });
-    }
+    req.validate();
 
     final userId = req.store.get<User>('user').id;
     if (userId == null) {

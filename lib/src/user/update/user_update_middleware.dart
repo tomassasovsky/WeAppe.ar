@@ -6,11 +6,12 @@ class UserUpdateMiddleware extends AuthenticationMiddleware {
   @override
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     await super.call(req, res);
-    final body = await req.bodyAsJsonMap;
 
-    final dynamic country = body['country'];
-    final dynamic city = body['city'];
-    final dynamic photo = body['photo'] as HttpBodyFileUpload?;
+    final country = await InputVariableValidator<String>(req, 'country').optional();
+    final city = await InputVariableValidator<String>(req, 'city').optional();
+    final photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional();
+
+    req.validate();
 
     if (country == null && city == null && photo == null) {
       res.reasonPhrase = 'nothingToUpdate';

@@ -5,13 +5,13 @@ class AuthenticationMiddleware {
 
   @mustCallSuper
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final authHeader = req.headers.value('Authorization');
+    final authHeader = await InputVariableValidator<String>(
+      req,
+      'Authorization',
+      source: Source.headers,
+    ).required();
 
-    if (authHeader == null) {
-      throw AlfredException(401, {
-        'message': 'no auth header provided',
-      });
-    }
+    req.validate();
 
     final token = authHeader.replaceAll('Bearer ', '');
 

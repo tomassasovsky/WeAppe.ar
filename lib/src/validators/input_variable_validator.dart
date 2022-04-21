@@ -71,8 +71,8 @@ class InputVariableValidator<T> {
         }
         break;
       case Source.query:
-        if (req.uri.queryParameters.containsKey(name)) {
-          value = req.uri.queryParameters[name];
+        if (req.params.containsKey(name)) {
+          value = req.params[name];
         }
         break;
       case Source.headers:

@@ -4,31 +4,15 @@ class UserRegisterMiddleware {
   const UserRegisterMiddleware();
 
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final body = await req.bodyAsJsonMap;
-    final dynamic email = body['email'];
-    final dynamic password = body['password'];
-    final dynamic firstName = body['firstName'];
-    final dynamic lastName = body['lastName'];
+    final email = await InputVariableValidator<String>(req, 'email').required();
+    final password = await InputVariableValidator<String>(req, 'password').required();
+    final firstName = await InputVariableValidator<String>(req, 'firstName').required();
+    final lastName = await InputVariableValidator<String>(req, 'lastName').required();
 
-    if (email == null || password == null || firstName == null || lastName == null) {
-      res.reasonPhrase = 'fieldsRequired';
-      throw AlfredException(400, {
-        'message': 'fields are required: email, password, firstName, lastName',
-      });
-    }
-
-    if (email is! String || password is! String || firstName is! String || lastName is! String) {
-      res.reasonPhrase = 'strings required';
-      throw AlfredException(400, {
-        'message': 'fields must be strings',
-      });
-    }
+    req.validate();
 
     final passwordIsValid = Constants.passwordRegExp.hasMatch(password);
     final emailIsValid = Constants.emailRegExp.hasMatch(email);
-
-    final firstNameIsValid = firstName.isNotEmpty;
-    final lastNameIsValid = lastName.isNotEmpty;
 
     if (!passwordIsValid) {
       res.reasonPhrase = 'passwordError';
@@ -41,13 +25,6 @@ class UserRegisterMiddleware {
       res.reasonPhrase = 'emailError';
       throw AlfredException(400, {
         'message': 'email must be a valid email address',
-      });
-    }
-
-    if (!firstNameIsValid || !lastNameIsValid) {
-      res.reasonPhrase = 'nameError';
-      throw AlfredException(400, {
-        'message': 'first and last name are required',
       });
     }
 

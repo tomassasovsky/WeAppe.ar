@@ -6,19 +6,12 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
   @override
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     await super.call(req, res);
-    final body = await req.bodyAsJsonMap;
 
-    final id = req.params['id'] as String?;
+    final id = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
+    final homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional();
+    final photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional();
 
-    if (id == null || id.isEmpty == true) {
-      res.reasonPhrase = 'nameRequired';
-      throw AlfredException(400, {
-        'message': "the organization's id is required",
-      });
-    }
-
-    final dynamic homePageUrl = body['homePageUrl'];
-    final dynamic photo = body['photo'] as HttpBodyFileUpload?;
+    req.validate();
 
     final userId = req.store.get<User>('user').id;
     if (userId == null) {
@@ -45,7 +38,7 @@ class UpdateOrganizationMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    if ((photo == null || photo == organization.imageUrl) && (homePageUrl == null || homePageUrl == organization.homePageUrl)) {
+    if ((photo == null) && (homePageUrl == null || homePageUrl == organization.homePageUrl)) {
       res.reasonPhrase = 'nothingToUpdate';
       throw AlfredException(202, {
         'message': 'nothing to update!',

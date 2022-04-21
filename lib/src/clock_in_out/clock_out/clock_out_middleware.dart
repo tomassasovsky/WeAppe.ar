@@ -7,15 +7,9 @@ class ClockOutMiddleware extends AuthenticationMiddleware {
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     await super.call(req, res);
     final userId = req.store.get<User>('user').id;
-    final params = req.params;
-    final organizationId = params['id'] as String?;
 
-    if (organizationId == null) {
-      res.reasonPhrase = 'organizationIdRequired';
-      throw AlfredException(400, {
-        'message': 'organizationId is required!',
-      });
-    }
+    final organizationId = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
+    req.validate();
 
     final organization = await Services().organizations.findOrganizationById(organizationId);
 

@@ -7,14 +7,11 @@ class JoinOrganizationMiddleware extends AuthenticationMiddleware {
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     await super.call(req, res);
 
-    final refId = req.params['refId'] as String?;
-    final userId = req.store.get<ObjectId>('userId');
+    final refId = await InputVariableValidator<String>(req, 'refId', source: Source.query).required();
 
-    if (refId == null) {
-      throw AlfredException(404, {
-        'message': 'No refId provided',
-      });
-    }
+    req.validate();
+
+    final userId = req.store.get<ObjectId>('userId');
 
     final invite = await Services().invites.findByRefId(refId);
 

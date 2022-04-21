@@ -4,6 +4,11 @@ class UserCurrentController {
   const UserCurrentController();
 
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    return req.store.get<User>('user');
+    final user = req.store.get<User>('user');
+
+    res.statusCode = 200;
+    await res.json(
+      user.toJson(showPassword: false),
+    );
   }
 }

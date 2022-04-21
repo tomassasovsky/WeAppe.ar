@@ -7,8 +7,9 @@ class ClockInMiddleware extends AuthenticationMiddleware {
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     await super.call(req, res);
     final user = req.store.get<User>('user');
-    final params = req.params;
-    final organizationId = params['id'] as String?;
+
+    final organizationId = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
+    req.validate();
 
     final userId = user.id;
 
@@ -16,13 +17,6 @@ class ClockInMiddleware extends AuthenticationMiddleware {
       res.reasonPhrase = 'userIdNotFound';
       throw AlfredException(500, {
         'message': 'user id was not found!',
-      });
-    }
-
-    if (organizationId == null) {
-      res.reasonPhrase = 'organizationIdRequired';
-      throw AlfredException(400, {
-        'message': 'organizationId is required!',
       });
     }
 
@@ -45,9 +39,9 @@ class ClockInMiddleware extends AuthenticationMiddleware {
     }
 
     final clockInQuery = await Services().clockInOuts.findLastClockIn(
-      organizationId: organizationId,
-      userId: userId,
-    );
+          organizationId: organizationId,
+          userId: userId,
+        );
 
     if (clockInQuery != null && clockInQuery.clockOut != null) {
       res.reasonPhrase = 'clockInOpen';
