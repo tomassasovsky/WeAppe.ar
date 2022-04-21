@@ -5,7 +5,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Backend",
+      "name": "[DEV] Launch Backend",
+      "request": "launch",
+      "type": "dart",
+      "program": "bin/server_dev.dart",
+      "args": [
+        "--enable-vm-service"
+      ],
+    },
+    {
+      "name": "[PROD] Launch Backend",
       "request": "launch",
       "type": "dart",
       "program": "bin/server.dart",
