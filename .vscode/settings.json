@@ -5,5 +5,8 @@
   "explorer.experimental.fileNesting.patterns": {
     "build.bat": "build.bat, deploy.bat, docker-build.bat, docker-run.bat, build_runner.sh, run.bat",
     ".env": ".env, .example.env"
+  },
+  "files.exclude": {
+    "**/**.reflectable.dart": true
   }
 }

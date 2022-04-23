@@ -12,7 +12,7 @@ class InviteCreateMiddleware extends Middleware {
   @override
   FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
     organizationName = await InputVariableValidator<String>(req, 'organizationName').required();
-    recipientEmail = await InputVariableValidator<String>(req, 'recipientEmail').required();
+    recipientEmail = await InputVariableValidator<String>(req, 'recipientEmail', regExp: Validators.emailRegExp).required();
     message = await InputVariableValidator<String>(req, 'message').optional();
     rawUserType = await InputVariableValidator<String>(req, 'userType').optional();
     userId = req.store.get<ObjectId>('userId');
@@ -20,13 +20,6 @@ class InviteCreateMiddleware extends Middleware {
 
   @override
   FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
-    final isValidEmail = Constants.emailRegExp.hasMatch(recipientEmail);
-    if (!isValidEmail) {
-      throw AlfredException(400, {
-        'message': 'recipientEmail is invalid',
-      });
-    }
-
     final userType = UserType.values.firstWhere(
       (e) => e.name == rawUserType,
       orElse: () => UserType.employee,

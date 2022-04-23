@@ -8,9 +8,15 @@ class UpdateOrganizationMiddleware extends Middleware {
 
   @override
   FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
-    id = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
+    id = await InputVariableValidator<String>(
+      req,
+      'id',
+      source: Source.query,
+      regExp: Validators.mongoIdRegExp,
+      regExpErrorMessage: 'invalid organization id',
+    ).required();
     photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional().catchError((dynamic _) {});
-    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional().catchError((dynamic _) {});
+    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl', regExp: Validators.urlRegExp).optional().catchError((dynamic _) {});
     userId = req.store.get<ObjectId>('userId');
   }
 

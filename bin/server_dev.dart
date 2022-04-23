@@ -28,4 +28,7 @@ Future<void> main() async {
   await recharge.init();
 }
 
-Future<void>? runServer() => server.restart();
+Future<void>? runServer() async {
+  await server.close();
+  await server.init(printRoutes: false);
+}
