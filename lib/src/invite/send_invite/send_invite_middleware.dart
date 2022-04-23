@@ -1,5 +1,6 @@
 part of 'send_invite.dart';
 
+@reflector
 class InviteCreateMiddleware extends Middleware {
   InviteCreateMiddleware();
 

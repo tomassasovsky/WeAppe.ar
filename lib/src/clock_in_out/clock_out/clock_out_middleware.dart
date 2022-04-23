@@ -1,5 +1,6 @@
 part of 'clock_out.dart';
 
+@reflector
 class ClockOutMiddleware extends Middleware {
   late final String organizationId;
   late final ObjectId userId;

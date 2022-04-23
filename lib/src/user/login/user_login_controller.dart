@@ -1,5 +1,6 @@
 part of 'login.dart';
 
+@reflector
 class UserLoginController extends Controller {
   late final String email;
   late final String password;

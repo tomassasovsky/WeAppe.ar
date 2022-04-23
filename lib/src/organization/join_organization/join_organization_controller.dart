@@ -1,5 +1,6 @@
 part of 'join_organization.dart';
 
+@reflector
 class JoinOrganizationController extends Controller {
   late final Organization organization;
   late final Invite invite;

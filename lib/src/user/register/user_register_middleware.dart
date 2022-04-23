@@ -1,5 +1,6 @@
 part of 'register.dart';
 
+@reflector
 class UserRegisterMiddleware extends Middleware {
   late final String email;
   late final String password;

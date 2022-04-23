@@ -1,5 +1,6 @@
 part of 'register.dart';
 
+@reflector
 class UserRegisterController extends Controller {
   late final String firstName;
   late final String lastName;

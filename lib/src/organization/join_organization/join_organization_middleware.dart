@@ -1,5 +1,6 @@
 part of 'join_organization.dart';
 
+@reflector
 class JoinOrganizationMiddleware extends Middleware {
   late final String refId;
   late final ObjectId userId;

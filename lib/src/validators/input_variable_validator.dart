@@ -21,6 +21,7 @@ class InputVariableValidator<T> {
     this.source = Source.body,
     this.regExp,
     this.regExpErrorMessage,
+    this.onEmpty,
   });
 
   final String name;
@@ -28,6 +29,7 @@ class InputVariableValidator<T> {
   final HttpRequest req;
   final RegExp? regExp;
   final String? regExpErrorMessage;
+  final T? onEmpty;
 
   Future<T> required() async {
     final dynamic value = await _parseParameter();
@@ -79,7 +81,7 @@ class InputVariableValidator<T> {
       final isValid = regExp?.hasMatch(value) ?? true;
       if (!isValid) {
         _addError(value, ErrorType.customValidationFailed);
-        return _createInstanceOf();
+        return null;
       }
     }
 
@@ -149,8 +151,7 @@ class InputVariableValidator<T> {
       case Map:
         return <dynamic, dynamic>{} as T;
       default:
-        final mirror = reflectClass(T);
-        return mirror.newInstance(Symbol.empty, <dynamic>[]).reflectee as T;
+        return onEmpty!;
     }
   }
 }

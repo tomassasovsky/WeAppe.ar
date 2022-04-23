@@ -1,13 +1,26 @@
 import 'dart:async';
-import 'dart:mirrors';
 
 import 'package:alfred/alfred.dart';
 import 'package:backend/backend.dart';
 import 'package:meta/meta.dart';
+import 'package:reflectable/reflectable.dart';
 
 part 'controller.dart';
 part 'middleware.dart';
 
+class RouteHandlerReflector extends Reflectable {
+  const RouteHandlerReflector()
+      : super(
+          invokingCapability,
+          typingCapability,
+          newInstanceCapability,
+          reflectedTypeCapability,
+        );
+}
+
+const reflector = RouteHandlerReflector();
+
+@reflector
 abstract class RouteHandler {
   FutureOr<dynamic> defineVars(HttpRequest req, HttpResponse res) async {}
 
@@ -24,7 +37,7 @@ abstract class RouteHandler {
 
   RouteHandler _internalInstance() {
     // this creates a new instance of the class
-    final mirror = reflectClass(runtimeType);
-    return mirror.newInstance(Symbol.empty, <dynamic>[]).reflectee as RouteHandler;
+    final mirror = reflector.reflectType(runtimeType) as ClassMirror;
+    return mirror.newInstance('', <dynamic>[]) as RouteHandler;
   }
 }

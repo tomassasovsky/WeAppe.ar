@@ -1,5 +1,6 @@
 part of 'login.dart';
 
+@reflector
 class UserLoginMiddleware extends Middleware {
   late final String email;
   late final String password;

@@ -1,5 +1,6 @@
 part of 'update_organization.dart';
 
+@reflector
 class UpdateOrganizationMiddleware extends Middleware {
   late final String id;
   String? homePageUrl;
@@ -15,8 +16,8 @@ class UpdateOrganizationMiddleware extends Middleware {
       regExp: Validators.mongoIdRegExp,
       regExpErrorMessage: 'invalid organization id',
     ).required();
-    photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional().catchError((dynamic _) {});
-    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl', regExp: Validators.urlRegExp).optional().catchError((dynamic _) {});
+    photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional();
+    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl', regExp: Validators.urlRegExp).optional();
     userId = req.store.get<ObjectId>('userId');
   }
 

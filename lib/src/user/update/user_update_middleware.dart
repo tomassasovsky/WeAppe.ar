@@ -1,5 +1,6 @@
 part of 'update.dart';
 
+@reflector
 class UserUpdateMiddleware extends Middleware {
   String? country;
   String? city;
@@ -7,9 +8,9 @@ class UserUpdateMiddleware extends Middleware {
 
   @override
   FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
-    country = await InputVariableValidator<String>(req, 'country').optional().catchError((dynamic _) {});
-    city = await InputVariableValidator<String>(req, 'city').optional().catchError((dynamic _) {});
-    photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional().catchError((dynamic _) {});
+    country = await InputVariableValidator<String>(req, 'country').optional();
+    city = await InputVariableValidator<String>(req, 'city').optional();
+    photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional();
   }
 
   @override

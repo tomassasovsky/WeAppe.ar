@@ -1,5 +1,6 @@
 part of 'send_invite.dart';
 
+@reflector
 class InviteCreateController extends Controller {
   late final User user;
   late final Organization organization;

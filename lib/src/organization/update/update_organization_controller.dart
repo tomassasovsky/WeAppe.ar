@@ -1,5 +1,6 @@
 part of 'update_organization.dart';
 
+@reflector
 class UpdateOrganizationController extends Controller {
   late final Organization organization;
   String? homePageUrl;

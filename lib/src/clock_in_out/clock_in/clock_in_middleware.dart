@@ -1,5 +1,6 @@
 part of 'clock_in.dart';
 
+@reflector
 class ClockInMiddleware extends Middleware {
   late final String organizationId;
   late final ObjectId userId;
