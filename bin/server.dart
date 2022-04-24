@@ -6,6 +6,7 @@ import 'package:dotenv/dotenv.dart' as dotenv;
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 
 FutureOr<void> main() async {
+  print('Starting server...');
   final envFileExists = File.fromUri(Uri.parse('.env')).existsSync();
   if (envFileExists) dotenv.load();
 
@@ -16,6 +17,8 @@ FutureOr<void> main() async {
 
   await dbService.open();
 
+  print('Connected to database.');
+
   final server = Server();
-  await server.init();
+  await server.init(printRoutes: false);
 }

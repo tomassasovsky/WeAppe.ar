@@ -10,10 +10,10 @@ class Server {
   FutureOr<void> init({bool printRoutes = true}) async {
     // initialize alfred:
     _app = Alfred(
-      onNotFound: (req, res) => throw AlfredException(
-        404,
-        {'message': '${req.requestedUri.path} not found'},
-      ),
+      // limit the maximum number of concurrent connections:
+      simultaneousProcessing: 15000,
+      logLevel: LogType.error,
+      onNotFound: onNotFoundHandler,
       onInternalError: errorHandler,
     )
       ..post(
@@ -106,6 +106,7 @@ class Server {
 
     // start the alfred server:
     await _app?.listen(8080);
+    print('Server started on: ${_app?.server?.address.host}:${_app?.server?.port}');
   }
 
   Future<void>? close() async {
@@ -118,4 +119,11 @@ class Server {
 FutureOr<dynamic> errorHandler(HttpRequest req, HttpResponse res) {
   res.statusCode = 500;
   return {'message': 'error not handled'};
+}
+
+FutureOr<dynamic> onNotFoundHandler(HttpRequest req, HttpResponse res) {
+  throw AlfredException(
+    404,
+    {'message': '${req.requestedUri.path} not found'},
+  );
 }
