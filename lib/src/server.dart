@@ -7,20 +7,19 @@ class Server {
   Server();
   Alfred? _app;
 
-  FutureOr<void> init() async {
+  FutureOr<void> init({bool printRoutes = true}) async {
     // initialize alfred:
     _app = Alfred(
-      onNotFound: (req, res) => throw AlfredException(
-        404,
-        {'message': '${req.requestedUri.path} not found'},
-      ),
+      // limit the maximum number of concurrent connections:
+      simultaneousProcessing: 15000,
+      logLevel: LogType.error,
+      onNotFound: onNotFoundHandler,
       onInternalError: errorHandler,
     )
       ..post(
         'user/register',
         UserRegisterController(),
         middleware: [
-          AuthenticationMiddleware(),
           UserRegisterMiddleware(),
         ],
       )
@@ -55,7 +54,7 @@ class Server {
         ],
       )
       ..put(
-        'organization/:id:[0-9a-z]+',
+        'organization/:id',
         UpdateOrganizationController(),
         middleware: [
           AuthenticationMiddleware(),
@@ -63,7 +62,7 @@ class Server {
         ],
       )
       ..post(
-        'organization/join/:refId:uuid',
+        'organization/join/:refId',
         JoinOrganizationController(),
         middleware: [
           AuthenticationMiddleware(),
@@ -78,7 +77,7 @@ class Server {
         ],
       )
       ..post(
-        'clock/in/:id:[0-9a-z]+',
+        'clock/in/:id',
         ClockInController(),
         middleware: [
           AuthenticationMiddleware(),
@@ -86,7 +85,7 @@ class Server {
         ],
       )
       ..post(
-        'clock/out/:id:[0-9a-z]+',
+        'clock/out/:id',
         ClockOutController(),
         middleware: [
           AuthenticationMiddleware(),
@@ -101,22 +100,30 @@ class Server {
           (req, res) => InviteCreateMiddleware().call,
         ],
       )
-      ..printRoutes()
       ..registerOnDoneListener(errorPluginOnDoneHandler);
+
+    if (printRoutes) _app?.printRoutes();
 
     // start the alfred server:
     await _app?.listen(8080);
+    print('Server started on: ${_app?.server?.address.host}:${_app?.server?.port}');
   }
 
-  Future<void>? restart() async {
+  Future<void>? close() async {
     try {
       await _app?.close();
     } catch (_) {}
-    await _app?.listen(8080);
   }
 }
 
 FutureOr<dynamic> errorHandler(HttpRequest req, HttpResponse res) {
   res.statusCode = 500;
   return {'message': 'error not handled'};
+}
+
+FutureOr<dynamic> onNotFoundHandler(HttpRequest req, HttpResponse res) {
+  throw AlfredException(
+    404,
+    {'message': '${req.requestedUri.path} not found'},
+  );
 }

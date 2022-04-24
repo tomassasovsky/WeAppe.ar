@@ -1,5 +1,6 @@
 part of 'create_organization.dart';
 
+@reflector
 class CreateOrganizationController extends Controller {
   late final String name;
   late final ObjectId userId;

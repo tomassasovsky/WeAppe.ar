@@ -1,12 +1,19 @@
 part of 'clock_in.dart';
 
+@reflector
 class ClockInMiddleware extends Middleware {
   late final String organizationId;
   late final ObjectId userId;
 
   @override
   FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
-    organizationId = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
+    organizationId = await InputVariableValidator<String>(
+      req,
+      'id',
+      source: Source.query,
+      regExp: Validators.mongoIdRegExp,
+      regExpErrorMessage: 'invalid organization id',
+    ).required();
     userId = req.store.get<ObjectId>('userId');
   }
 

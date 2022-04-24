@@ -1,5 +1,6 @@
 part of 'update.dart';
 
+@reflector
 class UserUpdateMiddleware extends Middleware {
   String? country;
   String? city;

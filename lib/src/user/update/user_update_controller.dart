@@ -1,5 +1,6 @@
 part of 'update.dart';
 
+@reflector
 class UserUpdateController extends Controller {
   late final User user;
   String? country;

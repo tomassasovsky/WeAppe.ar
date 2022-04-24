@@ -1,5 +1,6 @@
 part of 'update_organization.dart';
 
+@reflector
 class UpdateOrganizationMiddleware extends Middleware {
   late final String id;
   String? homePageUrl;
@@ -8,9 +9,15 @@ class UpdateOrganizationMiddleware extends Middleware {
 
   @override
   FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
-    id = await InputVariableValidator<String>(req, 'id', source: Source.query).required();
-    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional();
+    id = await InputVariableValidator<String>(
+      req,
+      'id',
+      source: Source.query,
+      regExp: Validators.mongoIdRegExp,
+      regExpErrorMessage: 'invalid organization id',
+    ).required();
     photo = await InputVariableValidator<HttpBodyFileUpload>(req, 'photo').optional();
+    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl', regExp: Validators.urlRegExp).optional();
     userId = req.store.get<ObjectId>('userId');
   }
 
@@ -33,7 +40,7 @@ class UpdateOrganizationMiddleware extends Middleware {
       });
     }
 
-    if ((photo == null) && (homePageUrl == null || homePageUrl == organization.homePageUrl)) {
+    if ((homePageUrl == null || homePageUrl == organization.homePageUrl) && photo == null) {
       res.reasonPhrase = 'nothingToUpdate';
       throw AlfredException(202, {
         'message': 'nothing to update!',

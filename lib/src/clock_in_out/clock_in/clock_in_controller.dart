@@ -1,5 +1,6 @@
 part of 'clock_in.dart';
 
+@reflector
 class ClockInController extends Controller {
   late final ObjectId userId;
   late final String organizationId;

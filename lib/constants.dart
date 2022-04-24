@@ -19,9 +19,4 @@ abstract class Constants {
         Platform.environment['INVITE_EMAIL_PORT'] ?? env['INVITE_EMAIL_PORT'] ?? '',
       ) ??
       465;
-
-  static final passwordRegExp = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-  static final emailRegExp = RegExp(
-    r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
-  );
 }

@@ -1,5 +1,6 @@
 part of 'current.dart';
 
+@reflector
 class UserCurrentController extends Controller {
   late final User user;
 

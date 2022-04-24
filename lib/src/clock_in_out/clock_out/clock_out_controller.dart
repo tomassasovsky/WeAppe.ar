@@ -1,5 +1,6 @@
 part of 'clock_out.dart';
 
+@reflector
 class ClockOutController extends Controller {
   late final ObjectId clockInOutId;
 

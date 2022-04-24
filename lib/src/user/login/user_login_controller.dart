@@ -1,5 +1,6 @@
 part of 'login.dart';
 
+@reflector
 class UserLoginController extends Controller {
   late final String email;
   late final String password;
@@ -52,11 +53,11 @@ class UserLoginController extends Controller {
       // save the refresh token in the database:
       await Services().tokens.addToDatabase(user.id, refreshToken);
 
-      return {
+      await res.json({
         'user': user.toJson(showPassword: false),
         'refreshToken': refreshToken,
         'accessToken': accessToken,
-      };
+      });
     } catch (e) {
       throw AlfredException(500, {
         'message': 'an unknown error occurred',

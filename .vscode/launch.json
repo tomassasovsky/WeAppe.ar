@@ -8,6 +8,8 @@
       "name": "[DEV] Launch Backend",
       "request": "launch",
       "type": "dart",
+      "console": "debugConsole",
+      "templateFor": "Debug",
       "program": "bin/server_dev.dart",
       "args": [
         "--enable-vm-service"

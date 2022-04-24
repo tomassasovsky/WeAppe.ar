@@ -1,5 +1,6 @@
 part of 'logout.dart';
 
+@reflector
 class UserLogoutController extends Controller {
   late final String token;
   @override

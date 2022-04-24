@@ -1,3 +1,5 @@
+// ignore_for_file: no_duplicate_case_values
+
 part of 'validators.dart';
 
 enum Source {
@@ -9,6 +11,7 @@ enum Source {
 enum ErrorType {
   parameterNotFound,
   parameterTypeMismatch,
+  customValidationFailed,
 }
 
 class InputVariableValidator<T> {
@@ -16,13 +19,19 @@ class InputVariableValidator<T> {
     this.req,
     this.name, {
     this.source = Source.body,
+    this.regExp,
+    this.regExpErrorMessage,
+    this.onEmpty,
   });
 
   final String name;
   final Source source;
   final HttpRequest req;
+  final RegExp? regExp;
+  final String? regExpErrorMessage;
+  final T? onEmpty;
 
-  FutureOr<T> required() async {
+  Future<T> required() async {
     final dynamic value = await _parseParameter();
 
     if (value == null || (value is String && value.isEmpty)) {
@@ -39,10 +48,19 @@ class InputVariableValidator<T> {
       _addError(value, ErrorType.parameterTypeMismatch);
       return _createInstanceOf();
     }
+
+    if (value is String && regExp != null) {
+      final isValid = regExp?.hasMatch(value) ?? true;
+      if (!isValid) {
+        _addError(value, ErrorType.customValidationFailed);
+        return _createInstanceOf();
+      }
+    }
+
     return value;
   }
 
-  FutureOr<T?> optional() async {
+  Future<T?> optional() async {
     final dynamic value = await _parseParameter();
 
     if (value == null || (value is String && value.isEmpty)) {
@@ -58,6 +76,15 @@ class InputVariableValidator<T> {
       _addError(value, ErrorType.parameterTypeMismatch);
       return null;
     }
+
+    if (value is String && regExp != null) {
+      final isValid = regExp?.hasMatch(value) ?? true;
+      if (!isValid) {
+        _addError(value, ErrorType.customValidationFailed);
+        return null;
+      }
+    }
+
     return value;
   }
 
@@ -88,11 +115,22 @@ class InputVariableValidator<T> {
     dynamic value,
     ErrorType errorType,
   ) {
-    final message = errorType == ErrorType.parameterNotFound ? 'Parameter not found' : 'Parameter is not of type $T';
+    late final String errorMessage;
+    switch (errorType) {
+      case ErrorType.parameterNotFound:
+        errorMessage = '$name is required';
+        break;
+      case ErrorType.customValidationFailed:
+        errorMessage = regExpErrorMessage ?? 'validation failed';
+        break;
+      case ErrorType.parameterTypeMismatch:
+        errorMessage = 'Parameter is not a valid $T';
+        break;
+    }
     req.errorStore.add(
       ValidationError(
         location: source.name,
-        msg: message,
+        msg: errorMessage,
         param: name,
       ),
     );
@@ -113,8 +151,7 @@ class InputVariableValidator<T> {
       case Map:
         return <dynamic, dynamic>{} as T;
       default:
-        final mirror = reflectClass(T);
-        return mirror.newInstance(Symbol.empty, <dynamic>[]).reflectee as T;
+        return onEmpty!;
     }
   }
 }

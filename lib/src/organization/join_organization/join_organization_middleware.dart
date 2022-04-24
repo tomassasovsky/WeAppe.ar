@@ -1,13 +1,20 @@
 part of 'join_organization.dart';
 
+@reflector
 class JoinOrganizationMiddleware extends Middleware {
   late final String refId;
-
   late final ObjectId userId;
 
   @override
   FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
-    refId = await InputVariableValidator<String>(req, 'refId', source: Source.query).required();
+    refId = await InputVariableValidator<String>(
+      req,
+      'refId',
+      source: Source.query,
+      regExp: Validators.uuidRegExp,
+      regExpErrorMessage: 'refId must be a string of alphanumeric characters. please make sure you have entered the correct refId',
+    ).required();
+
     userId = req.store.get<ObjectId>('userId');
   }
 

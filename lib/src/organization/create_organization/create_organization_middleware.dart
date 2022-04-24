@@ -1,5 +1,6 @@
 part of 'create_organization.dart';
 
+@reflector
 class CreateOrganizationMiddleware extends Middleware {
   late final String name;
   late final ObjectId userId;
@@ -8,7 +9,7 @@ class CreateOrganizationMiddleware extends Middleware {
   @override
   FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
     name = await InputVariableValidator<String>(req, 'name').required();
-    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl').optional();
+    homePageUrl = await InputVariableValidator<String>(req, 'homePageUrl', regExp: Validators.urlRegExp).optional();
     userId = req.store.get<ObjectId>('userId');
   }
 

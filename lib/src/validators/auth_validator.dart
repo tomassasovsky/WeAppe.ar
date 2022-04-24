@@ -1,5 +1,6 @@
 part of 'validators.dart';
 
+@reflector
 class AuthenticationMiddleware extends Middleware {
   late final String authHeader;
 
