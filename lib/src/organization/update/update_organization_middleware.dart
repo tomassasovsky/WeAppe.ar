@@ -40,7 +40,7 @@ class UpdateOrganizationMiddleware extends Middleware {
       });
     }
 
-    if ((photo == null) && (homePageUrl == null || homePageUrl == organization.homePageUrl) && photo == null) {
+    if ((homePageUrl == null || homePageUrl == organization.homePageUrl) && photo == null) {
       res.reasonPhrase = 'nothingToUpdate';
       throw AlfredException(202, {
         'message': 'nothing to update!',
