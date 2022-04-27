@@ -4,8 +4,13 @@ import 'package:alfred/alfred.dart';
 import 'package:backend/backend.dart';
 
 class Server {
-  Server();
+  static final Server _instance = Server._internal();
+  factory Server() => _instance;
+  Server._internal();
+
   Alfred? _app;
+  String? get host => _app?.server?.address.host;
+  int get port => _app?.server?.port ?? 8080;
 
   FutureOr<void> init({bool printRoutes = true}) async {
     // initialize alfred:
@@ -96,8 +101,8 @@ class Server {
         'invite/send/',
         InviteCreateController(),
         middleware: [
-          (req, res) => AuthenticationMiddleware().call,
-          (req, res) => InviteCreateMiddleware().call,
+          AuthenticationMiddleware(),
+          InviteCreateMiddleware(),
         ],
       )
       ..registerOnDoneListener(errorPluginOnDoneHandler);
@@ -105,8 +110,8 @@ class Server {
     if (printRoutes) _app?.printRoutes();
 
     // start the alfred server:
-    await _app?.listen(8080);
-    print('Server started on: ${_app?.server?.address.host}:${_app?.server?.port}');
+    await _app?.listen(port);
+    print('Server started on: $host:$port');
   }
 
   Future<void>? close() async {
@@ -122,8 +127,6 @@ FutureOr<dynamic> errorHandler(HttpRequest req, HttpResponse res) {
 }
 
 FutureOr<dynamic> onNotFoundHandler(HttpRequest req, HttpResponse res) {
-  throw AlfredException(
-    404,
-    {'message': '${req.requestedUri.path} not found'},
-  );
+  res.statusCode = 404;
+  return {'message': '${req.requestedUri.path} not found'};
 }

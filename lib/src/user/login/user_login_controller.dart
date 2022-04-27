@@ -35,23 +35,27 @@ class UserLoginController extends Controller {
         });
       }
 
-      final jwt = JWT(
+      final refreshToken = JWT(
         {'userId': user.id?.$oid},
         issuer: 'https://weappe.ar',
-      );
-
-      final accessToken = jwt.sign(
-        Services().jwtAccessSigner,
-        expiresIn: const Duration(days: 7),
-      );
-
-      final refreshToken = jwt.sign(
+      ).sign(
         Services().jwtRefreshSigner,
         expiresIn: const Duration(days: 90),
       );
 
       // save the refresh token in the database:
-      await Services().tokens.addToDatabase(user.id, refreshToken);
+      final refTokenResult = await Services().tokens.addToDatabase(user.id, refreshToken);
+
+      final accessToken = JWT(
+        {
+          'userId': user.id?.$oid,
+          'refreshTokenId': (refTokenResult.id as ObjectId?)?.$oid,
+        },
+        issuer: 'https://weappe.ar',
+      ).sign(
+        Services().jwtAccessSigner,
+        expiresIn: const Duration(days: 7),
+      );
 
       await res.json({
         'user': user.toJson(showPassword: false),

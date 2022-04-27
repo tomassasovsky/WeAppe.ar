@@ -33,8 +33,11 @@ class OrganizationService {
     required String name,
     required String userId,
   }) async {
+    final userIdAsObjectId = ObjectId.parse(userId);
     final rawOrganization = await dbService.organizationsCollection.findOne(
-      where.eq('name', name),
+      where.eq('name', name).and(
+            where.eq('employers', userIdAsObjectId).or(where.eq('admin', userIdAsObjectId)),
+          ),
     );
 
     if (rawOrganization == null || rawOrganization.isEmpty) {
@@ -43,10 +46,6 @@ class OrganizationService {
 
     final organization = Organization.fromJson(rawOrganization);
 
-    final userIdAsObjectId = ObjectId.parse(userId);
-    if (organization.hasAdminPrivileges(userIdAsObjectId)) {
-      return organization;
-    }
-    return null;
+    return organization;
   }
 }
