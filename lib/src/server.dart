@@ -105,6 +105,10 @@ class Server {
           InviteCreateMiddleware(),
         ],
       )
+      ..all(
+        '/',
+        (req, res) => res.redirect(Uri.https('github.com', '/tomassasovsky/WeAppe.ar')),
+      )
       ..registerOnDoneListener(errorPluginOnDoneHandler);
 
     if (printRoutes) _app?.printRoutes();
