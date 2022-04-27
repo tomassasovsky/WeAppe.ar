@@ -107,7 +107,7 @@ class Server {
       )
       ..all(
         '/',
-        (req, res) => res.redirect(Uri.https('github.com', '/tomassasovsky/WeAppe.ar')),
+        (req, res) => res.redirect(Uri.parse(Constants.redirectHomepage)),
       )
       ..registerOnDoneListener(errorPluginOnDoneHandler);
 
