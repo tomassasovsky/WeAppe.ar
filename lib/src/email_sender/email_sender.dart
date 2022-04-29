@@ -43,9 +43,11 @@ class EmailSenderService {
   }
 
   String _createHtml(String refId, String? message) {
+    final server = Server();
+
     final stringBuffer = StringBuffer()
       ..writeln("<h1>Here's your invite link:</h1>")
-      ..writeln('<p>https://${Constants.host}/organization/join/$refId</p>')
+      ..writeln('<p>https://${server.host}/organization/join/$refId</p>')
       ..writeln('<p>This link will expire in one week.</p>')
       ..writeln("<p>If you don't want to join the organization, you can ignore this email.</p>")
       ..writeln('<h2>$message</h2>')

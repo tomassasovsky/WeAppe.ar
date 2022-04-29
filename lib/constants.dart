@@ -15,6 +15,7 @@ abstract class Constants {
   static final inviteEmailPassword = (Platform.environment['INVITE_EMAIL_PASSWORD'] ?? env['INVITE_EMAIL_PASSWORD'])!;
   static final inviteEmailHost = (Platform.environment['INVITE_EMAIL_HOST'] ?? env['INVITE_EMAIL_HOST'])!;
   static final host = (Platform.environment['HOST'] ?? env['HOST'])!;
+  static final redirectHomepage = (Platform.environment['REDIRECT_HOMEPAGE'] ?? env['REDIRECT_HOMEPAGE'])!;
   static final inviteEmailPort = int.tryParse(
         Platform.environment['INVITE_EMAIL_PORT'] ?? env['INVITE_EMAIL_PORT'] ?? '',
       ) ??

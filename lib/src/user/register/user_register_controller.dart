@@ -29,22 +29,27 @@ class UserRegisterController extends Controller {
     try {
       await user.save();
 
-      final jwt = JWT(
+      final refreshToken = JWT(
         {'userId': user.id?.$oid},
         issuer: 'https://weappe.ar',
-      );
-
-      final accessToken = jwt.sign(
-        Services().jwtAccessSigner,
-        expiresIn: const Duration(days: 7),
-      );
-
-      final refreshToken = jwt.sign(
+      ).sign(
         Services().jwtRefreshSigner,
         expiresIn: const Duration(days: 90),
       );
 
-      await Services().tokens.addToDatabase(user.id, refreshToken);
+      // save the refresh token in the database:
+      final refTokenResult = await Services().tokens.addToDatabase(user.id, refreshToken);
+
+      final accessToken = JWT(
+        {
+          'userId': user.id?.$oid,
+          'refreshTokenId': (refTokenResult.id as ObjectId?)?.$oid,
+        },
+        issuer: 'https://weappe.ar',
+      ).sign(
+        Services().jwtAccessSigner,
+        expiresIn: const Duration(days: 7),
+      );
 
       res.statusCode = HttpStatus.ok;
       await res.json({

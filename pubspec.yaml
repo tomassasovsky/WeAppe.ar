@@ -14,6 +14,7 @@ dependencies:
   dotenv: ^3.0.0
   http: ^0.13.4
   http_parser: ^4.0.0
+  intl: ^0.17.0
   json_annotation: ^4.4.0
   mailer: ^5.1.0
   meta: ^1.7.0
