@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:backend/backend.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class DatabaseService {
@@ -22,6 +23,15 @@ class DatabaseService {
   DbCollection get clockInOutCollection => _db.collection('clockInOut');
   DbCollection get invitesCollection => _db.collection('invites');
 
-  FutureOr open() => _db.open();
+  Future<void> open() async {
+    await _db.open();
+    await _db.createCollection(
+      'organizations',
+      createCollectionOptions: CreateCollectionOptions(
+        validator: Organization.generic.jsonSchema,
+      ),
+    );
+  }
+
   FutureOr close() => _db.close();
 }

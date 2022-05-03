@@ -24,7 +24,7 @@ class RefreshTokenDB extends DBModel<RefreshTokenDB> {
     try {
       JWT.verify(
         refreshToken,
-        Services().jwtAccessSigner,
+        Services().jwtRefreshSigner,
       );
       return true;
     } catch (_) {
@@ -34,4 +34,15 @@ class RefreshTokenDB extends DBModel<RefreshTokenDB> {
 
   @override
   RefreshTokenDB fromJson(Map<String, dynamic> json) => RefreshTokenDB.fromJson(json);
+
+  static RefreshTokenDB get generic {
+    return RefreshTokenDB(
+      userId: ObjectId(),
+      refreshToken: '',
+    );
+  }
+
+  // TODO: add jsonSchema to RefreshTokenDB class
+  @override
+  Map<String, dynamic> get jsonSchema => <String, dynamic>{};
 }

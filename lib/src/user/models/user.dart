@@ -34,4 +34,17 @@ class User extends DBModel<User> {
 
   @override
   User fromJson(Map<String, dynamic> json) => User.fromJson(json);
+
+  static User get generic {
+    return User(
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+    );
+  }
+
+  // TODO: add jsonSchema to User class
+  @override
+  Map<String, dynamic> get jsonSchema => <String, dynamic>{};
 }
