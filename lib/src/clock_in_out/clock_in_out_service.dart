@@ -67,4 +67,19 @@ class ClockInOutService {
     };
     return result;
   }
+
+  Future<List<Map<String, dynamic>>?> getClockList({
+    required ObjectId organizationId,
+    required ObjectId userId,
+  }) async {
+    final result = await dbService.clockInOutCollection
+        .find(
+          where
+            ..eq('userId', userId)
+            ..eq('organizationId', organizationId)
+            ..sortBy('clockIn', descending: true),
+        )
+        .toList();
+    return result;
+  }
 }

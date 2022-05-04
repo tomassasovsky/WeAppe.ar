@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:alfred/alfred.dart';
 import 'package:backend/src/clock_in_out/clock_in/clock_in.dart';
+import 'package:backend/src/clock_in_out/clock_list/clock_out.dart';
 import 'package:backend/src/clock_in_out/clock_out/clock_out.dart';
 import 'package:backend/src/organization/create_organization/create_organization.dart';
 import 'package:backend/src/organization/update/update_organization.dart';
+import 'package:backend/src/test/test.dart';
 import 'package:backend/src/user/current/current.dart';
 import 'package:backend/src/user/user.dart';
 import 'package:backend/src/validators/auth_validator.dart';
@@ -70,10 +72,19 @@ class Server {
         const ClockOutController(),
         middleware: [const ClockOutMiddleware()],
       )
+      ..get(
+        'clock/list/:id:[0-9a-z]+',
+        const ClockListController(),
+        middleware: [const ClockListMiddleware()],
+      )
+      ..get(
+        'test',
+        const TestController(),
+      )
       ..printRoutes();
 
     // start the alfred server:
-    await app.listen(8080);
+    await app.listen(8000);
   }
 }
 

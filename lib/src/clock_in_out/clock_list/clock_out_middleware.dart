@@ -1,16 +1,14 @@
-part of 'clock_in.dart';
+part of 'clock_out.dart';
 
-class ClockInMiddleware extends AuthenticationMiddleware {
-  const ClockInMiddleware();
+class ClockListMiddleware extends AuthenticationMiddleware {
+  const ClockListMiddleware();
 
   @override
   Future<dynamic> call(HttpRequest req, HttpResponse res) async {
     await super.call(req, res);
-    final user = req.store.get<User>('user');
+    final userId = req.store.get<User>('user').id;
     final params = req.params;
     final organizationId = params['id'] as String?;
-
-    final userId = user.id;
 
     if (userId == null) {
       res.reasonPhrase = 'userIdNotFound';
@@ -44,18 +42,18 @@ class ClockInMiddleware extends AuthenticationMiddleware {
       });
     }
 
-    final clockInQuery = await services.clockInOuts.findLastClockIn(
-      organizationId: organizationId,
+    final clockInOuts = await services.clockInOuts.getClockList(
+      organizationId: ObjectId.parse(organizationId),
       userId: userId,
     );
 
-    if (clockInQuery != null && clockInQuery.clockOut == null) {
-      res.reasonPhrase = 'clockInOpen';
-      throw AlfredException(409, {
-        'message': 'you have a clock in open!',
+    if (clockInOuts == null || clockInOuts.isEmpty) {
+      res.reasonPhrase = 'clockInOutsNotFound';
+      throw AlfredException(404, {
+        'message': 'clock in outs not found!',
       });
     }
 
-    req.store.set('organizationId', organizationId);
+    req.store.set('clockInOuts', clockInOuts);
   }
 }
