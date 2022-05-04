@@ -14,7 +14,7 @@ class Organization extends DBModel<Organization> {
     this.imageUrl,
     this.employers,
     this.employees,
-  }) : super(database.organizationsCollection);
+  }) : super(DatabaseService().organizationsCollection);
 
   factory Organization.fromJson(Map<String, dynamic> json) => _$OrganizationFromJson(json);
 
@@ -28,6 +28,10 @@ class Organization extends DBModel<Organization> {
   bool containsUser(ObjectId userId) =>
       (employers?.contains(userId) ?? false) ||
       (employees?.contains(userId) ?? false) ||
+      (admin == userId);
+      
+  bool hasAdminPrivileges(ObjectId userId) =>
+      (employers?.contains(userId) ?? false) ||
       (admin == userId);
 
   @override

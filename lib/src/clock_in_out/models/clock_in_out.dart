@@ -13,10 +13,9 @@ class ClockInOut extends DBModel<ClockInOut> {
     required this.clockIn,
     this.clockOut,
     this.durationInMiliseconds,
-  }) : super(database.clockInOutCollection);
+  }) : super(DatabaseService().clockInOutCollection);
 
-  factory ClockInOut.fromJson(Map<String, dynamic> json) =>
-      _$ClockInOutFromJson(json);
+  factory ClockInOut.fromJson(Map<String, dynamic> json) => _$ClockInOutFromJson(json);
 
   final ObjectId userId;
   final ObjectId organizationId;

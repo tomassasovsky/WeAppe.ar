@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -10,7 +12,7 @@ abstract class DBModel<T> {
   @JsonKey(ignore: true)
   DbCollection collection;
 
-  Future<Map<String, Object?>?> save() async {
+  FutureOr<Map<String, Object?>?> save() async {
     if (id != null) {
       final result = await collection.modernUpdate(
         where.eq('_id', id),
@@ -28,7 +30,7 @@ abstract class DBModel<T> {
     }
   }
 
-  Future<List<T>> find([dynamic query]) async {
+  FutureOr<List<T>> find([dynamic query]) async {
     final data = await collection.find(query).toList();
     return data.map<T>(fromJson).toList();
   }
@@ -39,7 +41,7 @@ abstract class DBModel<T> {
     }
   }
 
-  Future<T?> findOne([dynamic query]) async {
+  FutureOr<T?> findOne([dynamic query]) async {
     final data = await collection.findOne(query);
     if (data != null) {
       if (data[r'\$err'] == null) {
@@ -52,14 +54,11 @@ abstract class DBModel<T> {
     }
   }
 
-  Future<T?> byId(dynamic id) {
+  FutureOr<T?> byId(dynamic id) {
     return findOne(<String, dynamic>{'_id': id});
   }
 
-  Future<void> delete() async {
-    await collection.remove(<String, dynamic>{'_id': id});
-    return;
-  }
+  FutureOr<void> delete() => collection.remove(<String, dynamic>{'_id': id});
 
   Map<String, dynamic> toJson();
   T fromJson(Map<String, dynamic> json);

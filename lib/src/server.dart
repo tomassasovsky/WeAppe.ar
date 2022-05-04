@@ -1,94 +1,136 @@
 import 'dart:async';
 
 import 'package:alfred/alfred.dart';
-import 'package:backend/src/clock_in_out/clock_in/clock_in.dart';
-import 'package:backend/src/clock_in_out/clock_list/clock_out.dart';
-import 'package:backend/src/clock_in_out/clock_out/clock_out.dart';
-import 'package:backend/src/organization/create_organization/create_organization.dart';
-import 'package:backend/src/organization/update/update_organization.dart';
-import 'package:backend/src/test/test.dart';
-import 'package:backend/src/user/current/current.dart';
-import 'package:backend/src/user/user.dart';
-import 'package:backend/src/validators/auth_validator.dart';
+import 'package:backend/backend.dart';
 
 class Server {
-  const Server();
+  static final Server _instance = Server._internal();
+  factory Server() => _instance;
+  Server._internal();
 
-  Future<void> init() async {
+  Alfred? _app;
+  String? get host => _app?.server?.address.host;
+  int get port => _app?.server?.port ?? 8080;
+
+  FutureOr<void> init({bool printRoutes = true}) async {
     // initialize alfred:
-    final app = Alfred(
-      onNotFound: (req, res) => throw AlfredException(
-        404,
-        {'message': '${req.requestedUri.path} not found'},
-      ),
+    _app = Alfred(
+      // limit the maximum number of concurrent connections:
+      simultaneousProcessing: 15000,
+      logLevel: LogType.error,
+      onNotFound: onNotFoundHandler,
       onInternalError: errorHandler,
     )
       ..post(
         'user/register',
-        const UserRegisterController(),
-        middleware: [const UserRegisterMiddleware()],
+        UserRegisterController(),
+        middleware: [
+          UserRegisterMiddleware(),
+        ],
       )
       ..put(
         'user/update',
-        const UserUpdateController(),
-        middleware: [const UserUpdateMiddleware()],
+        UserUpdateController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          UserUpdateMiddleware(),
+        ],
       )
       ..post(
         'user/login',
-        const UserLoginController(),
+        UserLoginController(),
         middleware: [
-          const UserLoginMiddleware(),
+          UserLoginMiddleware(),
         ],
       )
       ..get(
         'user',
-        const UserCurrentController(),
+        UserCurrentController(),
         middleware: [
-          const AuthenticationMiddleware(),
+          AuthenticationMiddleware(),
         ],
       )
       ..post(
         'organization',
-        const CreateOrganizationController(),
-        middleware: [const CreateOrganizationMiddleware()],
+        CreateOrganizationController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          CreateOrganizationMiddleware(),
+        ],
       )
       ..put(
-        'organization/:id:[0-9a-z]+',
-        const UpdateOrganizationController(),
-        middleware: [const UpdateOrganizationMiddleware()],
+        'organization/:id',
+        UpdateOrganizationController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          UpdateOrganizationMiddleware(),
+        ],
+      )
+      ..post(
+        'organization/join/:refId',
+        JoinOrganizationController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          JoinOrganizationMiddleware(),
+        ],
       )
       ..delete(
         'user/logout',
-        const UserLogoutController(),
-        middleware: [const AuthenticationMiddleware()],
+        UserLogoutController(),
+        middleware: [
+          AuthenticationMiddleware(),
+        ],
       )
       ..post(
-        'clock/in/:id:[0-9a-z]+',
-        const ClockInController(),
-        middleware: [const ClockInMiddleware()],
+        'clock/in/:id',
+        ClockInController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          ClockInMiddleware(),
+        ],
       )
       ..post(
-        'clock/out/:id:[0-9a-z]+',
-        const ClockOutController(),
-        middleware: [const ClockOutMiddleware()],
+        'clock/out/:id',
+        ClockOutController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          ClockOutMiddleware(),
+        ],
       )
-      ..get(
-        'clock/list/:id:[0-9a-z]+',
-        const ClockListController(),
-        middleware: [const ClockListMiddleware()],
+      ..post(
+        'invite/send/',
+        InviteCreateController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          InviteCreateMiddleware(),
+        ],
       )
-      ..get(
-        'test',
-        const TestController(),
+      ..all(
+        '/',
+        (req, res) => res.redirect(Uri.parse(Constants.redirectHomepage)),
       )
-      ..printRoutes();
+      ..registerOnDoneListener(errorPluginOnDoneHandler);
+
+    if (printRoutes) _app?.printRoutes();
 
     // start the alfred server:
-    await app.listen(8000);
+    await _app?.listen(port);
+    print('Server started on: $host:$port');
+  }
+
+  Future<void>? close() async {
+    try {
+      await _app?.close();
+    } catch (_) {}
   }
 }
 
 FutureOr<dynamic> errorHandler(HttpRequest req, HttpResponse res) {
   res.statusCode = 500;
   return {'message': 'error not handled'};
+}
+
+FutureOr<dynamic> onNotFoundHandler(HttpRequest req, HttpResponse res) {
+  res.statusCode = 404;
+  return {'message': '${req.requestedUri.path} not found'};
 }

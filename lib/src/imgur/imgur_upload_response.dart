@@ -1,8 +1,4 @@
-// To parse this JSON data, do
-//
-//     final imgurUploadResponse = imgurUploadResponseFromMap(jsonString);
-
-import 'dart:convert';
+part of 'imgur_client.dart';
 
 ImgurUploadResponse imgurUploadResponseFromMap(String str) => ImgurUploadResponse.fromMap(json.decode(str) as Map<String, dynamic>);
 

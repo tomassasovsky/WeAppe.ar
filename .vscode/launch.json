@@ -5,9 +5,21 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "weappear_backend",
+      "name": "[DEV] Launch Backend",
       "request": "launch",
-      "type": "dart"
+      "type": "dart",
+      "console": "debugConsole",
+      "templateFor": "Debug",
+      "program": "bin/server_dev.dart",
+      "args": [
+        "--enable-vm-service"
+      ],
+    },
+    {
+      "name": "[PROD] Launch Backend",
+      "request": "launch",
+      "type": "dart",
+      "program": "bin/server.dart",
     }
   ]
 }

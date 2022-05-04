@@ -1,12 +1,17 @@
 part of 'clock_out.dart';
 
-class ClockOutController {
-  const ClockOutController();
+@reflector
+class ClockOutController extends Controller {
+  late final ObjectId clockInOutId;
 
-  Future<dynamic> call(HttpRequest req, HttpResponse res) async {
-    final clockInOut = req.store.get<ClockInOut>('clockInOut');
+  @override
+  FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
+    clockInOutId = req.store.get<ObjectId>('clockInOutId');
+  }
 
-    final result = await services.clockInOuts.clockOut(clockInOut.id!);
+  @override
+  FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
+    final result = await Services().clockInOuts.clockOut(clockInOutId);
     final document = result.document;
 
     if (result.isFailure || document == null) {

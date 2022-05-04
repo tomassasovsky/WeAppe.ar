@@ -11,8 +11,8 @@ Organization _$OrganizationFromJson(Map<String, dynamic> json) => Organization(
       admin: json['admin'] as ObjectId,
       homePageUrl: json['homePageUrl'] as String?,
       imageUrl: json['imageUrl'] as String?,
-      employers: json['employers'] as List<ObjectId>?,
-      employees: json['employees'] as List<ObjectId>?,
+      employers: (json['employers'] as List?)?.cast<ObjectId>(),
+      employees: (json['employees'] as List?)?.cast<ObjectId>(),
     )..id = json['_id'] as ObjectId?;
 
 Map<String, dynamic> _$OrganizationToJson(

@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'package:backend/src/database/database.dart';
-import 'package:backend/src/organization/models/organization.dart';
+import 'package:backend/src/organization/organization.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class OrganizationService {
@@ -7,7 +9,7 @@ class OrganizationService {
 
   final DatabaseService dbService;
 
-  Future<Organization?> findOrganizationById(dynamic id) async {
+  FutureOr<Organization?> findOrganizationById(dynamic id) async {
     final objectId = (id is ObjectId) ? id : ObjectId.parse(id as String);
 
     final organization = await dbService.organizationsCollection.findOne(
@@ -21,26 +23,29 @@ class OrganizationService {
     return Organization.fromJson(organization);
   }
 
-  Future<WriteResult> addToDatabase(Organization organization) async {
+  FutureOr<WriteResult> addToDatabase(Organization organization) async {
     return dbService.organizationsCollection.insertOne(
       organization.toJson(),
     );
   }
 
-  Future<Organization?> findOrganizationByNameAndUserId({
+  FutureOr<Organization?> findOrganizationByNameAndUserId({
     required String name,
     required String userId,
   }) async {
-    final organization = await dbService.organizationsCollection.findOne(
-      where
-        ..eq('name', name)
-        ..eq('admin', userId),
+    final userIdAsObjectId = ObjectId.parse(userId);
+    final rawOrganization = await dbService.organizationsCollection.findOne(
+      where.eq('name', name).and(
+            where.eq('employers', userIdAsObjectId).or(where.eq('admin', userIdAsObjectId)),
+          ),
     );
 
-    if (organization == null || organization.isEmpty) {
+    if (rawOrganization == null || rawOrganization.isEmpty) {
       return null;
     }
 
-    return Organization.fromJson(organization);
+    final organization = Organization.fromJson(rawOrganization);
+
+    return organization;
   }
 }
