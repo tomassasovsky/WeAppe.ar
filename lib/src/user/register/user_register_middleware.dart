@@ -28,15 +28,6 @@ class UserRegisterMiddleware extends Middleware {
 
   @override
   FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
-    final savedUser = await Services().users.findUserByEmail(email: email);
-    final found = savedUser != null;
-    if (found) {
-      res.reasonPhrase = 'userExists';
-      throw AlfredException(400, {
-        'message': 'user with email already exists',
-      });
-    }
-
     req.store.set('email', email);
     req.store.set('password', password);
     req.store.set('firstName', firstName);

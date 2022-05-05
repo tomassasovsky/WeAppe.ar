@@ -1,5 +1,4 @@
-import 'package:backend/src/database/database.dart';
-import 'package:backend/src/db_model.dart';
+import 'package:backend/backend.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -44,7 +43,6 @@ class User extends DBModel<User> {
     );
   }
 
-  // TODO: add jsonSchema to User class
   @override
-  Map<String, dynamic> get jsonSchema => <String, dynamic>{};
+  Map<String, dynamic> get jsonSchema => _$UserJsonSchema;
 }

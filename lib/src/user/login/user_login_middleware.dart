@@ -25,9 +25,8 @@ class UserLoginMiddleware extends Middleware {
   FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     final found = await Services().users.findUserByEmail(email: email) != null;
     if (!found) {
-      res.reasonPhrase = 'invalidCredentials';
-      throw AlfredException(400, {
-        'message': 'credentials are invalid',
+      throw AlfredException(401, {
+        'message': 'Login failed; Invalid user ID or password',
       });
     }
 

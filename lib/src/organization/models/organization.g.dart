@@ -72,7 +72,7 @@ Map<String, dynamic> get _$OrganizationJsonSchema {
           'bsonType': 'array',
           'description': 'must be an array',
           'uniqueItems': true,
-          'items': {
+            'items': {
             'bsonType': 'objectId',
             'description': 'must be an objectId',
           },

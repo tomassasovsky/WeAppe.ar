@@ -19,7 +19,7 @@ class UserLoginController extends Controller {
 
     if (user == null || user.password.isEmpty) {
       throw AlfredException(401, {
-        'message': 'combination of email and password is invalid',
+        'message': 'Login failed; Invalid user ID or password.',
       });
     }
 
@@ -31,7 +31,7 @@ class UserLoginController extends Controller {
 
       if (isCorrect == false) {
         throw AlfredException(401, {
-          'message': 'Invalid password',
+          'message': 'Login failed; Invalid user ID or password',
         });
       }
 

@@ -37,3 +37,57 @@ Map<String, dynamic> _$UserToJson(User instance, [bool showPassword = true]) {
   writeNotNull('organizations', instance.organizations);
   return val;
 }
+
+Map<String, dynamic> get _$UserJsonSchema {
+  return <String, dynamic>{
+    r'$jsonSchema': {
+      'bsonType': 'object',
+      'properties': {
+        'email': {
+          'bsonType': 'string',
+          'pattern': Validators.emailRegExp.pattern,
+          'description': 'must be a string and is required',
+        },
+        'firstName': {
+          'bsonType': 'string',
+          'description': 'must be a string and is required',
+        },
+        'lastName': {
+          'bsonType': 'string',
+          'description': 'must be a string and is required',
+        },
+        'password': {
+          'bsonType': 'string',
+          'description': 'must be a string and is required',
+        },
+        'country': {
+          'bsonType': 'string',
+          'description': 'must be a string',
+        },
+        'city': {
+          'bsonType': 'string',
+          'description': 'must be a string',
+        },
+        'photo': {
+          'bsonType': 'string',
+          'description': 'must be a string',
+        },
+        'organizations': {
+          'bsonType': 'array',
+          'description': 'must be an array',
+          'uniqueItems': true,
+          'items': {
+            'bsonType': 'objectId',
+            'description': 'must be an objectId',
+          },
+        },
+      },
+      'required': [
+        'email',
+        'password',
+        'firstName',
+        'lastName',
+      ],
+    }
+  };
+}

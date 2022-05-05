@@ -12,13 +12,12 @@ abstract class DBModel<T> {
   @JsonKey(ignore: true)
   DbCollection collection;
 
-  FutureOr<Map<String, Object?>?> save() async {
+  FutureOr<WriteResult> save() async {
     if (id != null) {
-      final result = await collection.modernUpdate(
+      return await collection.replaceOne(
         where.eq('_id', id),
         toJson(),
       );
-      return result;
     } else {
       final payload = toJson();
       final result = await collection.insertOne(payload);
@@ -26,7 +25,7 @@ abstract class DBModel<T> {
       if (document != null) {
         id = result.document?['_id'] as ObjectId?;
       }
-      return result.document;
+      return result;
     }
   }
 

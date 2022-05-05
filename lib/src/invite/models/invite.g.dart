@@ -36,3 +36,44 @@ Map<String, dynamic> _$InviteToJson(Invite instance, bool showTimestamp) {
   if (showTimestamp) writeNotNull('timestamp', instance.timestamp);
   return val;
 }
+
+Map<String, dynamic> get _$InviteJsonSchema {
+  return <String, dynamic>{
+    r'$jsonSchema': {
+      'bsonType': 'object',
+      'properties': {
+        'emitter': {
+          'bsonType': 'objectId',
+          'description': 'must be a string and is required',
+        },
+        'recipient': {
+          'bsonType': 'string',
+          'description': 'must be a string and is required',
+        },
+        'organization': {
+          'bsonType': 'objectId',
+          'description': 'must be a string and is required',
+        },
+        'refId': {
+          'bsonType': 'string',
+          'description': 'must be a string and is required',
+        },
+        'message': {
+          'bsonType': 'string',
+          'description': 'must be a string and is required',
+        },
+        'userType': {
+          'enum': UserType.values.map((e) => e.name).toList(),
+          'description': 'must be a string and is required',
+        },
+      },
+      'required': [
+        'emitter',
+        'recipient',
+        'organization',
+        'refId',
+        'userType',
+      ],
+    }
+  };
+}

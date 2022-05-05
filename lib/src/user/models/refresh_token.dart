@@ -42,7 +42,6 @@ class RefreshTokenDB extends DBModel<RefreshTokenDB> {
     );
   }
 
-  // TODO: add jsonSchema to RefreshTokenDB class
   @override
-  Map<String, dynamic> get jsonSchema => <String, dynamic>{};
+  Map<String, dynamic> get jsonSchema => _$RefreshTokenJsonSchema;
 }

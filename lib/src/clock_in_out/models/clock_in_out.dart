@@ -37,7 +37,6 @@ class ClockInOut extends DBModel<ClockInOut> {
     );
   }
 
-  // TODO: add jsonSchema to ClockInOut class
   @override
-  Map<String, dynamic> get jsonSchema => <String, dynamic>{};
+  Map<String, dynamic> get jsonSchema => _$ClockInOutJsonSchema;
 }

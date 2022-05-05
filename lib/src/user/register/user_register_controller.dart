@@ -27,7 +27,13 @@ class UserRegisterController extends Controller {
     );
 
     try {
-      await user.save();
+      final result = await user.save();
+
+      if (result.isFailure) {
+        throw AlfredException(403, {
+          'message': 'Could not create user',
+        });
+      }
 
       final refreshToken = JWT(
         {'userId': user.id?.$oid},
@@ -57,6 +63,8 @@ class UserRegisterController extends Controller {
         'accessToken': accessToken,
         'refreshToken': refreshToken,
       });
+    } on AlfredException {
+      rethrow;
     } catch (e) {
       throw AlfredException(500, {
         'message': 'an unknown error occurred',

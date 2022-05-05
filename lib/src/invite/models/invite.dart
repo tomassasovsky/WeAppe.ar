@@ -52,7 +52,6 @@ class Invite extends DBModel<Invite> {
     );
   }
 
-  // TODO: add jsonSchema to Invite class
   @override
-  Map<String, dynamic> get jsonSchema => <String, dynamic>{};
+  Map<String, dynamic> get jsonSchema => _$InviteJsonSchema;
 }

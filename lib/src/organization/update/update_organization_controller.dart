@@ -23,7 +23,7 @@ class UpdateOrganizationController extends Controller {
     }
 
     final result = await organization.save();
-    if (result?['ok'] == 0) {
+    if (result.isFailure) {
       res.reasonPhrase = 'organizationNotUpdated';
       throw AlfredException(500, {
         'message': 'something went wrong while updating the organization. sorry!',
