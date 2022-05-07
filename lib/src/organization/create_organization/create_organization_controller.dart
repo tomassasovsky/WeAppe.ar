@@ -26,21 +26,28 @@ class CreateOrganizationController extends Controller {
     );
 
     try {
-      final result = await Services().organizations.addToDatabase(
-            organization,
-          );
+      final saveOrganizationResult = await organization.save();
+
+      if (saveOrganizationResult.isFailure) {
+        throw AlfredException(403, {
+          'message': 'Failed to create organization',
+        });
+      }
 
       user.organizations ??= [];
-      user.organizations?.add(result.id as ObjectId);
+      user.organizations?.add(organization.id as ObjectId);
 
-      await user.save();
+      final saveUserResult = await user.save();
+
+      if (saveUserResult.isFailure) {
+        throw AlfredException(500, {
+          'message': 'Failed to add the organization to the user',
+        });
+      }
 
       res.statusCode = 200;
       await res.json(
-        <String, dynamic>{
-          'id': result.id,
-          ...organization.toJson(),
-        },
+        organization.toJson(),
       );
     } catch (e) {
       throw AlfredException(500, {
