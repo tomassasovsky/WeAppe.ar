@@ -14,10 +14,14 @@ abstract class DBModel<T> {
 
   FutureOr<WriteResult> save() async {
     if (id != null) {
-      return await collection.replaceOne(
-        where.eq('_id', id),
-        toJson(),
+      final modifier = ModifierBuilder();
+      toJson().forEach(modifier.set);
+
+      final result = await collection.updateOne(
+        where.id(id!),
+        modifier,
       );
+      return result;
     } else {
       final payload = toJson();
       final result = await collection.insertOne(payload);
