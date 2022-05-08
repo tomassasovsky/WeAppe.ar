@@ -9,12 +9,12 @@ part of 'clock_in_out.dart';
 ClockInOut _$ClockInOutFromJson(Map<String, dynamic> json) => ClockInOut(
       userId: json['userId'] as ObjectId,
       organizationId: json['organizationId'] as ObjectId,
-      clockIn: DateTime.parse(json['clockIn'] as String),
-      clockOut: (json['clockOut'] as String?) != null ? DateTime.parse(json['clockOut'] as String) : null,
+      clockIn: json['clockIn'] as Timestamp,
+      clockOut: json['clockOut'] as Timestamp?,
       durationInMiliseconds: json['durationInMiliseconds'] as int?,
     )..id = json['_id'] as ObjectId?;
 
-Map<String, dynamic> _$ClockInOutToJson(ClockInOut instance) {
+Map<String, dynamic> _$ClockInOutToJson(ClockInOut instance, bool standardEncoding) {
   final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
@@ -26,8 +26,13 @@ Map<String, dynamic> _$ClockInOutToJson(ClockInOut instance) {
   writeNotNull('_id', instance.id);
   writeNotNull('userId', instance.userId);
   writeNotNull('organizationId', instance.organizationId);
-  writeNotNull('clockIn', instance.clockIn.toIso8601String());
-  writeNotNull('clockOut', instance.clockOut?.toIso8601String());
+  if (standardEncoding) {
+    writeNotNull('clockIn', instance.clockInAsDateTime.toIso8601String());
+    writeNotNull('clockOut', instance.clockOutAsDateTime?.toIso8601String());
+  } else {
+    writeNotNull('clockIn', instance.clockIn);
+    writeNotNull('clockOut', instance.clockOut);
+  }
   writeNotNull('durationInMiliseconds', instance.durationInMiliseconds);
   return val;
 }

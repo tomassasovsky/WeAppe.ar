@@ -37,18 +37,6 @@ class ClockInMiddleware extends Middleware {
       });
     }
 
-    final clockInQuery = await Services().clockInOuts.findLastClockIn(
-          organizationId: organizationId,
-          userId: userId,
-        );
-
-    if (clockInQuery != null && clockInQuery.clockOut != null) {
-      res.reasonPhrase = 'clockInOpen';
-      throw AlfredException(409, {
-        'message': 'you have a clock in open!',
-      });
-    }
-
     req.store.set('organizationId', organizationId);
   }
 }

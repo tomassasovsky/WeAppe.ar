@@ -27,7 +27,7 @@ class ClockOutController extends Controller {
 
     res.statusCode = 200;
     await res.json(
-      newClockInOut.toJson(),
+      newClockInOut.toJson(standardEncoding: true),
     );
   }
 }

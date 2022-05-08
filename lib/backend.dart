@@ -13,3 +13,4 @@ export 'package:backend/src/server.dart';
 export 'package:backend/src/services/services.dart';
 export 'package:backend/src/user/user.dart';
 export 'package:backend/src/validators/validators.dart';
+export 'package:backend/src/queue/queue_service.dart';
