@@ -23,12 +23,6 @@ class OrganizationService {
     return Organization.fromJson(organization);
   }
 
-  FutureOr<WriteResult> addToDatabase(Organization organization) async {
-    return dbService.organizationsCollection.insertOne(
-      organization.toJson(),
-    );
-  }
-
   FutureOr<Organization?> findOrganizationByNameAndUserId({
     required String name,
     required String userId,

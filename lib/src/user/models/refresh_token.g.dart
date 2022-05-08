@@ -25,3 +25,25 @@ Map<String, dynamic> _$RefreshTokenDBToJson(RefreshTokenDB instance) {
   writeNotNull('userId', instance.userId);
   return val;
 }
+
+Map<String, dynamic> get _$RefreshTokenJsonSchema {
+  return <String, dynamic>{
+    r'$jsonSchema': {
+      'bsonType': 'object',
+      'properties': {
+        'refreshToken': {
+          'bsonType': 'string',
+          'description': 'must be a string and is required',
+        },
+        'userId': {
+          'bsonType': 'objectId',
+          'description': 'must be an objectId and is required',
+        },
+      },
+      'required': [
+        'refreshToken',
+        'userId',
+      ],
+    }
+  };
+}

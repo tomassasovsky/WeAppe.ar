@@ -25,9 +25,10 @@ class UserUpdateController extends Controller {
 
     if (photo != null) {
       final result = await Services().imgurClient.uploadImage(photo!);
-      user.photo = result?.data?.link;
-
-      await user.save();
+      if (result?.success ?? false) {
+        user.photo = result?.data?.link;
+        await user.save();
+      }
     }
 
     // and return the user and tokens

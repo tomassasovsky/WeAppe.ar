@@ -12,11 +12,14 @@ abstract class DBModel<T> {
   @JsonKey(ignore: true)
   DbCollection collection;
 
-  FutureOr<Map<String, Object?>?> save() async {
+  FutureOr<WriteResult> save() async {
     if (id != null) {
-      final result = await collection.modernUpdate(
-        where.eq('_id', id),
-        toJson(),
+      final modifier = ModifierBuilder();
+      toJson().forEach(modifier.set);
+
+      final result = await collection.updateOne(
+        where.id(id!),
+        modifier,
       );
       return result;
     } else {
@@ -26,7 +29,7 @@ abstract class DBModel<T> {
       if (document != null) {
         id = result.document?['_id'] as ObjectId?;
       }
-      return result.document;
+      return result;
     }
   }
 
@@ -62,4 +65,5 @@ abstract class DBModel<T> {
 
   Map<String, dynamic> toJson();
   T fromJson(Map<String, dynamic> json);
+  Map<String, dynamic> get jsonSchema;
 }

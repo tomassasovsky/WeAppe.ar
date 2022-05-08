@@ -35,3 +35,53 @@ Map<String, dynamic> _$OrganizationToJson(
   writeNotNull('employees', instance.employees);
   return val;
 }
+
+Map<String, dynamic> get _$OrganizationJsonSchema {
+  return <String, dynamic>{
+    r'$jsonSchema': {
+      'bsonType': 'object',
+      'properties': {
+        'name': {
+          'bsonType': 'string',
+          'description': 'must be a string and is required',
+        },
+        'admin': {
+          'bsonType': 'objectId',
+          'description': 'must be a string and is required',
+        },
+        'homePageUrl': {
+          'bsonType': 'string',
+          'description': 'must be a string',
+          'pattern': Validators.urlRegExp.pattern,
+        },
+        'imageUrl': {
+          'bsonType': 'objectId',
+          'pattern': Validators.urlRegExp.pattern,
+          'description': 'must be a string',
+        },
+        'employers': {
+          'bsonType': 'array',
+          'description': 'must be an array',
+          'uniqueItems': true,
+          'items': {
+            'bsonType': 'objectId',
+            'description': 'must be an objectId',
+          },
+        },
+        'employees': {
+          'bsonType': 'array',
+          'description': 'must be an array',
+          'uniqueItems': true,
+            'items': {
+            'bsonType': 'objectId',
+            'description': 'must be an objectId',
+          },
+        },
+      },
+      'required': [
+        'name',
+        'admin',
+      ],
+    }
+  };
+}

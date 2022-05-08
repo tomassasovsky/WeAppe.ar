@@ -41,4 +41,17 @@ class Invite extends DBModel<Invite> {
 
   @override
   Invite fromJson(Map<String, dynamic> json) => Invite.fromJson(json);
+
+  static Invite get generic {
+    return Invite(
+      emitter: ObjectId(),
+      recipient: '',
+      organization: ObjectId(),
+      refId: '',
+      userType: UserType.employee,
+    );
+  }
+
+  @override
+  Map<String, dynamic> get jsonSchema => _$InviteJsonSchema;
 }

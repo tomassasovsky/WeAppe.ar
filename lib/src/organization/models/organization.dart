@@ -1,5 +1,4 @@
-import 'package:backend/src/database/database.dart';
-import 'package:backend/src/db_model.dart';
+import 'package:backend/backend.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -39,4 +38,9 @@ class Organization extends DBModel<Organization> {
 
   @override
   Organization fromJson(Map<String, dynamic> json) => Organization.fromJson(json);
+  
+  static Organization get generic => Organization(name: '', admin: ObjectId());
+
+  @override
+  Map<String, dynamic> get jsonSchema => _$OrganizationJsonSchema;
 }

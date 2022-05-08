@@ -17,9 +17,10 @@ class JoinOrganizationController extends Controller {
 
   @override
   FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
+    organization.employers ??= [];
     organization.employers?.add(userId);
     final result = await organization.save();
-    if (result == null) {
+    if (result.isFailure) {
       throw AlfredException(500, {
         'message': 'Could not join organization',
       });

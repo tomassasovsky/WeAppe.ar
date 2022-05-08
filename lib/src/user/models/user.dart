@@ -1,5 +1,4 @@
-import 'package:backend/src/database/database.dart';
-import 'package:backend/src/db_model.dart';
+import 'package:backend/backend.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -34,4 +33,16 @@ class User extends DBModel<User> {
 
   @override
   User fromJson(Map<String, dynamic> json) => User.fromJson(json);
+
+  static User get generic {
+    return User(
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+    );
+  }
+
+  @override
+  Map<String, dynamic> get jsonSchema => _$UserJsonSchema;
 }

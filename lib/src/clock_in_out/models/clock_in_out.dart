@@ -28,4 +28,15 @@ class ClockInOut extends DBModel<ClockInOut> {
 
   @override
   Map<String, dynamic> toJson() => _$ClockInOutToJson(this);
+
+  static ClockInOut get generic {
+    return ClockInOut(
+      userId: ObjectId(),
+      organizationId: ObjectId(),
+      clockIn: DateTime.now(),
+    );
+  }
+
+  @override
+  Map<String, dynamic> get jsonSchema => _$ClockInOutJsonSchema;
 }

@@ -29,7 +29,7 @@ class JoinOrganizationMiddleware extends Middleware {
     }
 
     if (invite.isExpired) {
-      throw AlfredException(404, {
+      throw AlfredException(403, {
         'message': 'invite is expired',
       });
     }
