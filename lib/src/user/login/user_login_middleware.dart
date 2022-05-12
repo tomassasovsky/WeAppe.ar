@@ -1,7 +1,6 @@
 part of 'login.dart';
 
-@reflector
-class UserLoginMiddleware extends Middleware {
+class UserLoginMiddleware extends Middleware<UserLoginMiddleware> {
   late final String email;
   late final String password;
 
@@ -33,4 +32,7 @@ class UserLoginMiddleware extends Middleware {
     req.store.set('email', email);
     req.store.set('password', password);
   }
+
+  @override
+  UserLoginMiddleware get newInstance => UserLoginMiddleware();
 }

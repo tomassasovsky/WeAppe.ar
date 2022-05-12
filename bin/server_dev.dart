@@ -5,12 +5,9 @@ import 'package:dotenv/dotenv.dart' as dotenv;
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:recharge/recharge.dart';
 
-import 'server.reflectable.dart';
-
 final server = Server();
 
 Future<void> main() async {
-  initializeReflectable(); // Set up reflection support.
   final envFileExists = File.fromUri(Uri.parse('.env')).existsSync();
   if (envFileExists) dotenv.load();
 

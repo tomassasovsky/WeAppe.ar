@@ -1,7 +1,6 @@
 part of 'update_organization.dart';
 
-@reflector
-class UpdateOrganizationMiddleware extends Middleware {
+class UpdateOrganizationMiddleware extends Middleware<UpdateOrganizationMiddleware> {
   late final String id;
   String? homePageUrl;
   HttpBodyFileUpload? photo;
@@ -51,4 +50,7 @@ class UpdateOrganizationMiddleware extends Middleware {
     req.store.set('organization', organization);
     req.store.set('photo', photo);
   }
+
+  @override
+  UpdateOrganizationMiddleware get newInstance => UpdateOrganizationMiddleware();
 }

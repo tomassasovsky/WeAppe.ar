@@ -1,7 +1,6 @@
 part of 'login.dart';
 
-@reflector
-class UserLoginController extends Controller {
+class UserLoginController extends Controller<UserLoginController> {
   late final String email;
   late final String password;
 
@@ -68,4 +67,7 @@ class UserLoginController extends Controller {
       });
     }
   }
+
+  @override
+  UserLoginController get newInstance => UserLoginController();
 }

@@ -1,7 +1,6 @@
 part of 'clock_in.dart';
 
-@reflector
-class ClockInController extends Controller {
+class ClockInController extends Controller<ClockInController> {
   late final ObjectId userId;
   late final String organizationId;
 
@@ -30,4 +29,7 @@ class ClockInController extends Controller {
     res.statusCode = 200;
     await res.json(clockIn.toJson(standardEncoding: true));
   }
+
+  @override
+  ClockInController get newInstance => ClockInController();
 }

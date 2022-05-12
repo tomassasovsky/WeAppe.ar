@@ -1,7 +1,6 @@
 part of 'update.dart';
 
-@reflector
-class UserUpdateMiddleware extends Middleware {
+class UserUpdateMiddleware extends Middleware<UserUpdateMiddleware> {
   String? country;
   String? city;
   HttpBodyFileUpload? photo;
@@ -26,4 +25,7 @@ class UserUpdateMiddleware extends Middleware {
     if (city != null) req.store.set('city', city);
     if (photo != null) req.store.set('photo', photo);
   }
+
+  @override
+  UserUpdateMiddleware get newInstance => UserUpdateMiddleware();
 }

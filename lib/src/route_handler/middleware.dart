@@ -1,7 +1,6 @@
 part of 'route_handler.dart';
 
-@reflector
-abstract class Middleware with RouteHandler {
+abstract class Middleware<T extends RouteHandler<T>> with RouteHandler<T> {
   @literal
   const Middleware();
 }

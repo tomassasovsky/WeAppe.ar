@@ -1,7 +1,6 @@
 part of 'create_organization.dart';
 
-@reflector
-class CreateOrganizationMiddleware extends Middleware {
+class CreateOrganizationMiddleware extends Middleware<CreateOrganizationMiddleware> {
   late final String name;
   late final ObjectId userId;
   String? homePageUrl;
@@ -27,4 +26,7 @@ class CreateOrganizationMiddleware extends Middleware {
     req.store.set('name', name);
     req.store.set('homePageUrl', homePageUrl);
   }
+
+  @override
+  CreateOrganizationMiddleware get newInstance => CreateOrganizationMiddleware();
 }

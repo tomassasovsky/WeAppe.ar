@@ -1,7 +1,6 @@
 part of 'register.dart';
 
-@reflector
-class UserRegisterMiddleware extends Middleware {
+class UserRegisterMiddleware extends Middleware<UserRegisterMiddleware> {
   late final String email;
   late final String password;
   late final String firstName;
@@ -33,4 +32,7 @@ class UserRegisterMiddleware extends Middleware {
     req.store.set('firstName', firstName);
     req.store.set('lastName', lastName);
   }
+
+  @override
+  UserRegisterMiddleware get newInstance => UserRegisterMiddleware();
 }

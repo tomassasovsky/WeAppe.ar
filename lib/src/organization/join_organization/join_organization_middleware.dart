@@ -1,7 +1,6 @@
 part of 'join_organization.dart';
 
-@reflector
-class JoinOrganizationMiddleware extends Middleware {
+class JoinOrganizationMiddleware extends Middleware<JoinOrganizationMiddleware> {
   late final String refId;
   late final ObjectId userId;
 
@@ -65,4 +64,7 @@ class JoinOrganizationMiddleware extends Middleware {
     req.store.set('invite', invite);
     req.store.set('organization', organization);
   }
+
+  @override
+  JoinOrganizationMiddleware get newInstance => JoinOrganizationMiddleware();
 }

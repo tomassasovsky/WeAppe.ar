@@ -1,7 +1,6 @@
 part of 'clock_out.dart';
 
-@reflector
-class ClockOutMiddleware extends Middleware {
+class ClockOutMiddleware extends Middleware<ClockOutMiddleware> {
   late final String organizationId;
   late final ObjectId userId;
 
@@ -44,4 +43,7 @@ class ClockOutMiddleware extends Middleware {
 
     req.store.set('clockInOutId', clockInId);
   }
+
+  @override
+  ClockOutMiddleware get newInstance => ClockOutMiddleware();
 }
