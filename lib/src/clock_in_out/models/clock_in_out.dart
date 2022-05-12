@@ -19,21 +19,24 @@ class ClockInOut extends DBModel<ClockInOut> {
 
   final ObjectId userId;
   final ObjectId organizationId;
-  final DateTime clockIn;
-  final DateTime? clockOut;
+  final Timestamp clockIn;
+  final Timestamp? clockOut;
   final int? durationInMiliseconds;
 
   @override
   ClockInOut fromJson(Map<String, dynamic> json) => _$ClockInOutFromJson(json);
 
   @override
-  Map<String, dynamic> toJson() => _$ClockInOutToJson(this);
+  Map<String, dynamic> toJson({bool standardEncoding = false}) => _$ClockInOutToJson(this, standardEncoding);
+
+  DateTime get clockInAsDateTime => DateTime.fromMillisecondsSinceEpoch(clockIn.seconds * 1000);
+  DateTime? get clockOutAsDateTime => clockOut == null ? null : DateTime.fromMillisecondsSinceEpoch(clockOut!.seconds * 1000);
 
   static ClockInOut get generic {
     return ClockInOut(
       userId: ObjectId(),
       organizationId: ObjectId(),
-      clockIn: DateTime.now(),
+      clockIn: Timestamp(DateTime.now().millisecondsSinceEpoch ~/ 1000),
     );
   }
 

@@ -1,12 +1,14 @@
 import 'dart:async';
 
-import 'package:backend/src/clock_in_out/clock_in_out.dart';
-import 'package:backend/src/database/database.dart';
+import 'package:alfred/alfred.dart';
+import 'package:backend/backend.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class ClockInOutService {
   ClockInOutService(this.dbService);
+
   final DatabaseService dbService;
+  final userQueue = UserQueue();
 
   FutureOr<ClockInOut?> findClockInById(
     ObjectId id,
@@ -41,18 +43,12 @@ class ClockInOutService {
     return ClockInOut.fromJson(clockIn);
   }
 
-  FutureOr<WriteResult> clockIn(
-    ClockInOut clockIn,
-  ) async {
-    return dbService.clockInOutCollection.insertOne(clockIn.toJson());
-  }
-
   FutureOr<WriteResult> clockOut(
     ObjectId id,
   ) async {
     final date = DateTime.now();
     final clockIn = await findClockInById(id);
-    final duration = date.difference(clockIn!.clockIn);
+    final duration = date.difference(clockIn!.clockInAsDateTime);
     final result = await dbService.clockInOutCollection.updateOne(
       where.id(id),
       modify
@@ -65,5 +61,27 @@ class ClockInOutService {
       'durationInMiliseconds': duration.inMilliseconds,
     };
     return result;
+  }
+
+  Future<WriteResult> clockIn(
+    ClockInOut clockInOut,
+  ) async {
+    return userQueue.addToQueue(clockInOut.userId, () async {
+      final clockInQuery = await findLastClockIn(
+        organizationId: clockInOut.organizationId,
+        userId: clockInOut.userId,
+      );
+
+      if (clockInQuery != null && clockInQuery.clockOut == null) {
+        throw AlfredException(409, {
+          'message': 'you have a clock in open!',
+        });
+      }
+
+      final result = await dbService.clockInOutCollection.insertOne(
+        clockInOut.toJson(),
+      );
+      return result;
+    });
   }
 }

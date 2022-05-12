@@ -16,18 +16,18 @@ class ClockInController extends Controller {
     final clockIn = ClockInOut(
       userId: userId,
       organizationId: ObjectId.parse(organizationId),
-      clockIn: DateTime.now(),
+      clockIn: Timestamp(DateTime.now().millisecondsSinceEpoch ~/ 1000),
     );
 
     final result = await Services().clockInOuts.clockIn(clockIn);
 
-    if (result.failure) {
-      throw AlfredException(500, {
-        'message': 'clockIn failed',
+    if (result.isFailure) {
+      throw AlfredException(403, {
+        'message': 'clockIn failed! maybe you have a clock in open?',
       });
     }
 
     res.statusCode = 200;
-    await res.json(clockIn.toJson());
+    await res.json(clockIn.toJson(standardEncoding: true));
   }
 }
