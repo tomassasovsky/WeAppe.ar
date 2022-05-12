@@ -1,7 +1,6 @@
 part of 'clock_in.dart';
 
-@reflector
-class ClockInMiddleware extends Middleware {
+class ClockInMiddleware extends Middleware<ClockInMiddleware> {
   late final String organizationId;
   late final ObjectId userId;
 
@@ -39,4 +38,7 @@ class ClockInMiddleware extends Middleware {
 
     req.store.set('organizationId', organizationId);
   }
+
+  @override
+  ClockInMiddleware get newInstance => ClockInMiddleware();
 }

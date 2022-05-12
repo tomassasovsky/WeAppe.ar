@@ -1,7 +1,6 @@
 part of 'validators.dart';
 
-@reflector
-class AuthenticationMiddleware extends Middleware {
+class AuthenticationMiddleware extends Middleware<AuthenticationMiddleware> {
   late final String authHeader;
 
   @override
@@ -74,4 +73,7 @@ class AuthenticationMiddleware extends Middleware {
       });
     }
   }
+
+  @override
+  AuthenticationMiddleware get newInstance => AuthenticationMiddleware();
 }

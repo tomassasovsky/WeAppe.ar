@@ -1,7 +1,6 @@
 part of 'create_organization.dart';
 
-@reflector
-class CreateOrganizationController extends Controller {
+class CreateOrganizationController extends Controller<CreateOrganizationController> {
   late final String name;
   late final ObjectId userId;
   late final User user;
@@ -55,4 +54,7 @@ class CreateOrganizationController extends Controller {
       });
     }
   }
+
+  @override
+  CreateOrganizationController get newInstance => CreateOrganizationController();
 }

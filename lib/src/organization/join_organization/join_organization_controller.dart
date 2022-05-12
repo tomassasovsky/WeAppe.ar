@@ -1,7 +1,6 @@
 part of 'join_organization.dart';
 
-@reflector
-class JoinOrganizationController extends Controller {
+class JoinOrganizationController extends Controller<JoinOrganizationController> {
   late final Organization organization;
   late final Invite invite;
   late final User user;
@@ -30,4 +29,7 @@ class JoinOrganizationController extends Controller {
 
     await res.json(organization);
   }
+
+  @override
+  JoinOrganizationController get newInstance => JoinOrganizationController();
 }

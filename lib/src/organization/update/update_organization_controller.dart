@@ -1,7 +1,6 @@
 part of 'update_organization.dart';
 
-@reflector
-class UpdateOrganizationController extends Controller {
+class UpdateOrganizationController extends Controller<UpdateOrganizationController> {
   late final Organization organization;
   String? homePageUrl;
   HttpBodyFileUpload? photo;
@@ -33,4 +32,7 @@ class UpdateOrganizationController extends Controller {
     res.statusCode = 200;
     await res.json(organization.toJson());
   }
+
+  @override
+  UpdateOrganizationController get newInstance => UpdateOrganizationController();
 }

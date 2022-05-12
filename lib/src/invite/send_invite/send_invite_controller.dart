@@ -1,7 +1,6 @@
 part of 'send_invite.dart';
 
-@reflector
-class InviteCreateController extends Controller {
+class InviteCreateController extends Controller<InviteCreateController> {
   late final User user;
   late final Organization organization;
   late final ObjectId organizationId;
@@ -61,4 +60,7 @@ class InviteCreateController extends Controller {
     final jsonInvite = invite.toJson(showTimestamp: false);
     await res.json(jsonInvite);
   }
+
+  @override
+  InviteCreateController get newInstance => InviteCreateController();
 }

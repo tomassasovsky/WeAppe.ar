@@ -1,7 +1,6 @@
 part of 'clock_out.dart';
 
-@reflector
-class ClockOutController extends Controller {
+class ClockOutController extends Controller<ClockOutController> {
   late final ObjectId clockInOutId;
 
   @override
@@ -30,4 +29,7 @@ class ClockOutController extends Controller {
       newClockInOut.toJson(standardEncoding: true),
     );
   }
+
+  @override
+  ClockOutController get newInstance => ClockOutController();
 }

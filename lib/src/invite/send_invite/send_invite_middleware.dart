@@ -1,7 +1,6 @@
 part of 'send_invite.dart';
 
-@reflector
-class InviteCreateMiddleware extends Middleware {
+class InviteCreateMiddleware extends Middleware<InviteCreateMiddleware> {
   InviteCreateMiddleware();
 
   late final String organizationName;
@@ -66,4 +65,7 @@ class InviteCreateMiddleware extends Middleware {
     req.store.set('message', message);
     req.store.set('userType', userType);
   }
+
+  @override
+  InviteCreateMiddleware get newInstance => InviteCreateMiddleware();
 }

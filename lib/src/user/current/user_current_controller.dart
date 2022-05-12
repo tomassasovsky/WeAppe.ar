@@ -1,7 +1,6 @@
 part of 'current.dart';
 
-@reflector
-class UserCurrentController extends Controller {
+class UserCurrentController extends Controller<UserCurrentController> {
   late final User user;
 
   @override
@@ -16,4 +15,7 @@ class UserCurrentController extends Controller {
       user.toJson(showPassword: false),
     );
   }
+
+  @override
+  UserCurrentController get newInstance => UserCurrentController();
 }

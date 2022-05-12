@@ -1,7 +1,6 @@
 part of 'register.dart';
 
-@reflector
-class UserRegisterController extends Controller {
+class UserRegisterController extends Controller<UserRegisterController> {
   late final String firstName;
   late final String lastName;
   late final String email;
@@ -71,4 +70,7 @@ class UserRegisterController extends Controller {
       });
     }
   }
+
+  @override
+  UserRegisterController get newInstance => UserRegisterController();
 }

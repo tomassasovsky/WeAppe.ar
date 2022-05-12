@@ -1,7 +1,6 @@
 part of 'logout.dart';
 
-@reflector
-class UserLogoutController extends Controller {
+class UserLogoutController extends Controller<UserLogoutController> {
   late final String token;
   @override
   FutureOr<void> defineVars(HttpRequest req, HttpResponse res) async {
@@ -22,4 +21,7 @@ class UserLogoutController extends Controller {
     res.statusCode = HttpStatus.ok;
     await res.close();
   }
+
+  @override
+  UserLogoutController get newInstance => UserLogoutController();
 }

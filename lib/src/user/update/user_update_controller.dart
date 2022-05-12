@@ -1,7 +1,6 @@
 part of 'update.dart';
 
-@reflector
-class UserUpdateController extends Controller {
+class UserUpdateController extends Controller<UserUpdateController> {
   late final User user;
   String? country;
   String? city;
@@ -37,4 +36,7 @@ class UserUpdateController extends Controller {
       user.toJson(showPassword: false),
     );
   }
+
+  @override
+  UserUpdateController get newInstance => UserUpdateController();
 }
