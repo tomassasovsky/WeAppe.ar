@@ -46,19 +46,19 @@ class ClockInOutService {
   FutureOr<WriteResult> clockOut(
     ObjectId id,
   ) async {
-    final date = DateTime.now();
+    final date = Timestamp();
     final clockIn = await findClockInById(id);
-    final duration = date.difference(clockIn!.clockInAsDateTime);
+    final duration = date.seconds - (clockIn?.clockIn.seconds ?? 0);
     final result = await dbService.clockInOutCollection.updateOne(
       where.id(id),
       modify
-        ..set('clockOut', date.toIso8601String())
-        ..set('durationInMiliseconds', duration.inMilliseconds),
+        ..set('clockOut', date)
+        ..set('durationInMiliseconds', duration * 1000),
     );
     result.document = <String, dynamic>{
-      ...clockIn.toJson(),
-      'clockOut': date.toIso8601String(),
-      'durationInMiliseconds': duration.inMilliseconds,
+      ...clockIn?.toJson() ?? <String, dynamic>{},
+      'clockOut': date,
+      'durationInMiliseconds': duration * 1000,
     };
     return result;
   }
