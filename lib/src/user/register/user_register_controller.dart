@@ -25,50 +25,42 @@ class UserRegisterController extends Controller<UserRegisterController> {
       password: hashedPassword,
     );
 
-    try {
-      final result = await user.save();
+    final result = await user.save();
 
-      if (result.isFailure) {
-        throw AlfredException(403, {
-          'message': 'Could not create user',
-        });
-      }
-
-      final refreshToken = JWT(
-        {'userId': user.id?.$oid},
-        issuer: 'https://weappe.ar',
-      ).sign(
-        Services().jwtRefreshSigner,
-        expiresIn: const Duration(days: 90),
-      );
-
-      // save the refresh token in the database:
-      final refTokenResult = await Services().tokens.addToDatabase(user.id, refreshToken);
-
-      final accessToken = JWT(
-        {
-          'userId': user.id?.$oid,
-          'refreshTokenId': (refTokenResult.id as ObjectId?)?.$oid,
-        },
-        issuer: 'https://weappe.ar',
-      ).sign(
-        Services().jwtAccessSigner,
-        expiresIn: const Duration(days: 7),
-      );
-
-      res.statusCode = HttpStatus.ok;
-      await res.json({
-        'user': user.toJson(showPassword: false),
-        'accessToken': accessToken,
-        'refreshToken': refreshToken,
-      });
-    } on AlfredException {
-      rethrow;
-    } catch (e) {
-      throw AlfredException(500, {
-        'message': 'an unknown error occurred',
+    if (result.isFailure) {
+      throw AlfredException(403, {
+        'message': 'Could not create user',
       });
     }
+
+    final refreshToken = JWT(
+      {'userId': user.id?.$oid},
+      issuer: 'https://weappe.ar',
+    ).sign(
+      Services().jwtRefreshSigner,
+      expiresIn: const Duration(days: 90),
+    );
+
+    // save the refresh token in the database:
+    final refTokenResult = await Services().tokens.addToDatabase(user.id, refreshToken);
+
+    final accessToken = JWT(
+      {
+        'userId': user.id?.$oid,
+        'refreshTokenId': (refTokenResult.id as ObjectId?)?.$oid,
+      },
+      issuer: 'https://weappe.ar',
+    ).sign(
+      Services().jwtAccessSigner,
+      expiresIn: const Duration(days: 7),
+    );
+
+    res.statusCode = HttpStatus.ok;
+    await res.json({
+      'user': user.toJson(showPassword: false),
+      'accessToken': accessToken,
+      'refreshToken': refreshToken,
+    });
   }
 
   @override

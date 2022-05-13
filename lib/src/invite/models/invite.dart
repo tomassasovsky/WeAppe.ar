@@ -9,7 +9,21 @@ enum UserType {
   @JsonValue('employer')
   employer,
   @JsonValue('employee')
-  employee,
+  employee;
+
+  factory UserType.fromString(
+    String? value, {
+    UserType orElse = UserType.employee,
+  }) {
+    switch (value) {
+      case 'employer':
+        return UserType.employer;
+      case 'employee':
+        return UserType.employee;
+      default:
+        return orElse;
+    }
+  }
 }
 
 @JsonSerializable(explicitToJson: true)

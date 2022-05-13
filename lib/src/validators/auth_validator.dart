@@ -28,50 +28,35 @@ class AuthenticationMiddleware extends Middleware<AuthenticationMiddleware> {
         token,
         Services().jwtAccessSigner,
       );
-    } catch (e) {
+    } on JWTError {
       throw AlfredException(401, {
         'message': 'invalid token',
       });
     }
 
-    try {
-      final rawUserId = (parsedToken.payload as Map<String, dynamic>)['userId'] as String;
-      final rawRefreshTokenId = (parsedToken.payload as Map<String, dynamic>)['refreshTokenId'] as String?;
+    final rawUserId = (parsedToken.payload as Map<String, dynamic>)['userId'] as String;
+    final rawRefreshTokenId = (parsedToken.payload as Map<String, dynamic>)['refreshTokenId'] as String?;
 
-      if (rawRefreshTokenId == null) {
-        throw AlfredException(401, {
-          'message': 'expired token. please login again',
-        });
-      }
+    final refreshTokenDb = await Services().tokens.findById(rawRefreshTokenId);
 
-      final refreshTokenDb = await Services().tokens.findById(rawRefreshTokenId);
-
-      if (refreshTokenDb == null || !refreshTokenDb.isValid) {
-        throw AlfredException(401, {
-          'message': 'no refresh token linked to this access token. please login again',
-        });
-      }
-
-      final user = await Services().users.findUserById(rawUserId);
-      final userId = user?.id;
-
-      if (user == null || userId == null) {
-        throw AlfredException(401, {
-          'message': 'user not found',
-        });
-      }
-
-      req.store.set('token', parsedToken);
-      req.store.set('user', user);
-      req.store.set('userId', userId);
-    } on AlfredException {
-      rethrow;
-    } catch (e) {
+    if (refreshTokenDb == null || !refreshTokenDb.isValid) {
       throw AlfredException(401, {
-        'message': 'unauthorized',
-        'error': e.toString(),
+        'message': 'no refresh token linked to this access token. please login again',
       });
     }
+
+    final user = await Services().users.findUserById(rawUserId);
+    final userId = user?.id;
+
+    if (user == null || userId == null) {
+      throw AlfredException(401, {
+        'message': 'user not found',
+      });
+    }
+
+    req.store.set('token', parsedToken);
+    req.store.set('user', user);
+    req.store.set('userId', userId);
   }
 
   @override

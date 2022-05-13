@@ -16,11 +16,13 @@ class UserUpdateController extends Controller<UserUpdateController> {
 
   @override
   FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
-    user
-      ..country = country ?? user.country
-      ..city = city ?? user.city;
+    if (city != null && country != null && user.country != country && user.city != city) {
+      user
+        ..country = country ?? user.country
+        ..city = city ?? user.city;
 
-    await user.save();
+      await user.save();
+    }
 
     if (photo != null) {
       final result = await Services().imgurClient.uploadImage(photo!);
