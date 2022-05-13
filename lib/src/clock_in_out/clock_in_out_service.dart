@@ -26,8 +26,11 @@ class ClockInOutService {
     required dynamic organizationId,
     required dynamic userId,
   }) async {
-    final _userId = (userId is ObjectId) ? userId : ObjectId.parse(userId as String);
-    final _organizationId = (organizationId is ObjectId) ? organizationId : ObjectId.parse(organizationId as String);
+    final _userId =
+        (userId is ObjectId) ? userId : ObjectId.parse(userId as String);
+    final _organizationId = (organizationId is ObjectId)
+        ? organizationId
+        : ObjectId.parse(organizationId as String);
 
     final clockIn = await dbService.clockInOutCollection.findOne(
       where
@@ -41,6 +44,42 @@ class ClockInOutService {
     }
 
     return ClockInOut.fromJson(clockIn);
+  }
+
+  FutureOr<List<ClockInOut>?> getListByUserId({
+    required dynamic userId,
+    required int qty,
+    required Timestamp from,
+    required Timestamp to,
+    dynamic organizationId,
+  }) async {
+    ObjectId? _organizationId;
+
+    final _userId =
+        (userId is ObjectId) ? userId : ObjectId.parse(userId as String);
+
+    final selector = where
+      ..eq('userId', _userId)
+      ..gte('clockIn', from)
+      ..lte('clockOut', to)
+      ..sortBy('clockIn', descending: true)
+      ..limit(qty);
+
+    if (organizationId != null) {
+      _organizationId = (organizationId is ObjectId)
+          ? organizationId
+          : ObjectId.parse(organizationId as String);
+      selector..eq('organizationId', _organizationId);
+    }
+
+    final clockList =
+        await dbService.clockInOutCollection.find(selector).toList();
+
+    if (clockList.isEmpty) {
+      return null;
+    }
+
+    return clockList.map(ClockInOut.fromJson).toList();
   }
 
   FutureOr<WriteResult> clockOut(

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:alfred/alfred.dart';
 import 'package:backend/backend.dart';
+import 'package:backend/src/clock_in_out/clock_list/clock_list.dart';
 
 class Server {
   static final Server _instance = Server._internal();
@@ -95,6 +96,14 @@ class Server {
         middleware: [
           AuthenticationMiddleware(),
           ClockOutMiddleware(),
+        ],
+      )
+      ..get(
+        'clock/list',
+        ClockListController(),
+        middleware: [
+          AuthenticationMiddleware(),
+          ClockListMiddleware(),
         ],
       )
       ..post(
