@@ -25,7 +25,7 @@ class ClockListController extends Controller<ClockListController> {
           to: to,
         );
     res.statusCode = 200;
-    return res
+    await res
         .json(result?.map((e) => e.toJson(standardEncoding: true)).toList());
   }
 
