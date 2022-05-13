@@ -32,7 +32,14 @@ class InputVariableValidator<T> {
   final T? onEmpty;
 
   Future<T> required() async {
-    final dynamic value = await _parseParameter();
+    dynamic value;
+    try {
+      value = await _parseParameter();
+    } catch (_) {
+      throw AlfredException(400, {
+        'message': 'Empty body',
+      });
+    }
 
     if (value == null || (value is String && value.isEmpty)) {
       _addError(value, ErrorType.parameterNotFound);
@@ -61,7 +68,12 @@ class InputVariableValidator<T> {
   }
 
   Future<T?> optional() async {
-    final dynamic value = await _parseParameter();
+    dynamic value;
+    try {
+      value = await _parseParameter();
+    } catch (_) {
+      return null;
+    }
 
     if (value == null || (value is String && value.isEmpty)) {
       return null;
