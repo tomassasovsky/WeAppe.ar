@@ -9,9 +9,7 @@ class UsersService {
 
   final DatabaseService dbService;
 
-  FutureOr<User?> findUserByEmail({
-    required String email,
-  }) async {
+  FutureOr<User?> findUserByEmail(String email) async {
     final user = await dbService.usersCollection.findOne(where.eq('email', email));
 
     if (user == null || user.isEmpty) {

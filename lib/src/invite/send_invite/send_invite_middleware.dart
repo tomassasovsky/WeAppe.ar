@@ -20,10 +20,7 @@ class InviteCreateMiddleware extends Middleware<InviteCreateMiddleware> {
 
   @override
   FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
-    final userType = UserType.values.firstWhere(
-      (e) => e.name == rawUserType,
-      orElse: () => UserType.employee,
-    );
+    final userType = UserType.fromString(rawUserType);
 
     final organization = await Services().organizations.findOrganizationByNameAndUserId(
           userId: userId.$oid,
@@ -38,7 +35,7 @@ class InviteCreateMiddleware extends Middleware<InviteCreateMiddleware> {
       });
     }
 
-    final userWithEmail = await Services().users.findUserByEmail(email: recipientEmail);
+    final userWithEmail = await Services().users.findUserByEmail(recipientEmail);
     if (userWithEmail != null) {
       if ((organization.employees ?? []).contains(userWithEmail.id) && userType == UserType.employee) {
         throw AlfredException(400, {
