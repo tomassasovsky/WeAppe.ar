@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:backend/backend.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -15,6 +17,7 @@ class User extends DBModel<User> {
     this.city,
     this.photo,
     this.organizations,
+    this.activationDate,
   }) : super(DatabaseService().usersCollection);
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -27,9 +30,26 @@ class User extends DBModel<User> {
   String? city;
   String? photo;
   List<ObjectId>? organizations;
+  Timestamp? activationDate;
+
+  DateTime? get _activationDateAsDateTime => activationDate == null ? null : DateTime.fromMillisecondsSinceEpoch(activationDate!.seconds * 1000);
+  bool get isActive => activationDate != null;
+
+  FutureOr<WriteResult> activate() async {
+    activationDate = Timestamp();
+    return await save();
+  }
 
   @override
-  Map<String, dynamic> toJson({bool showPassword = true}) => _$UserToJson(this, showPassword);
+  Map<String, dynamic> toJson({
+    bool showPassword = true,
+    bool standardEncoding = false,
+  }) =>
+      _$UserToJson(
+        this,
+        showPassword: showPassword,
+        standardEncoding: standardEncoding,
+      );
 
   @override
   User fromJson(Map<String, dynamic> json) => User.fromJson(json);

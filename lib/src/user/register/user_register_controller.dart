@@ -16,51 +16,64 @@ class UserRegisterController extends Controller<UserRegisterController> {
 
   @override
   FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
-    final hashedPassword = DBCrypt().hashpw(password, DBCrypt().gensalt());
+    try {
+      final foundUser = await Services().users.findUserByEmail(email);
 
-    final user = User(
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
-      password: hashedPassword,
-    );
+      if (foundUser?.isActive ?? false) {
+        res.statusCode = HttpStatus.ok;
+        return await res.close();
+      }
 
-    final result = await user.save();
+      await foundUser?.delete();
 
-    if (result.isFailure) {
-      throw AlfredException(403, {
-        'message': 'Could not create user',
+      final hashedPassword = DBCrypt().hashpw(password, DBCrypt().gensalt());
+      final user = User(
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        password: hashedPassword,
+      );
+
+      final result = await user.save();
+
+      if (result.isFailure) {
+        throw AlfredException(403, {
+          'message': 'Could not create user',
+        });
+      }
+
+      final userActivation = UserActivation(
+        activationKey: Uuid().v4(),
+        userId: user.id!,
+      );
+
+      final activationResult = await userActivation.save();
+      if (activationResult.isFailure) {
+        throw AlfredException(500, {
+          'message': 'Could not create user activation',
+        });
+      }
+
+      final emailSent = await Services().emailSender.sendRegisterVerificationEmail(
+            to: user.email,
+            activationKey: userActivation.activationKey,
+          );
+
+      if (!emailSent) {
+        throw AlfredException(500, {
+          'message': 'Could not send activation email',
+        });
+      }
+
+      res.statusCode = HttpStatus.ok;
+      await res.close();
+    } on AlfredException {
+      rethrow;
+    } catch (e) {
+      throw AlfredException(500, {
+        'message': 'an unknown error occurred',
       });
     }
-
-    final refreshToken = JWT(
-      {'userId': user.id?.$oid},
-      issuer: 'https://weappe.ar',
-    ).sign(
-      Services().jwtRefreshSigner,
-      expiresIn: const Duration(days: 90),
-    );
-
-    // save the refresh token in the database:
-    final refTokenResult = await Services().tokens.addToDatabase(user.id, refreshToken);
-
-    final accessToken = JWT(
-      {
-        'userId': user.id?.$oid,
-        'refreshTokenId': (refTokenResult.id as ObjectId?)?.$oid,
-      },
-      issuer: 'https://weappe.ar',
-    ).sign(
-      Services().jwtAccessSigner,
-      expiresIn: const Duration(days: 7),
-    );
-
-    res.statusCode = HttpStatus.ok;
-    await res.json({
-      'user': user.toJson(showPassword: false),
-      'accessToken': accessToken,
-      'refreshToken': refreshToken,
-    });
   }
 
   @override

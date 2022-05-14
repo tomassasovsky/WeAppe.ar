@@ -35,7 +35,7 @@ class UserUpdateController extends Controller<UserUpdateController> {
     // and return the user and tokens
     res.statusCode = HttpStatus.ok;
     await res.json(
-      user.toJson(showPassword: false),
+      user.toJson(showPassword: false, standardEncoding: true),
     );
   }
 
