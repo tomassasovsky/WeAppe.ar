@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:backend/backend.dart';
 import 'package:backend/src/user/models/refresh_token.dart';
+import 'package:backend/src/user/models/user_activation.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class DatabaseService {
@@ -19,6 +20,7 @@ class DatabaseService {
   late Db _db;
 
   DbCollection get usersCollection => _db.collection('users');
+  DbCollection get userActivationCollection => _db.collection('userActivation');
   DbCollection get refreshTokensCollection => _db.collection('refreshTokens');
   DbCollection get organizationsCollection => _db.collection('organizations');
   DbCollection get clockInOutCollection => _db.collection('clockInOut');
@@ -47,6 +49,10 @@ class DatabaseService {
     await _db.createCollection(
       'invites',
       createCollectionOptions: CreateCollectionOptions(validator: Invite.generic.jsonSchema),
+    );
+    await _db.createCollection(
+      'userActivation',
+      createCollectionOptions: CreateCollectionOptions(validator: UserActivation.generic.jsonSchema),
     );
 
     // create indexes

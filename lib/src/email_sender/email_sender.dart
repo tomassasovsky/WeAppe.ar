@@ -25,24 +25,6 @@ class EmailSenderService {
     required String refId,
     String? message,
   }) async {
-    final email = Message()
-      ..from = Address(
-        Constants.inviteEmailAccount,
-        Constants.inviteEmailUserName,
-      )
-      ..recipients.add(to)
-      ..subject = 'Invitation to join the ${organization.name} organization'
-      ..html = _createHtml(refId, message);
-
-    try {
-      await connection.send(email);
-      return true;
-    } on MailerException catch (_) {
-      return false;
-    }
-  }
-
-  String _createHtml(String refId, String? message) {
     final server = Server();
 
     final stringBuffer = StringBuffer()
@@ -54,6 +36,51 @@ class EmailSenderService {
       ..writeln('<p>Thanks,</p>')
       ..writeln('<p>${Constants.inviteEmailUserName}</p>');
 
-    return stringBuffer.toString();
+    final email = Message()
+      ..from = Address(
+        Constants.inviteEmailAccount,
+        Constants.inviteEmailUserName,
+      )
+      ..recipients.add(to)
+      ..subject = 'Invitation to join the ${organization.name} organization'
+      ..html = stringBuffer.toString();
+
+    try {
+      await connection.send(email);
+      return true;
+    } on MailerException catch (_) {
+      return false;
+    }
+  }
+
+  FutureOr<bool> sendRegisterVerificationEmail({
+    required String to,
+    required String activationKey,
+  }) async {
+    final server = Server();
+
+    final stringBuffer = StringBuffer()
+      ..writeln("<h1>Here's your activation link:</h1>")
+      ..writeln('<p>https://${server.host}/user/activate/$activationKey</p>')
+      ..writeln('<p>This link will expire in one week.</p>')
+      ..writeln("<p>If you don't want to activate this account, you can ignore this email.</p>")
+      ..writeln('<p>Thanks,</p>')
+      ..writeln('<p>${Constants.inviteEmailUserName}</p>');
+
+    final email = Message()
+      ..from = Address(
+        Constants.inviteEmailAccount,
+        Constants.inviteEmailUserName,
+      )
+      ..recipients.add(to)
+      ..subject = 'Activate Your WeAppe.ar Account'
+      ..html = stringBuffer.toString();
+
+    try {
+      await connection.send(email);
+      return true;
+    } on MailerException catch (_) {
+      return false;
+    }
   }
 }

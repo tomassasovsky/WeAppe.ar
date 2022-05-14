@@ -15,9 +15,10 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       city: json['city'] as String?,
       photo: json['photo'] as String?,
       organizations: (json['organizations'] as List?)?.cast<ObjectId>(),
+      activationDate: json['activationDate'] as Timestamp?,
     )..id = json['_id'] as ObjectId?;
 
-Map<String, dynamic> _$UserToJson(User instance, [bool showPassword = true]) {
+Map<String, dynamic> _$UserToJson(User instance, {required bool showPassword, required bool standardEncoding}) {
   final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
@@ -30,11 +31,16 @@ Map<String, dynamic> _$UserToJson(User instance, [bool showPassword = true]) {
   writeNotNull('firstName', instance.firstName);
   writeNotNull('lastName', instance.lastName);
   writeNotNull('email', instance.email);
-  if (showPassword) val['password'] = instance.password;
+  if (showPassword) writeNotNull('password', instance.password);
   writeNotNull('country', instance.country);
   writeNotNull('city', instance.city);
   writeNotNull('photo', instance.photo);
   writeNotNull('organizations', instance.organizations);
+  if (standardEncoding) {
+    writeNotNull('activationDate', instance._activationDateAsDateTime?.toIso8601String());
+  } else {
+    writeNotNull('activationDate', instance.activationDate);
+  }
   return val;
 }
 
@@ -80,6 +86,10 @@ Map<String, dynamic> get _$UserJsonSchema {
             'bsonType': 'objectId',
             'description': 'must be an objectId',
           },
+        },
+        'activationDate': {
+          'bsonType': 'timestamp',
+          'description': 'must be a timestamp',
         },
       },
       'required': [

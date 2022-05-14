@@ -29,6 +29,13 @@ class Server {
           UserRegisterMiddleware(),
         ],
       )
+      ..get(
+        'user/activate/:activationKey',
+        ActivateUserController(),
+        middleware: [
+          ActivateUserMiddleware(),
+        ],
+      )
       ..put(
         'user/update',
         UserUpdateController(),

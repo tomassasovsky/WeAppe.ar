@@ -12,7 +12,7 @@ class UserCurrentController extends Controller<UserCurrentController> {
   FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
     res.statusCode = 200;
     await res.json(
-      user.toJson(showPassword: false),
+      user.toJson(showPassword: false, standardEncoding: true),
     );
   }
 

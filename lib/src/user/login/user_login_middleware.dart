@@ -22,6 +22,13 @@ class UserLoginMiddleware extends Middleware<UserLoginMiddleware> {
 
   @override
   FutureOr<dynamic> run(HttpRequest req, HttpResponse res) async {
+    final found = await Services().users.findUserByEmail(email);
+    if (found == null || !found.isActive) {
+      throw AlfredException(401, {
+        'message': 'Login failed; Invalid user ID or password',
+      });
+    }
+
     req.store.set('email', email);
     req.store.set('password', password);
   }
