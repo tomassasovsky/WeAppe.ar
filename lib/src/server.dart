@@ -10,7 +10,7 @@ class Server {
   Server._internal();
 
   Alfred? _app;
-  String? get host => _app?.server?.address.host;
+  String get host => Constants.host;
   int get port => _app?.server?.port ?? 8080;
 
   FutureOr<void> init({bool printRoutes = true}) async {
@@ -22,6 +22,7 @@ class Server {
       onNotFound: onNotFoundHandler,
       onInternalError: errorHandler,
     )
+      ..all('*', cors())
       ..post(
         'user/register',
         UserRegisterController(),
