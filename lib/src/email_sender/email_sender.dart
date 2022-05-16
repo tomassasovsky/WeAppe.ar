@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:backend/backend.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'package:retry/retry.dart';
 
 class EmailSenderService {
   EmailSenderService();
@@ -15,9 +16,7 @@ class EmailSenderService {
     port: Constants.inviteEmailPort,
   );
 
-  late PersistentConnection connection = PersistentConnection(
-    smtpServer,
-  );
+  late PersistentConnection connection = PersistentConnection(smtpServer);
 
   FutureOr<bool> sendInvite({
     required String to,
@@ -25,16 +24,16 @@ class EmailSenderService {
     required String refId,
     String? message,
   }) async {
-    final server = Server();
-
-    final stringBuffer = StringBuffer()
-      ..writeln("<h1>Here's your invite link:</h1>")
-      ..writeln('<p>https://${server.host}/organization/join/$refId</p>')
-      ..writeln('<p>This link will expire in one week.</p>')
-      ..writeln("<p>If you don't want to join the organization, you can ignore this email.</p>")
-      ..writeln('<h2>$message</h2>')
-      ..writeln('<p>Thanks,</p>')
-      ..writeln('<p>${Constants.inviteEmailUserName}</p>');
+    final subject = 'Invitation to join the ${organization.name} organization';
+    final htmlMessage = (StringBuffer()
+          ..writeln("<h1>Here's your invite link:</h1>")
+          ..writeln('<p>https://${Constants.host}/organization/join/$refId</p>')
+          ..writeln('<p>This link will expire in one week.</p>')
+          ..writeln("<p>If you don't want to join the organization, you can ignore this email.</p>")
+          ..writeln('<h2>$message</h2>')
+          ..writeln('<p>Thanks,</p>')
+          ..writeln('<p>${Constants.inviteEmailUserName}</p>'))
+        .toString();
 
     final email = Message()
       ..from = Address(
@@ -42,13 +41,18 @@ class EmailSenderService {
         Constants.inviteEmailUserName,
       )
       ..recipients.add(to)
-      ..subject = 'Invitation to join the ${organization.name} organization'
-      ..html = stringBuffer.toString();
+      ..subject = subject
+      ..html = htmlMessage;
 
     try {
-      await connection.send(email);
-      return true;
-    } on MailerException catch (_) {
+      return await retry<bool>(
+        () {
+          connection.send(email);
+          return true;
+        },
+        maxAttempts: 3,
+      );
+    } catch (_) {
       return false;
     }
   }
@@ -57,15 +61,15 @@ class EmailSenderService {
     required String to,
     required String activationKey,
   }) async {
-    final server = Server();
-
-    final stringBuffer = StringBuffer()
-      ..writeln("<h1>Here's your activation link:</h1>")
-      ..writeln('<p>https://${server.host}/user/activate/$activationKey</p>')
-      ..writeln('<p>This link will expire in one week.</p>')
-      ..writeln("<p>If you don't want to activate this account, you can ignore this email.</p>")
-      ..writeln('<p>Thanks,</p>')
-      ..writeln('<p>${Constants.inviteEmailUserName}</p>');
+    final subject = 'Activate Your WeAppe.ar Account';
+    final htmlMessage = (StringBuffer()
+          ..writeln("<h1>Here's your activation link:</h1>")
+          ..writeln('<p>https://${Constants.host}/user/activate/$activationKey</p>')
+          ..writeln('<p>This link will expire in one week.</p>')
+          ..writeln("<p>If you don't want to activate this account, you can ignore this email.</p>")
+          ..writeln('<p>Thanks,</p>')
+          ..writeln('<p>${Constants.inviteEmailUserName}</p>'))
+        .toString();
 
     final email = Message()
       ..from = Address(
@@ -73,13 +77,18 @@ class EmailSenderService {
         Constants.inviteEmailUserName,
       )
       ..recipients.add(to)
-      ..subject = 'Activate Your WeAppe.ar Account'
-      ..html = stringBuffer.toString();
+      ..subject = subject
+      ..html = htmlMessage;
 
     try {
-      await connection.send(email);
-      return true;
-    } on MailerException catch (_) {
+      return await retry<bool>(
+        () {
+          connection.send(email);
+          return true;
+        },
+        maxAttempts: 3,
+      );
+    } catch (_) {
       return false;
     }
   }

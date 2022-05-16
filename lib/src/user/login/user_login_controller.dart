@@ -60,7 +60,7 @@ class UserLoginController extends Controller<UserLoginController> {
     );
 
     await res.json({
-      'user': user.toJson(showPassword: false),
+      'user': user.toJson(showPassword: false, standardEncoding: true),
       'refreshToken': refreshToken,
       'accessToken': accessToken,
     });
