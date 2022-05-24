@@ -37,4 +37,16 @@ class TokensService {
 
     return RefreshTokenDB.fromJson(result);
   }
+
+  FutureOr<RefreshTokenDB?> findByTokenValue(String token) async {
+    final result = await dbService.refreshTokensCollection.findOne(
+      where.eq('refreshToken', token),
+    );
+
+    if (result == null || result.isEmpty) {
+      return null;
+    }
+
+    return RefreshTokenDB.fromJson(result);
+  }
 }
