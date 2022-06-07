@@ -6,17 +6,30 @@ import 'package:mailer/smtp_server.dart';
 import 'package:retry/retry.dart';
 
 class EmailSenderService {
-  EmailSenderService();
+  EmailSenderService() {
+    try {
+      smtpServer = SmtpServer(
+        Constants.serverEmailHost,
+        ssl: true,
+        username: Constants.serverEmailAccount,
+        password: Constants.serverEmailPassword,
+        port: Constants.serverEmailPort,
+      );
 
-  late SmtpServer smtpServer = SmtpServer(
-    Constants.inviteEmailHost,
-    ssl: true,
-    username: Constants.inviteEmailAccount,
-    password: Constants.inviteEmailPassword,
-    port: Constants.inviteEmailPort,
-  );
+      from = Address(
+        Constants.serverEmailAccount,
+        Constants.serverEmailUserName,
+      );
 
-  late PersistentConnection connection = PersistentConnection(smtpServer);
+      connection = PersistentConnection(smtpServer);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  late final SmtpServer smtpServer;
+  late final Address from;
+  late final PersistentConnection connection;
 
   FutureOr<bool> sendInvite({
     required String to,
@@ -32,14 +45,11 @@ class EmailSenderService {
           ..writeln("<p>If you don't want to join the organization, you can ignore this email.</p>")
           ..writeln('<h2>$message</h2>')
           ..writeln('<p>Thanks,</p>')
-          ..writeln('<p>${Constants.inviteEmailUserName}</p>'))
+          ..writeln('<p>${Constants.serverEmailUserName}</p>'))
         .toString();
 
     final email = Message()
-      ..from = Address(
-        Constants.inviteEmailAccount,
-        Constants.inviteEmailUserName,
-      )
+      ..from = from
       ..recipients.add(to)
       ..subject = subject
       ..html = htmlMessage;
@@ -68,14 +78,11 @@ class EmailSenderService {
           ..writeln('<p>This link will expire in one week.</p>')
           ..writeln("<p>If you don't want to activate this account, you can ignore this email.</p>")
           ..writeln('<p>Thanks,</p>')
-          ..writeln('<p>${Constants.inviteEmailUserName}</p>'))
+          ..writeln('<p>${Constants.serverEmailUserName}</p>'))
         .toString();
 
     final email = Message()
-      ..from = Address(
-        Constants.inviteEmailAccount,
-        Constants.inviteEmailUserName,
-      )
+      ..from = from
       ..recipients.add(to)
       ..subject = subject
       ..html = htmlMessage;

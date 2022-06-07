@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:alfred/alfred.dart';
+import 'package:alfredito/alfredito.dart';
 import 'package:backend/backend.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -8,7 +9,7 @@ class ClockInOutService {
   ClockInOutService(this.dbService);
 
   final DatabaseService dbService;
-  final userQueue = UserQueue();
+  final userQueue = QueueService();
 
   FutureOr<ClockInOut?> findClockInById(
     ObjectId id,

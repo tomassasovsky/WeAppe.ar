@@ -20,9 +20,10 @@ class UsersService {
   }
 
   FutureOr<User?> findUserById(
-    String id,
+    dynamic id,
   ) async {
-    final user = await dbService.usersCollection.findOne(where.id(ObjectId.parse(id)));
+    final _id = (id is ObjectId) ? id : ObjectId.parse(id as String);
+    final user = await dbService.usersCollection.findOne(where.id(_id));
 
     if (user == null || user.isEmpty) {
       return null;
