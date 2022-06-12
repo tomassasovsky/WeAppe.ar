@@ -29,6 +29,8 @@ class Server {
     } catch (_) {}
   }
 
+  int get port => _app?.server?.port ?? 8080;
+
   FutureOr<dynamic> _errorHandler(HttpRequest req, HttpResponse res) {
     res.statusCode = 500;
     return {'message': 'error not handled'};
@@ -40,5 +42,4 @@ class Server {
   }
 
   Alfred? _app;
-  int get port => _app?.server?.port ?? 8080;
 }
