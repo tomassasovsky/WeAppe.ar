@@ -65,15 +65,14 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
+        <li><a href="#setting-up-the-project">Setting up the project</a></li>
+        <li><a href="#deploying">Deploying</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -181,6 +180,7 @@ We have an active [Postman Workspace](https://documenter.getpostman.com/view/144
 - [X] Create entities to clock in/out to
 - [X] Join entities to clock in/out to
 - [X] Clock in/out to entities
+- [X] Picture upload to Imgur
 - [ ] Task creation/asignation for clock ins/outs
 - [ ] Clock in/out pagination
 - [ ] 2 Factor Authentication
