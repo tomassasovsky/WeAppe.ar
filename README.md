@@ -29,7 +29,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
+  <a href="https://prod.api.weappe.ar/">
     <img src="https://media-exp1.licdn.com/dms/image/C4E0BAQF8LB_Jg4aj8A/company-logo_200_200/0/1650577795934?e=1662595200&v=beta&t=VJvmARSVtQG58kKrfExyJkhwBhugG_Wmjncr0dI8-Yo" alt="Logo" width="80" height="80">
   </a>
 
@@ -38,13 +38,11 @@
   <p align="center">
     Open source time logger backend made in Dart
     <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
+    <a href="https://documenter.getpostman.com/view/14403011/UVJfhuvf"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
-    ·
     <a href="https://github.com/tomassasovsky/WeAppe.ar/issues">Report Bug</a>
-    ·
+    · 
     <a href="https://github.com/tomassasovsky/WeAppe.ar/issues">Request Feature</a>
   </p>
 </div>
@@ -230,13 +228,6 @@ Jorge Rincon Arias - [@JorgeR5](https://twitter.com/JorgeR5) - jorge@weappe.ar
 Project Link: [https://github.com/tomassasovsky/WeAppe.ar](https://github.com/tomassasovsky/WeAppe.ar)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
