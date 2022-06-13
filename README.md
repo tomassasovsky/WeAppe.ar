@@ -200,9 +200,9 @@ If you have a suggestion that would make this better, please fork the repo and c
 Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
+2. Create your Feature Branch (`git checkout -b feat/amazing-feature-name`)
+3. Commit your Changes (`git commit -m 'Add some feat/amazing-feature-name'`)
+4. Push to the Branch (`git push origin feat/amazing-feature-name`)
 5. Open a Pull Request
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -223,9 +223,9 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Tomás Sasovsky - [@tomaSasovsky](https://twitter.com/tomaSasovsky) - tomas@weappe.ar
 
-Nazareno Cavazzon - [@NCavazzon](https://twitter.com/NCavazzon) - cavazzonnazareno@gmail.com
+Nazareno Cavazzon - [@NCavazzon](https://twitter.com/NCavazzon) - cavazzon@weappe.ar
 
-Jorge Rincon Arias - [@JorgeR5](https://twitter.com/JorgeR5) - rinconj.jra@gmail.com
+Jorge Rincon Arias - [@JorgeR5](https://twitter.com/JorgeR5) - jorge@weappe.ar
 
 Project Link: [https://github.com/tomassasovsky/WeAppe.ar](https://github.com/tomassasovsky/WeAppe.ar)
 
