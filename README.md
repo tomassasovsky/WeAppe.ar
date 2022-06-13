@@ -42,7 +42,7 @@
     <br />
     <br />
     <a href="https://github.com/tomassasovsky/WeAppe.ar/issues">Report Bug</a>
-    ·
+    · 
     <a href="https://github.com/tomassasovsky/WeAppe.ar/issues">Request Feature</a>
   </p>
 </div>
