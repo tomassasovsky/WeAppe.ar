@@ -5,9 +5,9 @@ class UserController extends Controller {
   UserController() {
     final service = UserService();
     router
-      ..post('/user/register', service.register)
-      ..post('/user/login', service.login)
-      ..get('/user/activate/<activationKey>', service.activateUser);
+      ..post('/$path/register', service.register)
+      ..post('/$path/login', service.login)
+      ..get('/$path/activate/<activationKey>', service.activateUser);
   }
 
   @override
