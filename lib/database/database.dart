@@ -26,7 +26,7 @@ class DatabaseService {
   Future<void> open() async {
     await _db.open();
 
-    // create the collections with validators
+    // create the collections
     Future.wait([
       _db.createCollection('users'),
       _db.createCollection('refreshTokens'),
