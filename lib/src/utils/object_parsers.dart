@@ -13,7 +13,13 @@ class BsonTimestampNullConverter implements JsonConverter<Timestamp?, dynamic> {
   const BsonTimestampNullConverter();
 
   @override
-  Timestamp? fromJson(dynamic json) => json as Timestamp?;
+  Timestamp? fromJson(dynamic json) {
+    if (json is String) {
+      final date = DateTime.parse(json);
+      return Timestamp(date.millisecondsSinceEpoch ~/ 1000, 0);
+    }
+    return json as Timestamp?;
+  }
 
   @override
   dynamic toJson(Timestamp? object) => object;
