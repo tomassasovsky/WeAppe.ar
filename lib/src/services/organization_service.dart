@@ -70,7 +70,10 @@ class OrganizationService {
         return Response(500, body: 'Could not create organization');
       }
 
-      return Response.ok(jsonEncode(organization.toJson()));
+      return Response.ok(
+        jsonEncode(organization.toJson()),
+        headers: alwaysHeaders,
+      );
     } catch (e) {
       return Response(500, body: 'Could not create organization');
     }
@@ -148,7 +151,10 @@ class OrganizationService {
         return Response(500, body: 'Could not send invites');
       }
 
-      return Response.ok(jsonEncode(invite.toJsonResponse));
+      return Response.ok(
+        jsonEncode(invite.toJsonResponse),
+        headers: alwaysHeaders,
+      );
     } catch (e) {
       return Response(500, body: 'Could not create organization');
     }
@@ -207,7 +213,10 @@ class OrganizationService {
 
       await organization.save();
 
-      return Response.ok(jsonEncode(organization.toJson()));
+      return Response.ok(
+        jsonEncode(organization.toJson()),
+        headers: alwaysHeaders,
+      );
     } catch (e) {
       return Response(500, body: 'Could not join organization');
     }

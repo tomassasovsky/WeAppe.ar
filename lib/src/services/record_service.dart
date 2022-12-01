@@ -61,7 +61,11 @@ class RecordService {
           return Response(400, body: 'Failed to save record');
         }
 
-        return Response(200, body: jsonEncode(clockIn.toJsonResponse));
+        return Response(
+          200,
+          body: jsonEncode(clockIn.toJsonResponse),
+          headers: alwaysHeaders,
+        );
       });
     } catch (e) {
       return Response(500, body: 'Could not create record');

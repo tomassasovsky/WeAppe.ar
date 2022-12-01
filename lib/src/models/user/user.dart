@@ -14,7 +14,7 @@ class User extends DBModel<User> {
     required this.firstName,
     required this.lastName,
     required this.email,
-    required this.password,
+    this.password,
     this.country,
     this.city,
     this.photo,
@@ -27,7 +27,7 @@ class User extends DBModel<User> {
   String firstName;
   String lastName;
   String email;
-  String password;
+  String? password;
   String? country;
   String? city;
   String? photo;
@@ -65,7 +65,6 @@ class User extends DBModel<User> {
       firstName: '',
       lastName: '',
       email: '',
-      password: '',
     );
   }
 }

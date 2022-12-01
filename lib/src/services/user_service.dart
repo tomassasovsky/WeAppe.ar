@@ -74,7 +74,10 @@ class UserService {
         return Response(500, body: 'Could not send verification email');
       }
 
-      return Response.ok(jsonEncode(user.toJsonResponse()));
+      return Response.ok(
+        jsonEncode(user.toJsonResponse()),
+        headers: alwaysHeaders,
+      );
     } catch (_) {
       return Response(500, body: 'Unknown error');
     }
@@ -105,7 +108,10 @@ class UserService {
 
       await userActivation.delete();
 
-      return Response.ok(jsonEncode(user.toJsonResponse()));
+      return Response.ok(
+        jsonEncode(user.toJsonResponse()),
+        headers: alwaysHeaders,
+      );
     } catch (_) {
       return Response(500, body: 'Unknown error');
     }
@@ -130,7 +136,7 @@ class UserService {
         return Response(400, body: 'Invalid email or password');
       }
 
-      final correctPassword = DBCrypt().checkpw(password, user.password);
+      final correctPassword = DBCrypt().checkpw(password, user.password!);
       if (!correctPassword) {
         return Response(400, body: 'Invalid email or password');
       }
@@ -172,7 +178,7 @@ class UserService {
         'accessToken': accessToken,
       };
 
-      return Response.ok(jsonEncode(responseMap));
+      return Response.ok(jsonEncode(responseMap), headers: alwaysHeaders);
     } catch (_) {
       return Response(500, body: 'Unknown error');
     }
@@ -237,6 +243,6 @@ class UserService {
 
     return Response.ok({
       'accessToken': newAccessToken,
-    });
+    }, headers: alwaysHeaders);
   }
 }
