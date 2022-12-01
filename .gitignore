@@ -6,3 +6,6 @@
 build/
 .history
 .env
+**.aot
+**.hive
+**.lock
