@@ -11,7 +11,7 @@ class OrganizationController extends Controller {
         Pipeline().addHandler(
           router
             ..post(
-                '',
+                '/',
                 Pipeline()
                     .addMiddleware(Middlewares.tokenMiddleware)
                     .addHandler(service.create))
