@@ -70,8 +70,3 @@ class RequestBodyAccessor {
   /// Returns the request body as a binary stream.
   Stream<List<int>> get asBinary => request.read();
 }
-
-extension ResponseHeaders on Response {
-  /// Returns the response headers as a [Map].
-  Map<String, String> get headers => headers;
-}
