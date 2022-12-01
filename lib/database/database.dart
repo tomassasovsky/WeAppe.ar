@@ -14,26 +14,27 @@ class DatabaseService {
 
   static final DatabaseService _inst = DatabaseService._internal();
 
-  late Db _db;
+  Db? _db;
 
-  DbCollection get usersCollection => _db.collection('users');
-  DbCollection get userActivationCollection => _db.collection('userActivation');
-  DbCollection get refreshTokensCollection => _db.collection('refreshTokens');
-  DbCollection get organizationsCollection => _db.collection('organizations');
-  DbCollection get recordsCollection => _db.collection('records');
-  DbCollection get invitesCollection => _db.collection('invites');
+  DbCollection get usersCollection => _db!.collection('users');
+  DbCollection get userActivationCollection =>
+      _db!.collection('userActivation');
+  DbCollection get refreshTokensCollection => _db!.collection('refreshTokens');
+  DbCollection get organizationsCollection => _db!.collection('organizations');
+  DbCollection get recordsCollection => _db!.collection('records');
+  DbCollection get invitesCollection => _db!.collection('invites');
 
   Future<void> open() async {
-    await _db.open();
+    await _db!.open();
 
     // create the collections
     Future.wait([
-      _db.createCollection('users'),
-      _db.createCollection('refreshTokens'),
-      _db.createCollection('organizations'),
-      _db.createCollection('userActivation'),
-      _db.createCollection('records'),
-      _db.createCollection('invites'),
+      _db!.createCollection('users'),
+      _db!.createCollection('refreshTokens'),
+      _db!.createCollection('organizations'),
+      _db!.createCollection('userActivation'),
+      _db!.createCollection('records'),
+      _db!.createCollection('invites'),
       // create indexes
       usersCollection.createIndex(key: 'email', unique: true),
       organizationsCollection.createIndex(
@@ -46,5 +47,5 @@ class DatabaseService {
     ]);
   }
 
-  FutureOr<dynamic> close() => _db.close();
+  FutureOr<dynamic> close() => _db!.close();
 }
