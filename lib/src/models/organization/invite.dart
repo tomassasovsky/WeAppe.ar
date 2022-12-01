@@ -34,7 +34,12 @@ class Invite extends DBModel<Invite> {
     required this.organization,
     required this.refId,
     required this.userType,
-  }) : super(DatabaseService().invitesCollection);
+  }) {
+    try {
+      super.collection = DatabaseService().invitesCollection;
+      super.id;
+    } catch (e) {}
+  }
 
   factory Invite.fromJson(Map<String, dynamic> json) => _$InviteFromJson(json);
 

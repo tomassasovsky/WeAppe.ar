@@ -20,7 +20,12 @@ class User extends DBModel<User> {
     this.photo,
     this.organizations,
     this.activationDate,
-  }) : super(DatabaseService().usersCollection);
+  }) {
+    try {
+      super.collection = DatabaseService().usersCollection;
+      super.id;
+    } catch (e) {}
+  }
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 

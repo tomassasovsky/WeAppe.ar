@@ -13,7 +13,12 @@ class RefreshTokenDB extends DBModel<RefreshTokenDB> {
   RefreshTokenDB({
     required this.userId,
     required this.refreshToken,
-  }) : super(DatabaseService().refreshTokensCollection);
+  }) {
+    try {
+      super.collection = DatabaseService().refreshTokensCollection;
+      super.id;
+    } catch (e) {}
+  }
 
   factory RefreshTokenDB.fromJson(Map<String, dynamic> json) =>
       _$RefreshTokenDBFromJson(json);

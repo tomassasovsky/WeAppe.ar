@@ -11,7 +11,12 @@ class UserActivation extends DBModel<UserActivation> {
   UserActivation({
     required this.activationKey,
     required this.userId,
-  }) : super(DatabaseService().userActivationCollection);
+  }) {
+    try {
+      super.collection = DatabaseService().userActivationCollection;
+      super.id;
+    } catch (e) {}
+  }
 
   factory UserActivation.fromJson(Map<String, dynamic> json) =>
       _$UserActivationFromJson(json);

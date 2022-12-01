@@ -14,7 +14,12 @@ class Record extends DBModel<Record> {
     required this.clockIn,
     this.clockOut,
     this.durationInMiliseconds,
-  }) : super(DatabaseService().recordsCollection);
+  }) {
+    try {
+      super.collection = DatabaseService().refreshTokensCollection;
+      super.id;
+    } catch (e) {}
+  }
 
   factory Record.fromJson(Map<String, dynamic> json) => _$RecordFromJson(json);
 

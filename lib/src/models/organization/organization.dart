@@ -16,7 +16,12 @@ class Organization extends DBModel<Organization> {
     this.imageUrl,
     this.employers,
     this.employees,
-  }) : super(DatabaseService().organizationsCollection);
+  }) {
+    try {
+      super.collection = DatabaseService().organizationsCollection;
+      super.id;
+    } catch (e) {}
+  }
 
   factory Organization.fromJson(Map<String, dynamic> json) =>
       _$OrganizationFromJson(json);
