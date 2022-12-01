@@ -12,7 +12,7 @@ Invite _$InviteFromJson(Map<String, dynamic> json) => Invite(
       refId: json['refId'] as String,
       userType: $enumDecode(_$UserTypeEnumMap, json['userType']),
     )
-      ..id = objectId(json['_id'] as ObjectId)
+      ..id = objectId(json['_id'])
       ..timestamp =
           const BsonTimestampNullConverter().fromJson(json['timestamp']);
 

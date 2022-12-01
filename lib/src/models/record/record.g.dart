@@ -12,7 +12,7 @@ Record _$RecordFromJson(Map<String, dynamic> json) => Record(
       clockIn: const BsonTimestampConverter().fromJson(json['clockIn']),
       clockOut: const BsonTimestampNullConverter().fromJson(json['clockOut']),
       durationInMiliseconds: json['durationInMiliseconds'] as int?,
-    )..id = objectId(json['_id'] as ObjectId);
+    )..id = objectId(json['_id']);
 
 Map<String, dynamic> _$RecordToJson(Record instance) {
   final val = <String, dynamic>{};

@@ -5,8 +5,11 @@ List<ObjectId>? objectIdsFromJsonList(List<dynamic>? json) {
   return json?.cast<String>().map((e) => ObjectId.fromHexString(e)).toList();
 }
 
-ObjectId objectId(ObjectId id) {
-  return id;
+ObjectId objectId(dynamic id) {
+  if (id is String) {
+    return ObjectId.fromHexString(id);
+  }
+  return id as ObjectId;
 }
 
 class BsonTimestampNullConverter implements JsonConverter<Timestamp?, dynamic> {

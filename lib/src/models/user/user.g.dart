@@ -17,7 +17,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       organizations: objectIdsFromJsonList(json['organizations'] as List?),
       activationDate:
           const BsonTimestampNullConverter().fromJson(json['activationDate']),
-    )..id = objectId(json['_id'] as ObjectId);
+    )..id = objectId(json['_id']);
 
 Map<String, dynamic> _$UserToJson(User instance) {
   final val = <String, dynamic>{};

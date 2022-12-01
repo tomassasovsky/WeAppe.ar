@@ -10,7 +10,7 @@ RefreshTokenDB _$RefreshTokenDBFromJson(Map<String, dynamic> json) =>
     RefreshTokenDB(
       userId: ObjectId.parse(json['userId'] as String),
       refreshToken: json['refreshToken'] as String,
-    )..id = objectId(json['_id'] as ObjectId);
+    )..id = objectId(json['_id']);
 
 Map<String, dynamic> _$RefreshTokenDBToJson(RefreshTokenDB instance) {
   final val = <String, dynamic>{};

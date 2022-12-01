@@ -10,7 +10,7 @@ UserActivation _$UserActivationFromJson(Map<String, dynamic> json) =>
     UserActivation(
       activationKey: json['activationKey'] as String,
       userId: ObjectId.parse(json['userId'] as String),
-    )..id = objectId(json['_id'] as ObjectId);
+    )..id = objectId(json['_id']);
 
 Map<String, dynamic> _$UserActivationToJson(UserActivation instance) {
   final val = <String, dynamic>{};
