@@ -9,6 +9,7 @@ part 'record.g.dart';
 @JsonSerializable(explicitToJson: true)
 class Record extends DBModel<Record> {
   Record({
+    ObjectId? id,
     required this.userId,
     required this.organizationId,
     required this.clockIn,
@@ -16,8 +17,8 @@ class Record extends DBModel<Record> {
     this.durationInMiliseconds,
   }) {
     try {
-      super.collection = DatabaseService().refreshTokensCollection;
-      super.id;
+      super.collection = DatabaseService().recordsCollection;
+      super.id = id;
     } catch (e) {}
   }
 
@@ -42,10 +43,34 @@ class Record extends DBModel<Record> {
   Future<Record?> findOpenRecord({
     required String organizationId,
     required String userId,
-  }) =>
+  }) async =>
       findOne(
-        where.eq('organizationId', organizationId).eq('userId', userId),
+        where
+            .eq('organizationId', organizationId)
+            .eq(
+              'userId',
+              userId,
+            )
+            .eq(
+              'clockOut',
+              null,
+            ),
       );
+
+  Future<Record> clockOutRecord() async {
+    final miliseconds = DateTime.now().millisecondsSinceEpoch;
+    final timestamp = Timestamp(miliseconds ~/ 1000);
+    final record = Record(
+      id: id,
+      userId: userId,
+      organizationId: organizationId,
+      clockIn: clockIn,
+      clockOut: timestamp,
+      durationInMiliseconds: miliseconds,
+    );
+    await record.save();
+    return record;
+  }
 
   DateTime get _clockInAsDateTime =>
       DateTime.fromMillisecondsSinceEpoch(clockIn.seconds * 1000);

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shelf/shelf.dart';
@@ -14,10 +16,7 @@ class Middlewares {
   /// The [corsMiddleware] will be used to allow CORS in the API. It's important
   /// to note that this middleware will be used in all the routes.
   static Middleware corsMiddleware = generateCorsMiddleware(
-    allowedOrigins: [
-      'http://localhost:3200',
-      'http://20.51.244.93/',
-    ],
+    allowedOrigins: ['http://localhost:8080'],
   );
 
   /// The [tokenMiddleware] is a method that is used to check if the request
@@ -56,4 +55,12 @@ extension UserId on JWT {
   ObjectId get userId => ObjectId.fromHexString(
         (payload as Map)['userId'] as String,
       );
+}
+
+/// This method is used to add default headers to the response.
+FutureOr<Response> responseHandler(
+  Future<Response> Function() response,
+) async {
+  final algo = await response();
+  return algo.change(headers: alwaysHeaders);
 }

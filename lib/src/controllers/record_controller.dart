@@ -9,7 +9,9 @@ class RecordsController extends Controller {
     router.mount(
       path,
       Pipeline().addMiddleware(Middlewares.tokenMiddleware).addHandler(
-            router..post('/clockIn', service.clockIn),
+            router
+              ..post('/clockIn', service.clockIn)
+              ..post('/clockOut', service.clockOut),
           ),
     );
   }
