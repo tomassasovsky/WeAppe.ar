@@ -11,7 +11,8 @@ class RecordsController extends Controller {
       Pipeline().addMiddleware(Middlewares.tokenMiddleware).addHandler(
             router
               ..post('/clockIn', service.clockIn)
-              ..post('/clockOut', service.clockOut),
+              ..post('/clockOut', service.clockOut)
+              ..get('/', service.getRecords),
           ),
     );
   }

@@ -121,4 +121,54 @@ class RecordService {
       }
     });
   }
+
+  FutureOr<Response> getRecords(Request request) async {
+    return responseHandler(() async {
+      try {
+        final json = jsonDecode(await request.readAsString()) as Map;
+        final queryParams = request.url.queryParameters;
+        final column = queryParams['column'] ?? 'clockIn';
+        final limit = int.parse(queryParams['limit'] ?? '50');
+        final start = int.parse(queryParams['start'] ?? '0');
+        var direction = true;
+        if (queryParams['direction']?.toLowerCase() == 'asc') {
+          direction = false;
+        }
+
+        final token = JWT.verify(
+          request.token!,
+          SecretKey(Constants.jwtAccessSignature),
+        );
+
+        final organizationId = json['organizationId'] as String?;
+        if (organizationId == null) {
+          return Response(400, body: 'Missing name');
+        }
+
+        final query = where
+            .eq('userId', token.userId.$oid)
+            .eq('organizationId', organizationId);
+
+        final recods = await Record.generic.find(query.sortBy(
+          column,
+          descending: direction,
+        ));
+        final total = await Record.generic.count(query);
+
+        return Response.ok(
+          jsonEncode(<String, dynamic>{
+            'meta': {
+              'total': total,
+              'returned': recods.length,
+              'offset': start,
+              'limit': limit,
+            },
+            'records': recods.map((e) => e.toJsonResponse).toList(),
+          }),
+        );
+      } catch (e) {
+        return Response(500, body: 'Could not get records');
+      }
+    });
+  }
 }

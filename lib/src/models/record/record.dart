@@ -60,13 +60,14 @@ class Record extends DBModel<Record> {
   Future<Record> clockOutRecord() async {
     final miliseconds = DateTime.now().millisecondsSinceEpoch;
     final timestamp = Timestamp(miliseconds ~/ 1000);
+    final difference = miliseconds - clockIn.seconds * 1000;
     final record = Record(
       id: id,
       userId: userId,
       organizationId: organizationId,
       clockIn: clockIn,
       clockOut: timestamp,
-      durationInMiliseconds: miliseconds,
+      durationInMiliseconds: difference,
     );
     await record.save();
     return record;

@@ -43,6 +43,10 @@ abstract class DBModel<T> {
     return data.map<T>(fromJson).toList();
   }
 
+  Future<int> count([dynamic query]) async {
+    return collection!.count(query);
+  }
+
   Stream<T> findStream([dynamic query]) async* {
     await for (final item in collection!.find(query)) {
       yield fromJson(item);

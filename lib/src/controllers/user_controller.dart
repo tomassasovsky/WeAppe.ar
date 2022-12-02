@@ -10,7 +10,7 @@ class UserController extends Controller {
       Pipeline().addHandler(
         router
           ..post('/register', service.register)
-          ..post('/login', service.login)
+          ..post('/logins', service.login)
           ..get('/activate/<activationKey>', service.activateUser),
       ),
     );
