@@ -20,6 +20,8 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
           const BsonTimestampNullConverter().fromJson(json['activationDate']),
       gender: $enumDecodeNullable(_$GenderEnumMap, json['gender']) ??
           Gender.helicopter,
+      lang: json['lang'] as String? ?? 'en_US',
+      timezone: json['timezone'] as String? ?? 'GMT',
     );
 
 Map<String, dynamic> _$UserToJson(User instance) {
@@ -39,6 +41,8 @@ Map<String, dynamic> _$UserToJson(User instance) {
   val['description'] = instance.description;
   val['location'] = instance.location;
   val['photo'] = instance.photo;
+  val['lang'] = instance.lang;
+  val['timezone'] = instance.timezone;
   val['gender'] = _$GenderEnumMap[instance.gender]!;
   writeNotNull(
       'organizations', instance.organizations?.map((e) => e.toJson()).toList());

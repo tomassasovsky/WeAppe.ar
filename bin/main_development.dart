@@ -7,6 +7,7 @@ import 'package:weappear_backend/database/database.dart';
 import 'package:weappear_backend/src/router.dart';
 import 'package:weappear_backend/src/utils/utils.dart';
 import 'package:shelf_hotreload/shelf_hotreload.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   stdout.write('Starting server...\n');
@@ -15,6 +16,8 @@ void main() async {
 
   final db = await mongo.Db.create(Constants.mongoConnectionString);
   final dbService = DatabaseService(db);
+
+  tz.initializeTimeZones();
   await dbService.open();
 
   stdout.write('Connected to database.');

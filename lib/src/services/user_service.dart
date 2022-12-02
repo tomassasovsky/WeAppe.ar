@@ -5,6 +5,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dbcrypt/dbcrypt.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shelf/shelf.dart';
+import 'package:timezone/standalone.dart' as tz;
 import 'package:weappear_backend/extensions/extensions.dart';
 import 'package:weappear_backend/src/models/user/refresh_token.dart';
 import 'package:weappear_backend/src/models/user/user.dart';
@@ -282,12 +283,26 @@ class UserService {
         final gender = Gender.fromString(
           json['gender'] as String? ?? user.gender.name,
         );
+        final timezone = json['timezone'] as String?;
+        if (timezone != null) {
+          try {
+            tz.getLocation(timezone);
+          } catch (e) {
+            return Response(400, body: 'Invalid location');
+          }
+        }
+        final lang = json['lang'] as String?;
+        if (lang != null && !LANGUAGE_BY_LOCALE.containsKey(lang)) {
+          return Response(400, body: 'Invalid localization');
+        }
 
         final saveUser = user.copyWith(
           description: description,
           location: location,
           gender: gender,
           photo: photo,
+          lang: lang,
+          timezone: timezone,
         );
 
         final result = await saveUser.save();

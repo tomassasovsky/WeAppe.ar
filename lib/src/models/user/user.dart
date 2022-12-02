@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:weappear_backend/database/database.dart';
@@ -46,6 +45,8 @@ class User extends DBModel<User> {
     this.organizations,
     this.activationDate,
     this.gender = Gender.helicopter,
+    this.lang = 'en_US',
+    this.timezone = 'GMT',
   }) {
     try {
       super.collection = DatabaseService().usersCollection;
@@ -62,6 +63,8 @@ class User extends DBModel<User> {
   String? description;
   String? location;
   String? photo;
+  String lang;
+  String timezone;
   Gender gender;
 
   @JsonKey(fromJson: objectIdsFromJsonList, includeIfNull: false)
@@ -98,6 +101,8 @@ class User extends DBModel<User> {
     String? location,
     String? photo,
     Gender? gender,
+    String? lang,
+    String? timezone,
   }) {
     return User(
       id: id,
@@ -110,6 +115,8 @@ class User extends DBModel<User> {
       photo: photo ?? this.photo,
       gender: gender ?? this.gender,
       activationDate: activationDate,
+      lang: lang ?? this.lang,
+      timezone: timezone ?? this.timezone,
     );
   }
 
@@ -123,20 +130,6 @@ class User extends DBModel<User> {
       email: '',
     );
   }
-
-  @override
-  List<Object?> get props => [
-        id,
-        firstName,
-        lastName,
-        email,
-        password,
-        description,
-        location,
-        photo,
-        gender,
-        organizations,
-      ];
 }
 
 Timestamp? readJsonValueAsTimestamp(Map<dynamic, dynamic> json, String key) {
