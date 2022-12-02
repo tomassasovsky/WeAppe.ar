@@ -86,7 +86,7 @@ class EmailSenderService {
     final htmlMessage = (StringBuffer()
           ..writeln("<h1>Here's your activation link:</h1>")
           ..writeln(
-              '<p>https://${Constants.host}/user/activate/$activationKey</p>')
+              '<p>https://${Constants.host}/users/activate/$activationKey</p>')
           ..writeln('<p>This link will expire in one week.</p>')
           ..writeln(
               "<p>If you don't want to activate this account, you can ignore this email.</p>")
