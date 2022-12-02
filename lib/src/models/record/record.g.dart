@@ -7,12 +7,13 @@ part of 'record.dart';
 // **************************************************************************
 
 Record _$RecordFromJson(Map<String, dynamic> json) => Record(
+      id: objectId(json['_id']),
       userId: ObjectId.parse(json['userId'] as String),
       organizationId: ObjectId.parse(json['organizationId'] as String),
       clockIn: const BsonTimestampConverter().fromJson(json['clockIn']),
       clockOut: const BsonTimestampNullConverter().fromJson(json['clockOut']),
       durationInMiliseconds: json['durationInMiliseconds'] as int?,
-    )..id = objectId(json['_id']);
+    );
 
 Map<String, dynamic> _$RecordToJson(Record instance) {
   final val = <String, dynamic>{};

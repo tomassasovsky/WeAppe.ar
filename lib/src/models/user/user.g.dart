@@ -7,17 +7,20 @@ part of 'user.dart';
 // **************************************************************************
 
 User _$UserFromJson(Map<String, dynamic> json) => User(
+      id: objectId(json['_id']),
       firstName: json['firstName'] as String,
       lastName: json['lastName'] as String,
       email: json['email'] as String,
       password: json['password'] as String?,
-      country: json['country'] as String?,
-      city: json['city'] as String?,
+      description: json['description'] as String?,
+      location: json['location'] as String?,
       photo: json['photo'] as String?,
       organizations: objectIdsFromJsonList(json['organizations'] as List?),
       activationDate:
           const BsonTimestampNullConverter().fromJson(json['activationDate']),
-    )..id = objectId(json['_id']);
+      gender: $enumDecodeNullable(_$GenderEnumMap, json['gender']) ??
+          Gender.helicopter,
+    );
 
 Map<String, dynamic> _$UserToJson(User instance) {
   final val = <String, dynamic>{};
@@ -33,12 +36,19 @@ Map<String, dynamic> _$UserToJson(User instance) {
   val['lastName'] = instance.lastName;
   val['email'] = instance.email;
   val['password'] = instance.password;
-  val['country'] = instance.country;
-  val['city'] = instance.city;
+  val['description'] = instance.description;
+  val['location'] = instance.location;
   val['photo'] = instance.photo;
+  val['gender'] = _$GenderEnumMap[instance.gender]!;
   writeNotNull(
       'organizations', instance.organizations?.map((e) => e.toJson()).toList());
   val['activationDate'] =
       const BsonTimestampNullConverter().toJson(instance.activationDate);
   return val;
 }
+
+const _$GenderEnumMap = {
+  Gender.male: 'male',
+  Gender.female: 'female',
+  Gender.helicopter: 'helicopter',
+};

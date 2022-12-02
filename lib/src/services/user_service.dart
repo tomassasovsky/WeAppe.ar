@@ -76,7 +76,7 @@ class UserService {
           return Response(500, body: 'Could not send verification email');
         }
 
-        return Response.ok(jsonEncode(user.toJsonResponse()));
+        return Response.ok(jsonEncode(user.toJsonResponse));
       } catch (_) {
         return Response(500, body: 'Unknown error');
       }
@@ -113,7 +113,7 @@ class UserService {
 
         await userActivation.delete();
 
-        return Response.ok(jsonEncode(user.toJsonResponse()));
+        return Response.ok(jsonEncode(user.toJsonResponse));
       } catch (_) {
         return Response(500, body: 'Unknown error');
       }
@@ -177,7 +177,7 @@ class UserService {
         );
 
         final responseMap = {
-          'user': user.toJsonResponse(),
+          'user': user.toJsonResponse,
           'refreshToken': refreshToken,
           'accessToken': accessToken,
         };
@@ -250,6 +250,104 @@ class UserService {
       return Response.ok({
         'accessToken': newAccessToken,
       });
+    });
+  }
+
+  FutureOr<Response> updateInfo(Request request) async {
+    return responseHandler(() async {
+      try {
+        final json = jsonDecode(await request.readAsString()) as Map;
+        final token = JWT.verify(
+          request.token!,
+          SecretKey(Constants.jwtAccessSignature),
+        );
+
+        final user = await User.generic.byObjectId(token.userId);
+        if (user == null) {
+          return Response(401, body: 'User not found');
+        }
+
+        final password = json['password'] as String?;
+        if (password == null) {
+          return Response(400, body: 'Missing password');
+        } else if (!Validators.passwordRegExp.hasMatch(password)) {
+          return Response(400, body: 'Invalid password');
+        } else if (DBCrypt().checkpw(password, user.password!) == false) {
+          return Response(400, body: 'Invalid password');
+        }
+
+        final description = json['description'] as String?;
+        final location = json['location'] as String?;
+        final photo = json['photo'] as String?;
+        final gender = Gender.fromString(
+          json['gender'] as String? ?? user.gender.name,
+        );
+
+        final saveUser = user.copyWith(
+          description: description,
+          location: location,
+          gender: gender,
+          photo: photo,
+        );
+
+        final result = await saveUser.save();
+
+        if (result.isFailure && !result.isSuccess) {
+          return Response(500, body: 'Could not save changes');
+        }
+
+        return Response.ok(jsonEncode(saveUser.toJsonResponse));
+      } catch (_) {
+        return Response(500, body: 'Unknown error');
+      }
+    });
+  }
+
+  FutureOr<Response> updatePassword(Request request) async {
+    return responseHandler(() async {
+      try {
+        final json = jsonDecode(await request.readAsString()) as Map;
+        final token = JWT.verify(
+          request.token!,
+          SecretKey(Constants.jwtAccessSignature),
+        );
+
+        final user = await User.generic.byObjectId(token.userId);
+        if (user == null) {
+          return Response(401, body: 'User not found');
+        }
+
+        final oldPassword = json['oldPassword'] as String?;
+        if (oldPassword == null) {
+          return Response(400, body: 'Missing password');
+        } else if (!Validators.passwordRegExp.hasMatch(oldPassword)) {
+          return Response(400, body: 'Invalid password');
+        } else if (DBCrypt().checkpw(oldPassword, user.password!) == false) {
+          return Response(400, body: 'Invalid password');
+        }
+
+        final newPassword = json['newPassword'] as String?;
+        if (newPassword == null) {
+          return Response(400, body: 'Missing new password');
+        } else if (!Validators.passwordRegExp.hasMatch(newPassword)) {
+          return Response(400, body: 'Invalid new password');
+        }
+
+        final hashedPassword =
+            DBCrypt().hashpw(newPassword, DBCrypt().gensalt());
+
+        final saveUser = user.copyWith(password: hashedPassword);
+
+        final result = await saveUser.save();
+
+        if (result.isFailure && !result.isSuccess) {
+          return Response(500, body: 'Could not change password');
+        }
+
+        return Response.ok(jsonEncode(saveUser.toJsonResponse));
+      } catch (_) {
+        return Response(500, body: 'Unknown error');
+      }
     });
   }
 }
