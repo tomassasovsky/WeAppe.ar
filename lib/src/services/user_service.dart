@@ -43,6 +43,12 @@ class UserService {
           return Response(400, body: 'Invalid password');
         }
 
+        final userInDatabase =
+            await User.generic.findOne(where.eq('email', email));
+        if (userInDatabase != null) {
+          return Response(400, body: 'User with this email already exists');
+        }
+
         final hashedPassword = DBCrypt().hashpw(password, DBCrypt().gensalt());
         final user = User(
           email: email,
@@ -74,7 +80,10 @@ class UserService {
         );
 
         if (!emailSent) {
-          return Response(500, body: 'Could not send verification email');
+          return Response(
+            500,
+            body: 'Could not send verification email',
+          );
         }
 
         return Response.ok(jsonEncode(user.toJsonResponse));
