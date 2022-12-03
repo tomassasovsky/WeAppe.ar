@@ -26,7 +26,7 @@ class RecordService {
 
         final organizationId = json['organizationId'] as String?;
         if (organizationId == null) {
-          return Response(400, body: 'Missing name');
+          return Response(400, body: 'Missing organizationId');
         }
 
         final organization = await Organization.generic.byId(organizationId);
@@ -83,7 +83,7 @@ class RecordService {
 
         final organizationId = json['organizationId'] as String?;
         if (organizationId == null) {
-          return Response(400, body: 'Missing name');
+          return Response(400, body: 'Missing organizationId');
         }
 
         final organization = await Organization.generic.byId(organizationId);
@@ -141,7 +141,16 @@ class RecordService {
 
         final organizationId = queryParams['organizationId'];
         if (organizationId == null) {
-          return Response(400, body: 'Missing name');
+          return Response(400, body: 'Missing organizationId');
+        }
+
+        final organization = await Organization.generic.byId(organizationId);
+        if (organization == null) {
+          return Response(400, body: 'Organization not found');
+        }
+
+        if (!organization.containsUser(token.userId.$oid)) {
+          return Response(400, body: 'User is not part of the organization');
         }
 
         final query = where
@@ -169,6 +178,59 @@ class RecordService {
         );
       } catch (e) {
         return Response(500, body: 'Could not get records');
+      }
+    });
+  }
+
+  FutureOr<Response> createRecord(Request request) async {
+    return responseHandler(() async {
+      try {
+        final json = jsonDecode(await request.readAsString()) as Map;
+
+        final token = JWT.verify(
+          request.token!,
+          SecretKey(Constants.jwtAccessSignature),
+        );
+
+        final organizationId = json['organizationId'] as String?;
+        if (organizationId == null) {
+          return Response(400, body: 'Missing name');
+        }
+
+        final organization = await Organization.generic.byId(organizationId);
+        if (organization == null) {
+          return Response(400, body: 'Organization not found');
+        }
+
+        if (!organization.containsUser(token.userId.$oid)) {
+          return Response(400, body: 'User is not part of the organization');
+        }
+
+        final hours = json['hours'] as int?;
+        if (hours == null) {
+          return Response(400, body: 'Missing hours');
+        }
+
+        if (hours < 0 || hours > 24) {
+          return Response(400, body: 'Invalid hours');
+        }
+
+        final user = await User.generic.byObjectId(token.userId);
+        if (user == null) {
+          return Response(400, body: 'User not found');
+        }
+
+        final now = DateTime.now();
+        final lastHour = (9 + hours).clamp(0, 24);
+        final record = Record(
+          userId: token.userId,
+          organizationId: organization.id!,
+          clockIn: DateTime(now.year, now.month, now.day, 9).toTimestamp(),
+          clockOut: DateTime(now.year, now.month, now.day, 9).toTimestamp(),
+        );
+        return Response.ok('');
+      } catch (_) {
+        return Response(400, body: 'Could not create record');
       }
     });
   }
