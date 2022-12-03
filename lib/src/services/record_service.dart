@@ -125,7 +125,6 @@ class RecordService {
   FutureOr<Response> getRecords(Request request) async {
     return responseHandler(() async {
       try {
-        final json = jsonDecode(await request.readAsString()) as Map;
         final queryParams = request.url.queryParameters;
         final column = queryParams['column'] ?? 'clockIn';
         final limit = int.parse(queryParams['limit'] ?? '50');
@@ -140,7 +139,7 @@ class RecordService {
           SecretKey(Constants.jwtAccessSignature),
         );
 
-        final organizationId = json['organizationId'] as String?;
+        final organizationId = queryParams['organizationId'];
         if (organizationId == null) {
           return Response(400, body: 'Missing name');
         }
@@ -149,10 +148,12 @@ class RecordService {
             .eq('userId', token.userId.$oid)
             .eq('organizationId', organizationId);
 
-        final recods = await Record.generic.find(query.sortBy(
-          column,
-          descending: direction,
-        ));
+        final recods = await Record.generic.find(query
+            .sortBy(
+              column,
+              descending: direction,
+            )
+            .skip(start));
         final total = await Record.generic.count(query);
 
         return Response.ok(
@@ -163,7 +164,7 @@ class RecordService {
               'offset': start,
               'limit': limit,
             },
-            'records': recods.map((e) => e.toJsonResponse).toList(),
+            'items': recods.map((e) => e.toJsonResponse).toList(),
           }),
         );
       } catch (e) {
