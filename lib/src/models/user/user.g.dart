@@ -14,7 +14,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       password: json['password'] as String?,
       description: json['description'] as String?,
       location: json['location'] as String?,
-      photo: json['photo'] as String?,
+      imageUrl: json['photo'] as String?,
       organizations: objectIdsFromJsonList(json['organizations'] as List?),
       activationDate:
           const BsonTimestampNullConverter().fromJson(json['activationDate']),
@@ -40,12 +40,14 @@ Map<String, dynamic> _$UserToJson(User instance) {
   val['password'] = instance.password;
   val['description'] = instance.description;
   val['location'] = instance.location;
-  val['photo'] = instance.photo;
+  val['photo'] = instance.imageUrl;
   val['lang'] = instance.lang;
   val['timezone'] = instance.timezone;
-  val['gender'] = _$GenderEnumMap[instance.gender]!;
+  val['gender'] = _$GenderEnumMap[instance.gender];
   writeNotNull(
-      'organizations', instance.organizations?.map((e) => e.toJson()).toList());
+    'organizations',
+    instance.organizations?.map((e) => e.toJson()).toList(),
+  );
   val['activationDate'] =
       const BsonTimestampNullConverter().toJson(instance.activationDate);
   return val;

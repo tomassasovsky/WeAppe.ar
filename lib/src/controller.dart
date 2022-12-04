@@ -8,5 +8,6 @@ abstract class Controller {
   /// The path for this controller.
   String get path;
 
+  /// The router of the controller
   final router = Router();
 }

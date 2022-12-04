@@ -1,24 +1,39 @@
+/// {@template validators}
+/// This class has all the validators we use for the requests.
+/// {@endtemplate}
 class Validators {
+  /// Validator for mongo ids.
   static RegExp get mongoIdRegExp => RegExp(r'^[a-fA-F0-9]{24}$');
+
+  /// Validator for UUIDs.
   static RegExp get uuidRegExp => RegExp(
         '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
       );
+
+  /// Validator for passwords.
   static RegExp get passwordRegExp => RegExp(
         r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
       );
+
+  /// Validator for emails.
   static RegExp get emailRegExp => RegExp(
         r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
       );
+
+  /// Validator for urls.
   static RegExp get urlRegExp => RegExp(
         r'(http|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?',
         caseSensitive: false,
       );
+
+  /// Validator for colors.
   static RegExp get colorRegExp => RegExp(
         r'^#(?:[0-9a-fA-F]{3}){1,2}$',
       );
 }
 
-final LANGUAGE_BY_LOCALE = {
+/// All the languages we support.
+final languageByLocale = {
   'af_NA': 'Afrikaans (Namibia)',
   'af_ZA': 'Afrikaans (South Africa)',
   'af': 'Afrikaans',

@@ -11,7 +11,11 @@ import 'package:weappear_backend/src/models/user/user.dart';
 import 'package:weappear_backend/src/utils/email_sender.dart';
 import 'package:weappear_backend/src/utils/utils.dart';
 
+/// {@template organization_service}
+/// This service has all the methods for the organizations collection.
+/// {@endtemplate}
 class OrganizationService {
+  /// This method creates a new organization.
   FutureOr<Response> create(Request request) async {
     return responseHandler(() async {
       try {
@@ -66,7 +70,7 @@ class OrganizationService {
         }
 
         user.organizations ??= [];
-        user.organizations?.add(organization.id as ObjectId);
+        user.organizations?.add(organization.id!);
 
         final saveUserResult = await user.save();
         if (saveUserResult.isFailure) {
@@ -80,6 +84,7 @@ class OrganizationService {
     });
   }
 
+  /// This method sends invites to the users.
   FutureOr<Response> sendInviteByMail(Request request) async {
     return responseHandler(() async {
       try {
@@ -95,7 +100,7 @@ class OrganizationService {
           return Response(400, body: 'Missing organizationId');
         }
 
-        var userTypeJson = json['userType'] as String?;
+        final userTypeJson = json['userType'] as String?;
         if (userTypeJson == null) {
           return Response(400, body: 'Missing userType');
         }
@@ -160,6 +165,7 @@ class OrganizationService {
     });
   }
 
+  /// This method is used to let users join an organizations.
   FutureOr<Response> joinOrganization(
     Request request,
     String refId,

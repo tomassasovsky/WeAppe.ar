@@ -1,30 +1,33 @@
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'package:weappear_backend/src/controllers/record_controller.dart';
 import 'package:weappear_backend/src/controllers/organization_controller.dart';
+import 'package:weappear_backend/src/controllers/record_controller.dart';
 import 'package:weappear_backend/src/controllers/user_controller.dart';
 import 'package:weappear_backend/src/utils/middlewares.dart';
 
 /// {@template we_appear_router}
 /// The [WeAppearRouter] is a class that is used to group routes together and
-/// register them with the proper [Controller]s.
+/// register them with the proper Controllers.
 /// {@endtemplate}
 class WeAppearRouter {
   /// {@macro we_appear_router}
   WeAppearRouter() {
-    final app = Router()..get('/ping', (Request _) => Response.ok('pong'));
-    app
+    final app = Router()
+      ..get('/ping', (Request _) => Response.ok('pong'))
       ..mount('/', UserController().router)
       ..mount('/', OrganizationController().router)
       ..mount(
-          '/',
-          const Pipeline()
-              .addMiddleware(Middlewares.tokenMiddleware)
-              .addHandler(RecordsController().router));
+        '/',
+        addMiddleWares(
+          RecordsController().router,
+          [Middlewares.tokenMiddleware],
+        ),
+      );
 
-    appPipeline = const Pipeline()
-        .addMiddleware(Middlewares.corsMiddleware)
-        .addHandler(app);
+    appPipeline = addMiddleWares(
+      app,
+      [Middlewares.corsMiddleware],
+    );
   }
 
   /// Local app client

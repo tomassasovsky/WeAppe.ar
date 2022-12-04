@@ -2,12 +2,17 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:weappear_backend/database/database.dart';
 import 'package:weappear_backend/database/db_model.dart';
+import 'package:weappear_backend/extensions/datetime.dart';
 import 'package:weappear_backend/src/utils/object_parsers.dart';
 
 part 'record.g.dart';
 
+/// {@template record}
+/// This class represents a record model in the database.
+/// {@endtemplate}
 @JsonSerializable(explicitToJson: true)
 class Record extends DBModel<Record> {
+  /// {@macro record}
   Record({
     ObjectId? id,
     required this.userId,
@@ -19,27 +24,38 @@ class Record extends DBModel<Record> {
     try {
       super.collection = DatabaseService().recordsCollection;
       super.id = id;
-    } catch (e) {}
+    } catch (_) {}
   }
 
   factory Record.fromJson(Map<String, dynamic> json) => _$RecordFromJson(json);
 
+  /// The id of the user making a record.
   @JsonKey(includeIfNull: false, fromJson: ObjectId.parse)
   final ObjectId userId;
 
+  /// The id of the organization to which the record belongs.
   @JsonKey(includeIfNull: false, fromJson: ObjectId.parse)
   final ObjectId organizationId;
 
+  /// The time when the user clocked in.
   @BsonTimestampConverter()
   final Timestamp clockIn;
 
+  /// The time when the user clocked out.
   @BsonTimestampNullConverter()
   final Timestamp? clockOut;
+
+  /// The duration of the record in miliseconds.
+  ///
+  /// e.g. if the user clocked in at 9am and clocked out at 7pm, the duration
+  /// would be 8 hours, or 28800000 miliseconds.
   final int? durationInMiliseconds;
 
   @override
   Record fromJson(Map<String, dynamic> json) => _$RecordFromJson(json);
 
+  /// This method is used to find if the user has an open record in the
+  /// organization.
   Future<Record?> findOpenRecord({
     required String organizationId,
     required String userId,
@@ -57,6 +73,7 @@ class Record extends DBModel<Record> {
             ),
       );
 
+  /// This method is used to close the record.
   Future<Record> clockOutRecord() async {
     final miliseconds = DateTime.now().millisecondsSinceEpoch;
     final timestamp = Timestamp(miliseconds ~/ 1000);
@@ -73,29 +90,18 @@ class Record extends DBModel<Record> {
     return record;
   }
 
-  DateTime get _clockInAsDateTime =>
-      DateTime.fromMillisecondsSinceEpoch(clockIn.seconds * 1000);
-
-  DateTime? get _clockOutAsDateTime => clockOut == null
-      ? null
-      : DateTime.fromMillisecondsSinceEpoch(clockOut!.seconds * 1000);
-
   @override
   Map<String, dynamic> toJson() => _$RecordToJson(this);
 
+  /// This method is used to get the record as a json response.
   Map<String, dynamic> get toJsonResponse {
     final json = toJson();
-    json['clockIn'] = _clockInAsDateTime.toIso8601String();
-    json['clockOut'] = _clockOutAsDateTime?.toIso8601String();
+    json['clockIn'] = clockIn.toDateTime().toIso8601String();
+    json['clockOut'] = clockOut?.toDateTime().toIso8601String();
     return json;
   }
 
-  DateTime get clockInAsDateTime =>
-      DateTime.fromMillisecondsSinceEpoch(clockIn.seconds * 1000);
-  DateTime? get clockOutAsDateTime => clockOut == null
-      ? null
-      : DateTime.fromMillisecondsSinceEpoch(clockOut!.seconds * 1000);
-
+  /// This method is used to get a generic record.
   static Record get generic {
     return Record(
       userId: ObjectId(),

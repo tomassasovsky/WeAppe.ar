@@ -1,9 +1,10 @@
+// ignore_for_file: avoid_catching_errors
+
 import 'dart:async';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shelf/shelf.dart';
-import 'package:logging/logging.dart';
 import 'package:weappear_backend/extensions/extensions.dart';
 import 'package:weappear_backend/src/utils/utils.dart';
 
@@ -11,8 +12,6 @@ import 'package:weappear_backend/src/utils/utils.dart';
 /// This class has all the [Middleware]s that will be used in the routes.
 /// {@endtemplate}
 class Middlewares {
-  static final log = Logger('Middleware log.');
-
   /// The [corsMiddleware] will be used to allow CORS in the API. It's important
   /// to note that this middleware will be used in all the routes.
   static Middleware corsMiddleware = generateCorsMiddleware(
@@ -63,4 +62,16 @@ FutureOr<Response> responseHandler(
 ) async {
   final algo = await response();
   return algo.change(headers: alwaysHeaders);
+}
+
+/// This method is used to add middleware to routes easily.
+FutureOr<Response> Function(Request) addMiddleWares(
+  FutureOr<Response> Function(Request) handler,
+  List<Middleware> middlewares,
+) {
+  const pipeline = Pipeline();
+  for (final middleware in middlewares) {
+    pipeline.addMiddleware(middleware);
+  }
+  return pipeline.addHandler(handler);
 }

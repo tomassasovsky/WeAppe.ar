@@ -6,13 +6,13 @@ part of 'refresh_token.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-RefreshTokenDB _$RefreshTokenDBFromJson(Map<String, dynamic> json) =>
-    RefreshTokenDB(
+RefreshToken _$RefreshTokenDBFromJson(Map<String, dynamic> json) =>
+    RefreshToken(
       userId: ObjectId.parse(json['userId'] as String),
       refreshToken: json['refreshToken'] as String,
     )..id = objectId(json['_id']);
 
-Map<String, dynamic> _$RefreshTokenDBToJson(RefreshTokenDB instance) {
+Map<String, dynamic> _$RefreshTokenDBToJson(RefreshToken instance) {
   final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {

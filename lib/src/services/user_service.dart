@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_catching_errors
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -13,21 +15,15 @@ import 'package:weappear_backend/src/models/user/user_activation.dart';
 import 'package:weappear_backend/src/utils/email_sender.dart';
 import 'package:weappear_backend/src/utils/utils.dart';
 
+/// {@template user_service}
+/// This service has all the methods for the users collection.
+/// {@endtemplate}
 class UserService {
+  /// This method sends an email to the user with a link to verify his email.
   FutureOr<Response> register(Request request) async {
     return responseHandler(() async {
       try {
         final json = jsonDecode(await request.readAsString()) as Map;
-
-        final firstName = json['firstName'] as String?;
-        if (firstName == null) {
-          return Response(400, body: 'Missing firstName');
-        }
-
-        final lastName = json['lastName'] as String?;
-        if (lastName == null) {
-          return Response(400, body: 'Missing lastName');
-        }
 
         final email = json['email'] as String?;
         if (email == null) {
@@ -36,36 +32,28 @@ class UserService {
           return Response(400, body: 'Invalid email');
         }
 
-        final password = json['password'] as String?;
-        if (password == null) {
-          return Response(400, body: 'Missing password');
-        } else if (!Validators.passwordRegExp.hasMatch(password)) {
-          return Response(400, body: 'Invalid password');
-        }
+        final databaseRecords = await Future.wait([
+          User.generic.findOne(
+            where.eq('email', email),
+          ),
+          UserActivation.generic.findOne(where.eq('email', email)),
+        ]);
 
-        final userInDatabase =
-            await User.generic.findOne(where.eq('email', email));
+        final userInDatabase = databaseRecords.first as User?;
         if (userInDatabase != null) {
           return Response(400, body: 'User with this email already exists');
         }
 
-        final hashedPassword = DBCrypt().hashpw(password, DBCrypt().gensalt());
-        final user = User(
-          email: email,
-          firstName: firstName,
-          lastName: lastName,
-          password: hashedPassword,
-        );
-
-        final result = await user.save();
-
-        if (result.isFailure) {
-          return Response(500, body: 'Could not create user');
+        final userActivationInDatabase =
+            databaseRecords.last as UserActivation?;
+        if (userActivationInDatabase != null) {
+          await userActivationInDatabase.delete();
         }
 
         final userActivation = UserActivation(
-          activationKey: Uuid().v4(),
-          userId: user.id!,
+          activationCode: EmailSenderService.createOtp(),
+          email: email,
+          createdAt: Timestamp(),
         );
 
         final activationResult = await userActivation.save();
@@ -75,8 +63,8 @@ class UserService {
 
         final emailSent =
             await EmailSenderService().sendRegisterVerificationEmail(
-          to: user.email,
-          activationKey: userActivation.activationKey,
+          to: email,
+          activationCode: userActivation.activationCode,
         );
 
         if (!emailSent) {
@@ -86,37 +74,121 @@ class UserService {
           );
         }
 
-        return Response.ok(jsonEncode(user.toJsonResponse));
+        return Response.ok('email sent');
       } catch (_) {
         return Response(500, body: 'Unknown error');
       }
     });
   }
 
-  FutureOr<Response> activateUser(
-    Request request,
-    String? activationKey,
-  ) async {
+  /// This method verifies the user's email.
+  FutureOr<Response> verifyEmail(Request request) async {
     return responseHandler(() async {
       try {
-        if (activationKey == null) {
-          return Response(400, body: 'Missing activationKey');
+        final json = jsonDecode(await request.readAsString()) as Map;
+
+        final activationCode = json['activationCode'] as String?;
+        if (activationCode == null) {
+          return Response(400, body: 'Missing activationCode');
+        }
+
+        final email = json['email'] as String?;
+        if (email == null) {
+          return Response(400, body: 'Missing email');
         }
 
         final userActivation = await UserActivation.generic.findOne(
-          where.eq('activationKey', activationKey),
+          where.eq('activationCode', activationCode).eq('email', email),
         );
         if (userActivation == null) {
-          return Response(400, body: 'Invalid activationKey');
+          return Response(400, body: 'Invalid activationCode or email');
         }
 
-        final user =
-            await User.generic.findOne(where.id(userActivation.userId));
-        if (user == null) {
-          return Response(400, body: 'Invalid activationKey');
+        if (userActivation.createdAt.toDateTime().isBefore(
+              DateTime.now().subtract(
+                const Duration(minutes: 15),
+              ),
+            )) {
+          return Response(400, body: 'Activation code expired');
         }
 
-        final result = await user.activate();
+        userActivation.verified = true;
+
+        final saveResult = await userActivation.save();
+        if (saveResult.isFailure) {
+          return Response(500, body: 'Could not verify email');
+        }
+
+        return Response.ok(jsonEncode(userActivation.toJsonResponse));
+      } catch (_) {
+        return Response(500, body: 'Unknown error');
+      }
+    });
+  }
+
+  /// This method creates a new user with the given name and passwords.
+  FutureOr<Response> activateUser(Request request) async {
+    return responseHandler(() async {
+      try {
+        final json = jsonDecode(await request.readAsString()) as Map;
+
+        final activationCode = json['activationCode'] as String?;
+        if (activationCode == null) {
+          return Response(400, body: 'Missing activationCode');
+        }
+
+        final email = json['email'] as String?;
+        if (email == null) {
+          return Response(400, body: 'Missing email');
+        }
+
+        final userActivation = await UserActivation.generic.findOne(
+          where.eq('activationCode', activationCode).eq('email', email),
+        );
+        if (userActivation == null) {
+          return Response(400, body: 'Invalid activationCode or email');
+        }
+
+        if (!userActivation.verified) {
+          return Response(400, body: 'Email not verified');
+        }
+
+        if (userActivation.createdAt
+            .toDateTime()
+            .isBefore(DateTime.now().subtract(const Duration(minutes: 15)))) {
+          return Response(400, body: 'Activation code expired');
+        }
+
+        final password = json['password'] as String?;
+        if (password == null) {
+          return Response(400, body: 'Missing password');
+        } else if (!Validators.passwordRegExp.hasMatch(password)) {
+          return Response(400, body: 'Invalid password');
+        }
+
+        final firstName = json['firstName'] as String?;
+        if (firstName == null) {
+          return Response(400, body: 'Missing firstName');
+        } else if (firstName.length > 25) {
+          return Response(400, body: 'Invalid firstName');
+        }
+
+        final lastName = json['lastName'] as String?;
+        if (lastName == null) {
+          return Response(400, body: 'Missing lastName');
+        } else if (lastName.length > 25) {
+          return Response(400, body: 'Invalid lastname');
+        }
+
+        final user = User(
+          email: email,
+          password: DBCrypt().hashpw(password, DBCrypt().gensalt()),
+          firstName: firstName,
+          lastName: lastName,
+          activationDate: Timestamp(),
+        );
+
+        final result = await user.save();
         if (result.isFailure) {
           return Response(500, body: 'Could not activate user');
         }
@@ -130,6 +202,7 @@ class UserService {
     });
   }
 
+  /// This method allows users to login.
   FutureOr<Response> login(Request request) async {
     return responseHandler(() async {
       try {
@@ -164,7 +237,7 @@ class UserService {
         );
 
         // save the refresh token in the database:
-        final refTokenResult = await RefreshTokenDB.generic.insertOne(
+        final refTokenResult = await RefreshToken.generic.insertOne(
           <String, dynamic>{
             'userId': user.id,
             'refreshToken': refreshToken,
@@ -199,6 +272,7 @@ class UserService {
     });
   }
 
+  /// This method refreshes the access token.
   FutureOr<Response> regenerateAccessToken(Request request) async {
     return responseHandler(() async {
       final token = request.token;
@@ -206,34 +280,30 @@ class UserService {
       if ((token?.isEmpty ?? true) ||
           token?.toLowerCase() == 'null' ||
           token == null) {
-        return Response(401, body: {
-          'message': 'Missing token',
-        });
-      }
-
-      try {
-        JWT.verify(
-          token,
-          SecretKey(Constants.jwtRefreshSignature),
+        return Response(
+          401,
+          body: {
+            'message': 'Missing token',
+          },
         );
-      } on JWTError {
-        return Response(401, body: {
-          'message': 'Invalid token',
-        });
-      } on FormatException {
-        return Response(401, body: {
-          'message': 'Invalid token',
-        });
       }
 
-      final refreshTokenDb = await RefreshTokenDB.generic.findOne(
+      final tokenIsValid = token.isValid;
+      if (tokenIsValid != null) {
+        return tokenIsValid;
+      }
+
+      final refreshTokenDb = await RefreshToken.generic.findOne(
         where.eq('refreshToken', token),
       );
 
       if (refreshTokenDb == null || !refreshTokenDb.isValid) {
-        return Response(401, body: {
-          'message': 'Invalid token',
-        });
+        return Response(
+          401,
+          body: {
+            'message': 'Invalid token',
+          },
+        );
       }
 
       final user = await User.generic.findOne(
@@ -241,9 +311,12 @@ class UserService {
       );
 
       if (user == null) {
-        return Response(401, body: {
-          'message': 'User not found',
-        });
+        return Response(
+          401,
+          body: {
+            'message': 'User not found',
+          },
+        );
       }
 
       final newAccessToken = JWT(
@@ -263,6 +336,7 @@ class UserService {
     });
   }
 
+  /// This method allows users to update their personal information.
   FutureOr<Response> updateInfo(Request request) async {
     return responseHandler(() async {
       try {
@@ -301,7 +375,7 @@ class UserService {
           }
         }
         final lang = json['lang'] as String?;
-        if (lang != null && !LANGUAGE_BY_LOCALE.containsKey(lang)) {
+        if (lang != null && !languageByLocale.containsKey(lang)) {
           return Response(400, body: 'Invalid localization');
         }
 
@@ -309,7 +383,7 @@ class UserService {
           description: description,
           location: location,
           gender: gender,
-          photo: photo,
+          imageUrl: photo,
           lang: lang,
           timezone: timezone,
         );
@@ -327,6 +401,7 @@ class UserService {
     });
   }
 
+  /// This method allows users to update their password.
   FutureOr<Response> updatePassword(Request request) async {
     return responseHandler(() async {
       try {

@@ -13,7 +13,7 @@ Invite _$InviteFromJson(Map<String, dynamic> json) => Invite(
       userType: $enumDecode(_$UserTypeEnumMap, json['userType']),
     )
       ..id = objectId(json['_id'])
-      ..timestamp =
+      ..createdAt =
           const BsonTimestampNullConverter().fromJson(json['timestamp']);
 
 Map<String, dynamic> _$InviteToJson(Invite instance) {
@@ -29,9 +29,9 @@ Map<String, dynamic> _$InviteToJson(Invite instance) {
   val['emitter'] = instance.emitter.toJson();
   val['organization'] = instance.organization.toJson();
   val['refId'] = instance.refId;
-  val['userType'] = _$UserTypeEnumMap[instance.userType]!;
+  val['userType'] = _$UserTypeEnumMap[instance.userType];
   val['timestamp'] =
-      const BsonTimestampNullConverter().toJson(instance.timestamp);
+      const BsonTimestampNullConverter().toJson(instance.createdAt);
   return val;
 }
 

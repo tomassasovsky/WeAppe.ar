@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:shelf/shelf_io.dart' as io;
 import 'package:dotenv/dotenv.dart' as dotenv;
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
+import 'package:shelf/shelf_io.dart' as io;
 import 'package:weappear_backend/database/database.dart';
 import 'package:weappear_backend/src/router.dart';
 import 'package:weappear_backend/src/utils/utils.dart';
@@ -21,8 +21,9 @@ void main() {
 
       await dbService.open();
 
-      stdout.write('Connected to database.');
-      stdout.write('Starting server at localhost:8080. \n');
+      stdout
+        ..write('Connected to database.')
+        ..write('Starting server at localhost:8080. \n');
       await io.serve(
         WeAppearRouter().appPipeline,
         'localhost',

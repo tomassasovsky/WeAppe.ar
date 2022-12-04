@@ -8,8 +8,10 @@ part of 'user_activation.dart';
 
 UserActivation _$UserActivationFromJson(Map<String, dynamic> json) =>
     UserActivation(
-      activationKey: json['activationKey'] as String,
-      userId: ObjectId.parse(json['userId'] as String),
+      activationCode: json['activationCode'] as String,
+      email: json['email'] as String,
+      createdAt: const BsonTimestampConverter().fromJson(json['createdAt']),
+      verified: json['verified'] as bool? ?? false,
     )..id = objectId(json['_id']);
 
 Map<String, dynamic> _$UserActivationToJson(UserActivation instance) {
@@ -22,7 +24,9 @@ Map<String, dynamic> _$UserActivationToJson(UserActivation instance) {
   }
 
   writeNotNull('_id', instance.id?.toJson());
-  val['activationKey'] = instance.activationKey;
-  val['userId'] = instance.userId.toJson();
+  val['activationCode'] = instance.activationCode;
+  val['email'] = instance.email;
+  val['createdAt'] = const BsonTimestampConverter().toJson(instance.createdAt);
+  val['verified'] = instance.verified;
   return val;
 }

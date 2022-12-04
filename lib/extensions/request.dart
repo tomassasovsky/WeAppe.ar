@@ -17,6 +17,7 @@ extension RequestBodyAccessorExtension on Request {
     }
   }
 
+  /// Creates a new request with the given body.
   Request newRequest(Object? body) => Request(
         method,
         requestedUri,

@@ -11,9 +11,14 @@ import 'package:weappear_backend/src/models/user/user.dart';
 import 'package:weappear_backend/src/utils/queu_service.dart';
 import 'package:weappear_backend/src/utils/utils.dart';
 
+/// {@template record_service}
+/// This service has all the methods for the records collection.
+/// {@endtemplate}
 class RecordService {
+  /// This queu is used to prevent multiple clock in and clock out requests.
   final userQueue = QueueService();
 
+  /// This method creates a new record.
   FutureOr<Response> clockIn(Request request) async {
     return responseHandler(() async {
       try {
@@ -71,6 +76,7 @@ class RecordService {
     });
   }
 
+  /// This method closes an open record.
   FutureOr<Response> clockOut(Request request) async {
     return responseHandler(() async {
       try {
@@ -122,6 +128,7 @@ class RecordService {
     });
   }
 
+  /// This method returns all records an user made in an organization.
   FutureOr<Response> getRecords(Request request) async {
     return responseHandler(() async {
       try {
@@ -157,12 +164,14 @@ class RecordService {
             .eq('userId', token.userId.$oid)
             .eq('organizationId', organizationId);
 
-        final recods = await Record.generic.find(query
-            .sortBy(
-              column,
-              descending: direction,
-            )
-            .skip(start));
+        final recods = await Record.generic.find(
+          query
+              .sortBy(
+                column,
+                descending: direction,
+              )
+              .skip(start),
+        );
         final total = await Record.generic.count(query);
 
         return Response.ok(
@@ -182,6 +191,8 @@ class RecordService {
     });
   }
 
+  /// This method is used to create a new record with the given hours, thus
+  /// allowing for quick clock in and clock out.
   FutureOr<Response> createRecord(Request request) async {
     return responseHandler(() async {
       try {
@@ -206,12 +217,14 @@ class RecordService {
           return Response(400, body: 'User is not part of the organization');
         }
 
-        final hours = json['hours'] as int?;
-        if (hours == null) {
+        final hoursString = json['hours'] as String?;
+        if (hoursString == null) {
           return Response(400, body: 'Missing hours');
         }
 
-        if (hours < 0 || hours > 24) {
+        final hours = int.parse(hoursString);
+
+        if (hours <= 0 || hours >= 24) {
           return Response(400, body: 'Invalid hours');
         }
 
@@ -221,14 +234,40 @@ class RecordService {
         }
 
         final now = DateTime.now();
-        final lastHour = (9 + hours).clamp(0, 24);
+        var remainingHours = 0;
+        var lastHour = 9 + hours;
+        if (lastHour > 24) {
+          remainingHours = lastHour - 24;
+          lastHour = 24;
+        }
+        final firstHour = 9 - remainingHours;
+
         final record = Record(
           userId: token.userId,
           organizationId: organization.id!,
-          clockIn: DateTime(now.year, now.month, now.day, 9).toTimestamp(),
-          clockOut: DateTime(now.year, now.month, now.day, 9).toTimestamp(),
+          clockIn: DateTime(
+            now.year,
+            now.month,
+            now.day,
+            firstHour,
+          ).toTimestamp(),
+          clockOut: DateTime(
+            now.year,
+            now.month,
+            now.day,
+            lastHour,
+          ).toTimestamp(),
+          durationInMiliseconds: Duration(
+            hours: hours,
+          ).inMilliseconds,
         );
-        return Response.ok('');
+
+        final saveRecord = await record.save();
+        if (saveRecord.isFailure) {
+          return Response(400, body: 'Failed to save record');
+        }
+
+        return Response.ok(jsonEncode(record.toJsonResponse));
       } catch (_) {
         return Response(400, body: 'Could not create record');
       }
