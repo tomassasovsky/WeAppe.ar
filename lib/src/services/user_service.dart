@@ -132,8 +132,8 @@ class UserService {
       try {
         final json = jsonDecode(await request.readAsString()) as Map;
 
-        final activationCode = json['activationCode'] as String?;
-        if (activationCode == null) {
+        final activationId = json['activationId'] as String?;
+        if (activationId == null) {
           return Response(400, body: 'Missing activationCode');
         }
 
@@ -142,10 +142,8 @@ class UserService {
           return Response(400, body: 'Missing email');
         }
 
-        final userActivation = await UserActivation.generic.findOne(
-          where.eq('activationCode', activationCode).eq('email', email),
-        );
-        if (userActivation == null) {
+        final userActivation = await UserActivation.generic.byId(activationId);
+        if (userActivation == null || userActivation.email != email) {
           return Response(400, body: 'Invalid activationCode or email');
         }
 

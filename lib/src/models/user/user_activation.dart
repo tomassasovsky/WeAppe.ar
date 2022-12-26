@@ -58,7 +58,7 @@ class UserActivation extends DBModel<UserActivation> {
 
   /// Creates a map with the response data.
   Map<String, dynamic> get toJsonResponse {
-    final json = toJson()..remove('activationCode');
+    final json = toJson();
     json['createdAt'] = createdAt.toDateTime().toIso8601String();
     return json;
   }
