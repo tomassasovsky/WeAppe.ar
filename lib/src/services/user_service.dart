@@ -74,7 +74,11 @@ class UserService {
           );
         }
 
-        return Response.ok('email sent');
+        return Response.ok(
+          jsonEncode({
+            'message': true,
+          }),
+        );
       } catch (_) {
         return Response(500, body: 'Unknown error');
       }
