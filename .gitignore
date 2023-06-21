@@ -4,8 +4,8 @@
 
 # Conventional directory for build output.
 build/
+.history
 .env
-
 **.aot
 **.hive
 **.lock
